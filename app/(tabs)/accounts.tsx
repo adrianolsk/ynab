@@ -46,7 +46,7 @@ export default function TabTwoScreen() {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.title}>Tab Two</Text>
+        <Text style={styles.title}>Tab add</Text>
         <View
           style={styles.separator}
           lightColor="#eee"
