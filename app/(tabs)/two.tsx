@@ -7,12 +7,16 @@ import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as schema from "../../database/schemas/user-schema";
 import { useEffect } from "react";
 import { db } from "@/database/db";
+import { eq, isNull } from "drizzle-orm";
 
 export default function TabTwoScreen() {
   // const database = useSQLiteContext();
   // const db = drizzle(database, { schema });
 
-  const { data } = useLiveQuery(db.select().from(schema.users));
+  // const { data } = useLiveQuery(db.select().from(schema.users));
+  const { data } = useLiveQuery(
+    db.select().from(schema.users).where(isNull(schema.users.deleted_at))
+  );
 
   const add = async () => {
     try {
@@ -27,9 +31,12 @@ export default function TabTwoScreen() {
 
   const deleteAll = async () => {
     try {
-      const response = db.update(schema.users).set({
-        name: new Date().toISOString(),
-      });
+      const response = db
+        .update(schema.users)
+        .set({
+          deleted_at: new Date().toISOString(),
+        })
+        .where(eq(schema.users.id, 1));
       console.log("response", { response: await response });
     } catch (error) {
       console.log("error", { error });

@@ -16,6 +16,7 @@ import { db } from "@/database/db";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Text, View } from "react-native";
 import migrations from "../drizzle/migrations";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 // DATABASE
 
 // DATABASE
@@ -60,6 +61,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { success, error } = useMigrations(db, migrations);
+  // useDrizzleStudio(db);
 
   if (error) {
     return (
