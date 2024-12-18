@@ -14,6 +14,8 @@ import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { db } from "@/database/db";
 import * as schema from "@/database/schemas/user-schema";
+import { AccountsSchema } from "@/database/schemas/accounts-schema";
+import { AccountGroup } from "@/database/types";
 
 export default function NewAccountScreen() {
   const router = useRouter();
@@ -24,7 +26,10 @@ export default function NewAccountScreen() {
     setText(text);
   };
 
-  const params = useLocalSearchParams<{ id?: string; accountGroup: string }>();
+  const params = useLocalSearchParams<{
+    id?: string;
+    accountGroup: AccountGroup;
+  }>();
   useEffect(() => {
     if (!params.id) return;
     setAccountType(params.id);
@@ -44,7 +49,7 @@ export default function NewAccountScreen() {
     }
 
     try {
-      const response = db.insert(schema.accounts).values({
+      const response = db.insert(AccountsSchema).values({
         name: text,
         account_type: accountType,
         user_id: 2,

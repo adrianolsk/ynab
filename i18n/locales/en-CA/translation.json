@@ -1,0 +1,7 @@
+{
+    "hello": "Hello",
+    "budget": "Budget",
+    "loan": "Loan",
+    "tracking": "Tracking",
+    "test": "This is a test {{value}}"
+}

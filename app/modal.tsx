@@ -11,6 +11,7 @@ import {
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { useRouter } from "expo-router";
+import { AccountGroup } from "@/database/types";
 
 type AccountType =
   | "checking"
@@ -114,7 +115,7 @@ const DATA: SectionItem[] = [
 export default function ModalScreen() {
   const router = useRouter();
 
-  function select(item: AccountItem, accountGroup: string) {
+  function select(item: AccountItem, accountGroup: AccountGroup) {
     // Return back to the view containing the form
     router.dismissTo({
       pathname: "/accounts/new",

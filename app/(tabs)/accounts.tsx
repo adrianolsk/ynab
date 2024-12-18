@@ -10,7 +10,7 @@ import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
-import * as schema from "../../database/schemas/user-schema";
+import { AccountsSchema } from "../../database/schemas/accounts-schema";
 import { useEffect, useMemo } from "react";
 import { db } from "@/database/db";
 import { eq, isNull } from "drizzle-orm";
@@ -22,6 +22,9 @@ import {
   useRouter,
 } from "expo-router";
 import { routeToScreen } from "expo-router/build/useScreens";
+import { useTranslation } from "react-i18next";
+import { AccountGroup } from "@/database/types";
+import { type AccountType } from "@/database/schemas/accounts-schema";
 
 type Account = {
   name: string;
@@ -56,16 +59,22 @@ type RootStackParamList = {
   details: { id: number; name: string };
 };
 
+type AccountGroupItem = {
+  title: AccountGroup;
+  data: AccountType[];
+};
 type MyObject = {
-  [key: string]: any; // Allow any key with any value
+  [key in AccountGroup]: AccountGroupItem;
 };
 
 export default function TabTwoScreen() {
+  const { t } = useTranslation();
+
   // const database = useSQLiteContext();
   // const db = drizzle(database, { schema });
   const router = useRouter();
   // const { data } = useLiveQuery(db.select().from(schema.users));
-  const { data } = useLiveQuery(db.select().from(schema.accounts));
+  const { data } = useLiveQuery(db.select().from(AccountsSchema));
 
   const accounts = useMemo(() => {
     const result = data?.reduce((acc, item) => {
@@ -78,7 +87,7 @@ export default function TabTwoScreen() {
     }, {} as MyObject);
 
     return Object.entries(result).map(([key, value]) => ({
-      title: key,
+      title: value.title,
       data: value.data,
     }));
   }, [data]);
@@ -102,29 +111,29 @@ export default function TabTwoScreen() {
       renderItem={({ item }) => (
         <View style={styles.item}>
           <Text style={styles.title}>
-            {item.name} -{item.balance}
+            {item.name} -{item.balance?.toFixed(2)}
           </Text>
         </View>
       )}
       renderSectionHeader={({ section: { title } }) => {
-        return title ? <Text style={styles.header}>{title}</Text> : null;
+        return title ? <Text style={styles.header}>{t(title)}</Text> : null;
       }}
       ListFooterComponent={() => {
         return (
           // <Link href="/accounts/new">Add Account</Link>
-          <View>
+          <View style={styles.footer}>
             <Button
               title="Add Account"
               onPress={() => {
                 router.push("/accounts/new");
               }}
             />
-            <Button
-              title="Delete all Account"
+            {/* <Button
+              title={t("budget")}
               onPress={() => {
                 deleteAll();
               }}
-            />
+            /> */}
           </View>
         );
       }}
@@ -171,5 +180,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
+  },
+  footer: {
+    marginTop: 32,
   },
 });
