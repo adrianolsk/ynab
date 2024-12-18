@@ -4,6 +4,7 @@ import {
   ScrollView,
   SectionList,
   StatusBar,
+  Pressable,
 } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
@@ -60,7 +61,7 @@ type RootStackParamList = {
 };
 
 type AccountGroupItem = {
-  title: AccountGroup;
+  title?: AccountGroup;
   data: AccountType[];
 };
 type MyObject = {
@@ -86,16 +87,26 @@ export default function TabTwoScreen() {
       return acc;
     }, {} as MyObject);
 
-    return Object.entries(result).map(([key, value]) => ({
+    const arr = Object.entries(result).map(([key, value]) => ({
       title: value.title,
       data: value.data,
     }));
+
+    // todo: add item at beginning of array
+    arr.unshift({
+      title: undefined,
+      data: [
+        {
+          name: "All transactions",
+        },
+      ],
+    });
+    return arr;
   }, [data]);
-  console.log("data le accounts", JSON.stringify({ accounts }, null, 2));
 
   const deleteAll = async () => {
     try {
-      const response = db.delete(schema.accounts).all();
+      const response = db.delete(AccountsSchema).all();
 
       console.log("response", { response: await response });
     } catch (error) {
@@ -109,11 +120,13 @@ export default function TabTwoScreen() {
       sections={accounts}
       keyExtractor={(item, index) => item.name + index}
       renderItem={({ item }) => (
-        <View style={styles.item}>
-          <Text style={styles.title}>
-            {item.name} -{item.balance?.toFixed(2)}
-          </Text>
-        </View>
+        <Link href={`/accounts/edit/${item.id}`} asChild>
+          <Pressable style={styles.item}>
+            <Text style={styles.title}>
+              {item.name} -{item.balance?.toFixed(2)}
+            </Text>
+          </Pressable>
+        </Link>
       )}
       renderSectionHeader={({ section: { title } }) => {
         return title ? <Text style={styles.header}>{t(title)}</Text> : null;
@@ -164,7 +177,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   item: {
-    // backgroundColor: "#f9c2ff",
+    flex: 1,
+
+    backgroundColor: "#fff",
     padding: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",

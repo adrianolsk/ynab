@@ -41,4 +41,4 @@ export const AccountsSchema = sqliteTable(
   },
   (t) => [index("account_user_id").on(t.user_id)]
 );
-export type AccountType = typeof accounts.$inferInsert;
+export type AccountType = typeof AccountsSchema.$inferInsert;
