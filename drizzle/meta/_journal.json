@@ -15,6 +15,13 @@
       "when": 1734461014554,
       "tag": "0001_broken_ozymandias",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1734488928261,
+      "tag": "0002_crazy_micromacro",
+      "breakpoints": true
     }
   ]
 }

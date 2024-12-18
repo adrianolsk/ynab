@@ -65,6 +65,7 @@ export const accounts = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    account_group: text("account_group").notNull().default("budget"),
     account_type: text("account_type").notNull(),
     balance: real("balance").default(0.0),
     created_at: text("created_at")

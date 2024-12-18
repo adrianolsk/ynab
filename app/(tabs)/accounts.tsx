@@ -11,9 +11,17 @@ import { Text, View } from "@/components/Themed";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as schema from "../../database/schemas/user-schema";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { db } from "@/database/db";
 import { eq, isNull } from "drizzle-orm";
+import {
+  Link,
+  useNavigation,
+  useNavigationContainerRef,
+  useRootNavigation,
+  useRouter,
+} from "expo-router";
+import { routeToScreen } from "expo-router/build/useScreens";
 
 type Account = {
   name: string;
@@ -27,47 +35,54 @@ type Account = {
 
 const DATA = [
   {
-    type: "card",
     title: undefined,
     data: ["All transactions"],
   },
   {
-    type: "card",
     title: "Budget",
     data: ["Cash Account", "Savings", "WS Visa"],
   },
   {
-    type: "card",
     title: "Loans",
     data: ["Mortgage", "Car Loan"],
   },
   {
-    type: "card",
     title: "Tracking",
     data: ["TFSA", "RRSP"],
   },
 ];
 
+type RootStackParamList = {
+  details: { id: number; name: string };
+};
+
+type MyObject = {
+  [key: string]: any; // Allow any key with any value
+};
+
 export default function TabTwoScreen() {
   // const database = useSQLiteContext();
   // const db = drizzle(database, { schema });
-
+  const router = useRouter();
   // const { data } = useLiveQuery(db.select().from(schema.users));
   const { data } = useLiveQuery(db.select().from(schema.accounts));
 
-  const add = async () => {
-    try {
-      const response = db.insert(schema.accounts).values({
-        name: "TFSA",
-        account_type: "investment",
-        user_id: 2,
-        balance: 20000,
-      });
-      console.log("response", { response: (await response).lastInsertRowId });
-    } catch (error) {
-      console.log("error", { error });
-    }
-  };
+  const accounts = useMemo(() => {
+    const result = data?.reduce((acc, item) => {
+      acc[item.account_group] = acc[item.account_group] || {
+        title: item.account_group,
+        data: [],
+      };
+      acc[item.account_group].data.push(item);
+      return acc;
+    }, {} as MyObject);
+
+    return Object.entries(result).map(([key, value]) => ({
+      title: key,
+      data: value.data,
+    }));
+  }, [data]);
+  console.log("data le accounts", JSON.stringify({ accounts }, null, 2));
 
   const deleteAll = async () => {
     try {
@@ -80,24 +95,44 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <ScrollView>
-      <SectionList
-        style={styles.section}
-        sections={DATA}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item}</Text>
+    <SectionList
+      style={styles.section}
+      sections={accounts}
+      keyExtractor={(item, index) => item.name + index}
+      renderItem={({ item }) => (
+        <View style={styles.item}>
+          <Text style={styles.title}>
+            {item.name} -{item.balance}
+          </Text>
+        </View>
+      )}
+      renderSectionHeader={({ section: { title } }) => {
+        return title ? <Text style={styles.header}>{title}</Text> : null;
+      }}
+      ListFooterComponent={() => {
+        return (
+          // <Link href="/accounts/new">Add Account</Link>
+          <View>
+            <Button
+              title="Add Account"
+              onPress={() => {
+                router.push("/accounts/new");
+              }}
+            />
+            <Button
+              title="Delete all Account"
+              onPress={() => {
+                deleteAll();
+              }}
+            />
           </View>
-        )}
-        renderSectionHeader={({ section: { title, type } }) => {
-          return title ? <Text style={styles.header}>{title}</Text> : null;
-        }}
-        ListFooterComponent={() => {
-          return <Button title="Add Account" onPress={() => {}} />;
-        }}
-      />
-      {/* <View style={styles.container}>
+        );
+      }}
+    />
+  );
+}
+
+/* <View style={styles.container}>
         <Text style={styles.title}>Tab add</Text>
         <View
           style={styles.separator}
@@ -108,10 +143,7 @@ export default function TabTwoScreen() {
         <Button title="teste2" onPress={add}></Button>
         <Button title="teste2" onPress={deleteAll}></Button>
         <Text>{JSON.stringify(data, null, 2)}</Text>
-      </View> */}
-    </ScrollView>
-  );
-}
+      </View> */
 
 const styles = StyleSheet.create({
   container: {

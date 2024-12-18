@@ -84,6 +84,7 @@ function RootLayoutNav() {
       <Stack screenOptions={{}}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+        {/* <Stack.Screen name="accounts/new" options={{ presentation: "modal" }} /> */}
       </Stack>
       {/* </SQLiteProvider> */}
     </ThemeProvider>

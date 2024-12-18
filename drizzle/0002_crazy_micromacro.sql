@@ -1,0 +1,1 @@
+ALTER TABLE `accounts` ADD `account_group` text DEFAULT 'budget' NOT NULL;
