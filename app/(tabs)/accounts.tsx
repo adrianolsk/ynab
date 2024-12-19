@@ -123,7 +123,7 @@ export default function TabTwoScreen() {
         <Link href={`/accounts/edit/${item.id}`} asChild>
           <Pressable style={styles.item}>
             <Text style={styles.title}>
-              {item.name} -{item.balance?.toFixed(2)}
+              {item.name} -{item.balance}
             </Text>
           </Pressable>
         </Link>

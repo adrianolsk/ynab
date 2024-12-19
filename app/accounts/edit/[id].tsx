@@ -19,12 +19,22 @@ import {
   AccountType,
 } from "@/database/schemas/accounts-schema";
 import { AccountGroup } from "@/database/types";
+import { TextField } from "@/components/text-field";
+import { Switch } from "@/components/switch";
+import { useSharedValue } from "react-native-reanimated";
+import { BalanceField } from "@/components/balance-field";
 
 export default function EditAccountScreen() {
   const router = useRouter();
+  const isOn = useSharedValue(false);
+
+  const handlePress = () => {
+    isOn.value = !isOn.value;
+  };
   const [text, setText] = useState<string | undefined>("");
-  const [accountType, setAccountType] = useState<string | undefined>();
-  const [balance, setBalance] = useState<string | undefined>("");
+  const [notes, setNotes] = useState<string | undefined>("");
+
+  const [balance, setBalance] = useState<number | null>();
   const onChangeText = (text: string) => {
     setText(text);
   };
@@ -46,20 +56,14 @@ export default function EditAccountScreen() {
 
       .then(([result]) => {
         // setAccount(result);
-        setBalance(result.balance?.toFixed(2));
+        setBalance(result.balance);
         setText(result.name);
       });
   }, [params.id]);
 
   const addAccount = async () => {
-    if (!balance) return;
-    const value: number = parseFloat(balance);
+    // console.log("addAccount", { text, accountType, balance });
 
-    console.log("addAccount", { text, accountType, balance, value });
-    if (isNaN(value)) {
-      alert("Please enter a valid number");
-      return;
-    }
     if (!text) {
       alert("Please enter a valid name and type");
       return;
@@ -67,15 +71,16 @@ export default function EditAccountScreen() {
 
     try {
       if (!params.id) return;
+
+      console.log("🐌 balance", { balance });
       const id = parseInt(params.id);
       const response = db
         .update(AccountsSchema)
         .set({
           name: text,
-          account_type: accountType,
-          user_id: 2,
-          balance: value,
-          account_group: params?.accountGroup,
+          // notes,
+          balance,
+          // account_group: params?.accountGroup,
         })
         .where(eq(AccountsSchema.id, id));
 
@@ -86,46 +91,42 @@ export default function EditAccountScreen() {
     }
   };
 
-  const handleChangeText = (text: string) => {
+  const handleChangeText = (numericValue: number) => {
     // Allow only numeric values
-    const numericValue = text.replace(/[^0-9]/g, "");
+
     setBalance(numericValue);
   };
 
+  const handleChangeNotes = (text: string) => {
+    setNotes(text);
+  };
   return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
-          // presentation: "modal",
           headerTitle: "Edit Account",
           headerBackButtonDisplayMode: "minimal",
         }}
       />
-      <View style={styles.row}>
-        <Text>Account Nickname </Text>
+      <Text style={styles.sectionTitle}>Account information </Text>
 
-        <TextInput
-          placeholder="My checkings account"
-          style={styles.input}
-          placeholderTextColor={"#aaa"}
-          onChangeText={(text) => onChangeText(text)}
+      <View style={styles.rowCard}>
+        <TextField
+          placeholder="Account Nickname"
+          onChangeText={onChangeText}
           value={text}
         />
+        <View style={styles.separator} />
+        <TextField
+          placeholder="Notes"
+          onChangeText={handleChangeNotes}
+          value={notes}
+        />
       </View>
+      <Text style={styles.sectionTitle}>Today's Balance </Text>
 
       <View style={styles.row}>
-        <Text>Today's Balance </Text>
-
-        {/* limit to only numeric values  */}
-        <TextInput
-          keyboardType="numeric"
-          placeholder="0.00"
-          textContentType="creditCardNumber"
-          //   placeholder="My checkings account"
-          style={styles.input}
-          onChangeText={handleChangeText}
-          value={balance}
-        />
+        <BalanceField onChangeText={handleChangeText} value={balance} />
       </View>
 
       <Button title="Save" onPress={addAccount} />
@@ -138,20 +139,44 @@ export default function EditAccountScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    backgroundColor: "transparent",
+    flex: 1,
+    backgroundColor: "#EDF1F5",
     height: "50%",
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    marginHorizontal: 16,
+    marginTop: 16,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
   },
   separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+    // borderTopWidth: 0.5,
+    // borderColor: "#ccc",
+    backgroundColor: "#aaa",
+    height: 0.2,
+    width: "100%",
+  },
+  rowCard: {
+    // borderWidth: 1,
+    borderRadius: 6,
+    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    // paddingTop: 16,
+    backgroundColor: "#fff",
+    // marginBottom: 16,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    marginVertical: 8,
   },
   row: {
+    backgroundColor: "transparent",
     // borderWidth: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
@@ -164,5 +189,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 6,
     borderColor: "#999",
+    backgroundColor: "#fff",
   },
 });
