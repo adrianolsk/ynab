@@ -78,7 +78,10 @@ function formatCurrency(numericValue: number) {
 function parseCurrencyToDecimal(currency: string) {
   // Remove all non-digit characters
   const numericString = currency.replace(/[^\d-]/g, "");
+  const parsed = parseFloat(numericString);
+  if (Number.isNaN(parsed)) return 0;
 
+  console.log("🍎numericString", { numericString, currency, parsed });
   // Convert to Decimal and divide by 100
   const value = new Decimal(numericString).dividedBy(100);
 
@@ -97,7 +100,7 @@ export const BalanceField = (props: any) => {
     },
   });
 
-  //   const amountValue = watch("amount");
+  // const amountValue = watch("amount");
 
   useEffect(() => {
     const currency = getValues("amount");
@@ -126,8 +129,10 @@ export const BalanceField = (props: any) => {
     isOn.value = !isOn.value;
   };
 
+  const borderColor = props.value > 0 ? styles.positive : styles.negative;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, borderColor]}>
       <View style={{ flex: 1 }}>
         <Controller
           name="amount"
@@ -162,7 +167,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: "#fff",
     paddingHorizontal: 16,
-    borderColor: "#999",
+    borderColor: "#bbb",
     alignItems: "center",
+  },
+  positive: {
+    borderColor: "#4D9119",
+  },
+  negative: {
+    borderColor: "#C72C1E",
   },
 });

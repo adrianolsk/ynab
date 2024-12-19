@@ -23,6 +23,7 @@ import { TextField } from "@/components/text-field";
 import { Switch } from "@/components/switch";
 import { useSharedValue } from "react-native-reanimated";
 import { BalanceField } from "@/components/balance-field";
+import { CardButton } from "@/components/card-button";
 
 export default function EditAccountScreen() {
   const router = useRouter();
@@ -31,12 +32,12 @@ export default function EditAccountScreen() {
   const handlePress = () => {
     isOn.value = !isOn.value;
   };
-  const [text, setText] = useState<string | undefined>("");
+  const [nickName, setNickName] = useState<string | undefined>("");
   const [notes, setNotes] = useState<string | undefined>("");
 
   const [balance, setBalance] = useState<number | null>();
   const onChangeText = (text: string) => {
-    setText(text);
+    setNickName(text);
   };
 
   const params = useLocalSearchParams<{
@@ -56,15 +57,17 @@ export default function EditAccountScreen() {
 
       .then(([result]) => {
         // setAccount(result);
+        console.log("🍎result", { result });
+        setNotes(result.notes ?? "");
         setBalance(result.balance);
-        setText(result.name);
+        setNickName(result.name);
       });
   }, [params.id]);
 
   const addAccount = async () => {
-    // console.log("addAccount", { text, accountType, balance });
+    console.log("addAccount", { nickName, notes, balance });
 
-    if (!text) {
+    if (!nickName) {
       alert("Please enter a valid name and type");
       return;
     }
@@ -77,8 +80,8 @@ export default function EditAccountScreen() {
       const response = db
         .update(AccountsSchema)
         .set({
-          name: text,
-          // notes,
+          notes: notes,
+          name: nickName,
           balance,
           // account_group: params?.accountGroup,
         })
@@ -114,7 +117,7 @@ export default function EditAccountScreen() {
         <TextField
           placeholder="Account Nickname"
           onChangeText={onChangeText}
-          value={text}
+          value={nickName}
         />
         <View style={styles.separator} />
         <TextField
@@ -127,9 +130,18 @@ export default function EditAccountScreen() {
 
       <View style={styles.row}>
         <BalanceField onChangeText={handleChangeText} value={balance} />
+        <Text style={styles.info}>
+          An adjustment transaction will be created automatically if you change
+          this amount.{" "}
+        </Text>
       </View>
 
-      <Button title="Save" onPress={addAccount} />
+      <View style={[styles.row, { marginTop: 32 }]}>
+        <CardButton text="Save Account" type="primary" onPress={addAccount} />
+      </View>
+      <View style={styles.row}>
+        <CardButton text="Close Account" type="destructive" />
+      </View>
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
@@ -190,5 +202,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderColor: "#999",
     backgroundColor: "#fff",
+  },
+  info: {
+    fontWeight: "300",
+    marginTop: 8,
+    fontSize: 10,
+    color: "#000",
   },
 });

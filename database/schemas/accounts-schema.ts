@@ -27,6 +27,7 @@ export const AccountsSchema = sqliteTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    notes: text("notes"),
     account_group: customColumnAccountGroup("account_group")
       .notNull()
       .default("budget"),

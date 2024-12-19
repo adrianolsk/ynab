@@ -22,6 +22,13 @@
       "when": 1734488928261,
       "tag": "0002_crazy_micromacro",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1734619622006,
+      "tag": "0003_complete_toxin",
+      "breakpoints": true
     }
   ]
 }

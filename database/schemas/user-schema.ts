@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 import { AccountGroup } from "../types";
+import { AccountsSchema } from "./accounts-schema";
 
 // const customColumnAccountGroup = customType<{
 //   data: AccountGroup;
@@ -95,7 +96,7 @@ export const categories = sqliteTable(
 //   },
 //   (t) => [index("account_user_id").on(t.user_id)]
 // );
-// export type AccountType = typeof accounts.$inferInsert;
+// export type AccountType = typeof AccountsSchema.$inferInsert;
 
 // TRANSACTIONS TABLE
 export const transactions = sqliteTable(
@@ -104,7 +105,7 @@ export const transactions = sqliteTable(
     id: int("id").primaryKey(),
     account_id: int("account_id")
       .notNull()
-      .references(() => accounts.id, { onDelete: "cascade" }),
+      .references(() => AccountsSchema.id, { onDelete: "cascade" }),
     category_id: int("category_id").references(() => categories.id, {
       onDelete: "set null",
     }),
@@ -152,7 +153,7 @@ export const scheduledTransactions = sqliteTable(
     id: int("id").primaryKey(),
     account_id: int("account_id")
       .notNull()
-      .references(() => accounts.id, { onDelete: "cascade" }),
+      .references(() => AccountsSchema.id, { onDelete: "cascade" }),
     category_id: int("category_id").references(() => categories.id, {
       onDelete: "set null",
     }),
