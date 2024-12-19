@@ -4,27 +4,29 @@ import {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  ButtonProps,
 } from "react-native";
 import React from "react";
 import { ViewContent } from "../Themed";
 
 type ButtonType = "primary" | "secondary" | "destructive";
 
-interface CardButtonProps {
+interface CardButtonProps extends ButtonProps {
   onPress?: () => void;
-  text?: string;
+
   type?: ButtonType;
 }
 
 export const CardButton = ({
   onPress,
-  text,
+  title,
   type = "primary",
+  ...props
 }: CardButtonProps) => {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} {...props}>
       <ViewContent style={styles.container}>
-        <Text style={[styles[type]]}>{text}</Text>
+        <Text style={[styles[type]]}>{title}</Text>
       </ViewContent>
     </TouchableOpacity>
   );

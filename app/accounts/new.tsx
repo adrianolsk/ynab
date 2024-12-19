@@ -1,13 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {
-  Button,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  Text,
-  View,
-} from "react-native";
+import { Button, Platform, Pressable, StyleSheet, View } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 // import { Text, View } from "@/components/Themed";
@@ -16,20 +8,30 @@ import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { db } from "@/database/db";
 import * as schema from "@/database/schemas/user-schema";
-import { AccountsSchema } from "@/database/schemas/accounts-schema";
+import {
+  AccountsSchema,
+  AccountSchemaType,
+} from "@/database/schemas/accounts-schema";
 import { AccountGroup } from "@/database/types";
+import { BalanceField } from "@/components/balance-field";
+import { TextInput, Text } from "@/components/Themed";
+import { useTranslation } from "react-i18next";
+import { AccountType } from "@/types";
+import { CardButton } from "@/components/card-button";
 
 export default function NewAccountScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [text, setText] = useState("");
   const [accountType, setAccountType] = useState<string | undefined>();
-  const [balance, setBalance] = useState("");
+  const [balance, setBalance] = useState<number | undefined>();
   const onChangeText = (text: string) => {
     setText(text);
   };
 
   const params = useLocalSearchParams<{
-    id?: string;
+    id?: AccountType;
+    // accountType: AccountType;
     accountGroup: AccountGroup;
   }>();
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function NewAccountScreen() {
   }, [params.id]);
 
   const addAccount = async () => {
-    const value: number = parseFloat(balance);
+    const value: number = balance ?? 0; //parseFloat(balance);
 
     console.log("addAccount", { text, accountType, balance, value });
     if (isNaN(value)) {
@@ -65,11 +67,16 @@ export default function NewAccountScreen() {
     }
   };
 
-  const handleChangeText = (text: string) => {
+  const handleChangeText = (numericValue: number) => {
     // Allow only numeric values
-    const numericValue = text.replace(/[^0-9]/g, "");
+    // const numericValue = text.replace(/[^0-9]/g, "");
     setBalance(numericValue);
   };
+
+  console.log("🍎params", { id: params.id });
+  const accountTypeText = params.id
+    ? t(`accountTypes.${params.id}`)
+    : t("accountTypes.placeholder");
 
   return (
     <View style={styles.container}>
@@ -93,38 +100,32 @@ export default function NewAccountScreen() {
       <View style={styles.row}>
         <Text>What type of account are you adding?</Text>
         {/* <Link href="/modal" asChild> */}
-        <Pressable
-          onPress={() => router.push("/modal")}
-          style={{ backgroundColor: "red", width: 100, height: 100 }}
-        >
-          {/* <TextInput
+        <Pressable onPress={() => router.push("/modal")}>
+          <TextInput
+            pointerEvents="none"
             editable={false}
             placeholder="My checkings account"
             style={styles.input}
-            placeholderTextColor={"#aaa"}
+            // placeholderTextColor={"#aaa"}
             onChangeText={(text) => onChangeText(text)}
-            value={params.id}
-          /> */}
+            value={accountTypeText}
+          />
         </Pressable>
         {/* </Link> */}
       </View>
       <View style={styles.row}>
         <Text>What is your current account balance? </Text>
 
-        {/* limit to only numeric values  */}
-        <TextInput
-          keyboardType="numeric"
-          placeholder="0.00"
-          textContentType="creditCardNumber"
-          //   placeholder="My checkings account"
-          style={styles.input}
-          onChangeText={handleChangeText}
-          value={balance}
+        <BalanceField onChangeText={handleChangeText} value={balance} />
+      </View>
+      <View style={styles.row}>
+        <CardButton
+          //   disabled={true}
+          title="Save Account"
+          type="primary"
+          onPress={addAccount}
         />
       </View>
-
-      <Button title="Next" onPress={addAccount} />
-
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       {/* <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} /> */}
     </View>
@@ -134,7 +135,6 @@ export default function NewAccountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#EDF1F5",
   },
   title: {
     fontSize: 20,
@@ -157,6 +157,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 6,
-    borderColor: "#999",
+    // borderColor: "#999",
   },
 });

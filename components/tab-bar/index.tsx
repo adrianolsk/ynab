@@ -1,12 +1,13 @@
 import { View, Platform, StatusBar } from "react-native";
 import { useLinkBuilder, useTheme } from "@react-navigation/native";
-import { Text, PlatformPressable } from "@react-navigation/elements";
+import { PlatformPressable } from "@react-navigation/elements";
 import {
   BottomTabBarProps,
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs";
 import { FontAwesome } from "@expo/vector-icons";
-import { useThemeColor } from "../Themed";
+import { useThemeColor, ViewContent } from "../Themed";
+import { Text } from "@/components/Themed";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -36,13 +37,21 @@ export const TabBar = ({
   const { buildHref } = useLinkBuilder();
 
   return (
-    <View
+    <ViewContent
       style={{
         flexDirection: "row",
         height: StatusBar.currentHeight,
-        backgroundColor: "white",
-        borderTopColor: "#ccc",
-        borderTopWidth: 1,
+        // backgroundColor: "white",
+        // borderTopColor: "#ccc",
+        // borderTopWidth: 1,
+        shadowOffset: {
+          width: 0,
+          height: -2,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 2,
+        // shadowColor: "#555",
+
         paddingTop: 8,
       }}
     >
@@ -83,15 +92,10 @@ export const TabBar = ({
             onLongPress={onLongPress}
             style={{ flex: 1 }}
           >
-            <View
+            <ViewContent
               style={{
-                // alignSelf: "center",
+                paddingTop: 4,
                 alignItems: "center",
-                // justifyContent: "center",
-                // alignContent: "center",
-                // width: "25%",
-                // flexDirection: "column",
-                // borderWidth: 1,
               }}
             >
               <TabBarIcon
@@ -102,15 +106,17 @@ export const TabBar = ({
               <Text
                 style={{
                   marginTop: 8,
+                  fontSize: 12,
+                  fontFamily: "NunitoSansLight",
                   color: isFocused ? tabIconSelected : tabIconDefault,
                 }}
               >
                 {label}
               </Text>
-            </View>
+            </ViewContent>
           </PlatformPressable>
         );
       })}
-    </View>
+    </ViewContent>
   );
 };

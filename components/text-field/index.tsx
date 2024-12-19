@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 40,
+    backgroundColor: "transparent",
     // borderBottomWidth: 1,
     // borderBottomColor: "gray",
     fontSize: 14,

@@ -3,7 +3,10 @@ import { CardButton } from "@/components/card-button";
 import { TextField } from "@/components/text-field";
 import { Text, View, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
-import { AccountsSchema } from "@/database/schemas/accounts-schema";
+import {
+  AccountsSchema,
+  AccountSchemaType,
+} from "@/database/schemas/accounts-schema";
 import { AccountGroup } from "@/database/types";
 import { eq } from "drizzle-orm";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -114,10 +117,10 @@ export default function EditAccountScreen() {
       </View>
 
       <View style={[styles.row, { marginTop: 32 }]}>
-        <CardButton text="Save Account" type="primary" onPress={addAccount} />
+        <CardButton title="Save Account" type="primary" onPress={addAccount} />
       </View>
       <View style={styles.row}>
-        <CardButton text="Close Account" type="destructive" />
+        <CardButton title="Close Account" type="destructive" />
       </View>
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View } from "@/components/Themed";
+import { Text, View, ViewContent } from "@/components/Themed";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { AccountsSchema } from "../../database/schemas/accounts-schema";
@@ -26,8 +26,10 @@ import {
 import { routeToScreen } from "expo-router/build/useScreens";
 import { useTranslation } from "react-i18next";
 import { AccountGroup } from "@/database/types";
-import { type AccountType } from "@/database/schemas/accounts-schema";
+import { type AccountSchemaType } from "@/database/schemas/accounts-schema";
 import { StatusBar } from "expo-status-bar";
+import { formatCurrency } from "@/utils/financials";
+import { CardButton } from "@/components/card-button";
 
 type Account = {
   name: string;
@@ -64,7 +66,7 @@ type RootStackParamList = {
 
 type AccountGroupItem = {
   title?: AccountGroup;
-  data: AccountType[];
+  data: AccountSchemaType[];
 };
 type MyObject = {
   [key in AccountGroup]: AccountGroupItem;
@@ -100,6 +102,8 @@ export default function TabTwoScreen() {
       data: [
         {
           name: "All transactions",
+          account_type: "checking",
+          user_id: 0,
         },
       ],
     });
@@ -126,10 +130,22 @@ export default function TabTwoScreen() {
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item }) => (
           <Link href={`/accounts/edit/${item.id}`} asChild>
-            <Pressable style={styles.item}>
-              <Text style={styles.title}>
-                {item.name} -{item.balance}
-              </Text>
+            <Pressable>
+              <ViewContent style={styles.item}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.title}>{item.name}</Text>
+                </View>
+                <View style={{ flex: 1, alignItems: "flex-end" }}>
+                  <Text
+                    style={[
+                      styles.value,
+                      (item.balance ?? 0) > 0 ? styles.positive : null,
+                    ]}
+                  >
+                    {formatCurrency(item.balance)}
+                  </Text>
+                </View>
+              </ViewContent>
             </Pressable>
           </Link>
         )}
@@ -138,20 +154,13 @@ export default function TabTwoScreen() {
         }}
         ListFooterComponent={() => {
           return (
-            // <Link href="/accounts/new">Add Account</Link>
             <View style={styles.footer}>
-              <Button
+              <CardButton
                 title="Add Account"
                 onPress={() => {
                   router.push("/accounts/new");
                 }}
               />
-              {/* <Button
-              title={t("budget")}
-              onPress={() => {
-                deleteAll();
-              }}
-            /> */}
             </View>
           );
         }}
@@ -160,23 +169,9 @@ export default function TabTwoScreen() {
   );
 }
 
-/* <View style={styles.container}>
-        <Text style={styles.title}>Tab add</Text>
-        <View
-          style={styles.separator}
-          lightColor="#eee"
-          darkColor="rgba(255,255,255,0.1)"
-        />
-        <EditScreenInfo path="app/(tabs)/two.tsx" />
-        <Button title="teste2" onPress={add}></Button>
-        <Button title="teste2" onPress={deleteAll}></Button>
-        <Text>{JSON.stringify(data, null, 2)}</Text>
-      </View> */
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingTop: StatusBar.currentHeight,
     marginHorizontal: 16,
   },
   section: {
@@ -184,25 +179,26 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 1,
-
-    backgroundColor: "#fff",
+    flexDirection: "row",
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    // marginVertical: 8,
+    borderBottomColor: "#aaa",
   },
   header: {
     marginVertical: 8,
-    // alignSelf: "flex-start",
     fontSize: 14,
     marginTop: 16,
-    color: "#000",
-    // borderWidth: 1,
-    // backgroundColor: "#fff",
+    fontFamily: "NunitoSansSemiBold",
   },
   title: {
+    flex: 1,
     fontSize: 14,
-    color: "#000",
+  },
+  value: {
+    fontFamily: "NunitoSansSemiBold",
+  },
+  positive: {
+    color: "#4D9119",
   },
   footer: {
     marginTop: 32,

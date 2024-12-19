@@ -3,5 +3,21 @@
     "budget": "Budget",
     "loan": "Loan",
     "tracking": "Tracking",
-    "test": "This is a test {{value}}"
+    "test": "This is a test {{value}}",
+    "accountTypes":{
+        "checking": "Checking Account",
+        "savings": "Savings Account",
+        "cash": "Cash Account",
+        "credit_card": "Credit Card",
+        "line_of_credit": "Line of Credit",
+        "mortgage": "Mortgage",
+        "auto_loan": "Auto Loan",
+        "student_loan": "Student Loan",
+        "personal_loan": "Personal Loan",
+        "medical_debt": "Medical Debt",
+        "other_debt": "Other Debt",
+        "asset": "Asset",
+        "liability": "Liability",
+        "placeholder": "Select Account Type"
+    }
 }

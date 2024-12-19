@@ -46,11 +46,21 @@ export const Text = React.forwardRef(function Text(props: TextProps, ref: any) {
 export const TextInput = (props: TextInputProps) => {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const backgroundContent = useThemeColor({}, "backgroundContent");
+  const borderColor = useThemeColor({}, "borderColor");
 
   return (
     <DefaultTextInput
       placeholderTextColor={color}
-      style={[{ color }, style]}
+      style={[
+        {
+          color,
+          backgroundColor: backgroundContent,
+          borderColor,
+          borderRadius: 6,
+        },
+        style,
+      ]}
       {...otherProps}
     />
   );

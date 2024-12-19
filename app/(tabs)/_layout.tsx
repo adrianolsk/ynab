@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { ViewContent } from "@/components/Themed";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -25,10 +26,10 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View
+    <ViewContent
       style={{
         flex: 1,
-        backgroundColor: "white",
+        // backgroundColor: "white",
         paddingBottom: insets.bottom,
       }}
     >
@@ -96,6 +97,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-    </View>
+    </ViewContent>
   );
 }

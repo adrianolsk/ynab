@@ -9,24 +9,10 @@ import {
 } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View } from "@/components/Themed";
+import { Text, View, ViewContent } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import { AccountGroup } from "@/database/types";
-
-type AccountType =
-  | "checking"
-  | "savings"
-  | "cash"
-  | "credit_card"
-  | "line_of_credit"
-  | "mortgage"
-  | "auto_loan"
-  | "student_loan"
-  | "personal_loan"
-  | "medical_debt"
-  | "other_debt"
-  | "asset"
-  | "liability";
+import { AccountType } from "@/types";
 
 type AccountItem = {
   name: string;
@@ -121,6 +107,7 @@ export default function ModalScreen() {
       pathname: "/accounts/new",
       params: {
         id: item.type,
+        accountType: item.type,
         accountGroup,
       },
     });
@@ -134,10 +121,12 @@ export default function ModalScreen() {
       keyExtractor={(item, index) => item.type + index}
       renderItem={({ item, section: { accountGroup } }) => (
         <Pressable
-          style={styles.item}
+          // style={styles.item}
           onPress={() => select(item, accountGroup)}
         >
-          <Text style={styles.title}>{item.name}</Text>
+          <ViewContent style={styles.item}>
+            <Text style={styles.title}>{item.name}</Text>
+          </ViewContent>
         </Pressable>
       )}
       renderSectionHeader={({ section: { title } }) => {
@@ -156,9 +145,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   item: {
-    backgroundColor: "#ffffff",
+    // backgroundColor: "#ffffff",
     padding: 20,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
+    marginBottom: 1,
     borderBottomColor: "#ccc",
     // marginVertical: 8,
   },

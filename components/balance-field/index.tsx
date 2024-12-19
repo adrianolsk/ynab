@@ -5,94 +5,9 @@ import { Switch } from "../switch";
 import Decimal from "decimal.js";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput, View, ViewContent } from "../Themed";
-
-// function formatCurrency(value?: string) {
-//   if (!value) {
-//     return "";
-//   }
-//   // Convert the Decimal value to a number
-//   const number = new Decimal(value).toNumber();
-
-//   // Format the number into the desired currency format
-//   const formatter = new Intl.NumberFormat("pt-BR", {
-//     style: "currency",
-//     currency: "BRL",
-//     minimumFractionDigits: 2,
-//     maximumFractionDigits: 2,
-//   });
-
-//   // Replace the default currency symbol with "$"
-//   return formatter.format(number).replace("US$", "$");
-// }
-
-// function formatCurrency(value?: string) {
-//   if (!value) {
-//     return "";
-//   }
-//   // Remove non-numeric characters except for commas and periods
-//   const numericValue = value.replace(/[^0-9,]/g, "").replace(",", ".");
-//   const number = new Decimal(numericValue);
-
-//   // Convert to a number and format as currency
-//   const formattedValue = new Intl.NumberFormat("pt-BR", {
-//     style: "currency",
-//     currency: "BRL",
-//     minimumFractionDigits: 2,
-//     maximumFractionDigits: 2,
-//   }).format(number.toNumber() || 0);
-
-//   // Replace default "US$" with "$" if necessary
-//   return formattedValue.replace("US$", "$");
-// }
-
-// function formatCurrency(value: String) {
-//   // Remove all non-numeric characters except for the period and comma
-//   const numericValue = value.replace(/[^0-9-]/g, "");
-
-//   // Add commas for thousands and format as currency
-//   const formattedValue = new Intl.NumberFormat("pt-BR", {
-//     style: "currency",
-//     currency: "BRL",
-//     minimumFractionDigits: 2,
-//     maximumFractionDigits: 2,
-//   }).format(parseFloat(numericValue) / 100); // Divide by 100 for cents
-
-//   // Replace default "US$" with "$"
-//   return formattedValue; //.replace("US$", "$");
-// }
-
-function formatCurrency(numericValue: number) {
-  // Remove all non-numeric characters except for the period and comma
-
-  // Add commas for thousands and format as currency
-  const formattedValue = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(numericValue); // Divide by 100 for cents
-
-  // Replace default "US$" with "$"
-  return formattedValue; //.replace("US$", "$");
-}
-
-function parseCurrencyToDecimal(currency: string) {
-  // Remove all non-digit characters
-  const numericString = currency.replace(/[^\d-]/g, "");
-  const parsed = parseFloat(numericString);
-  if (Number.isNaN(parsed)) return 0;
-
-  console.log("🍎numericString", { numericString, currency, parsed });
-  // Convert to Decimal and divide by 100
-  const value = new Decimal(numericString).dividedBy(100);
-
-  return value.toNumber();
-}
+import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 
 export const BalanceField = (props: any) => {
-  //   const [text, setText] = useState<string | undefined>(
-  //     formatCurrency(props.value)
-  //   );
   const isOn = useSharedValue(true);
 
   const { control, handleSubmit, setValue, watch, getValues, reset } = useForm({
