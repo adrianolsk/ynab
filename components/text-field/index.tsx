@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { TextInput, StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { Text, TextInput } from "@/components/Themed";
+
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 export const TextField = ({ placeholder, style, ...props }: any) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -52,9 +55,9 @@ export const TextField = ({ placeholder, style, ...props }: any) => {
 
   return (
     <View style={[styles.container, style]}>
-      <Animated.Text style={[styles.label, animatedLabelStyle]}>
+      <AnimatedText style={[styles.label, animatedLabelStyle]}>
         {placeholder}
-      </Animated.Text>
+      </AnimatedText>
       <TextInput
         {...props}
         style={styles.textInput}
@@ -74,8 +77,8 @@ const styles = StyleSheet.create({
   label: {
     position: "absolute",
     left: 0,
-    color: "gray",
-    fontFamily: "NunitoSansLight",
+    // color: "gray",
+    fontFamily: "NunitoSansRegular",
   },
   textInput: {
     height: 40,
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
     // borderBottomColor: "gray",
     fontSize: 14,
     // paddingVertical: 5,
-    marginBottom: 8,
-    fontFamily: "NunitoSansRegular",
+    // marginBottom: 8,
+    fontFamily: "NunitoSansMedium",
   },
 });

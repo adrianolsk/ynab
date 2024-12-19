@@ -1,9 +1,10 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSharedValue } from "react-native-reanimated";
 import { Switch } from "../switch";
 import Decimal from "decimal.js";
 import { Controller, useForm } from "react-hook-form";
+import { TextInput, View, ViewContent } from "../Themed";
 
 // function formatCurrency(value?: string) {
 //   if (!value) {
@@ -133,8 +134,8 @@ export const BalanceField = (props: any) => {
     !props.value || props.value >= 0 ? styles.positive : styles.negative;
 
   return (
-    <View style={[styles.container, borderColor]}>
-      <View style={{ flex: 1 }}>
+    <ViewContent style={[styles.container, borderColor]}>
+      <ViewContent style={{ flex: 1 }}>
         <Controller
           name="amount"
           control={control}
@@ -154,10 +155,10 @@ export const BalanceField = (props: any) => {
             />
           )}
         />
-      </View>
+      </ViewContent>
 
       <Switch value={isOn} onPress={handlePress} />
-    </View>
+    </ViewContent>
   );
 };
 
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 1,
     borderRadius: 6,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     paddingHorizontal: 16,
     borderColor: "#bbb",
     alignItems: "center",

@@ -4,9 +4,9 @@ import {
   Text,
   TouchableHighlight,
   TouchableOpacity,
-  View,
 } from "react-native";
 import React from "react";
+import { ViewContent } from "../Themed";
 
 type ButtonType = "primary" | "secondary" | "destructive";
 
@@ -22,15 +22,17 @@ export const CardButton = ({
   type = "primary",
 }: CardButtonProps) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Text style={[styles[type]]}>{text}</Text>
+    <TouchableOpacity onPress={onPress}>
+      <ViewContent style={styles.container}>
+        <Text style={[styles[type]]}>{text}</Text>
+      </ViewContent>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     padding: 16,
     alignItems: "center",
     borderRadius: 6,

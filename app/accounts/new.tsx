@@ -92,18 +92,21 @@ export default function NewAccountScreen() {
       </View>
       <View style={styles.row}>
         <Text>What type of account are you adding?</Text>
-        <Link href="/modal" asChild>
-          <Pressable>
-            <TextInput
-              editable={false}
-              placeholder="My checkings account"
-              style={styles.input}
-              placeholderTextColor={"#aaa"}
-              onChangeText={(text) => onChangeText(text)}
-              value={params.id}
-            />
-          </Pressable>
-        </Link>
+        {/* <Link href="/modal" asChild> */}
+        <Pressable
+          onPress={() => router.push("/modal")}
+          style={{ backgroundColor: "red", width: 100, height: 100 }}
+        >
+          {/* <TextInput
+            editable={false}
+            placeholder="My checkings account"
+            style={styles.input}
+            placeholderTextColor={"#aaa"}
+            onChangeText={(text) => onChangeText(text)}
+            value={params.id}
+          /> */}
+        </Pressable>
+        {/* </Link> */}
       </View>
       <View style={styles.row}>
         <Text>What is your current account balance? </Text>

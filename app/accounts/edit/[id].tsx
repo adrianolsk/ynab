@@ -1,37 +1,19 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  Button,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-} from "react-native";
-import { eq, lt, gte, ne } from "drizzle-orm";
-import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View } from "@/components/Themed";
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { db } from "@/database/db";
-import * as schema from "@/database/schemas/user-schema";
-import {
-  AccountsSchema,
-  AccountType,
-} from "@/database/schemas/accounts-schema";
-import { AccountGroup } from "@/database/types";
-import { TextField } from "@/components/text-field";
-import { Switch } from "@/components/switch";
-import { useSharedValue } from "react-native-reanimated";
 import { BalanceField } from "@/components/balance-field";
 import { CardButton } from "@/components/card-button";
+import { TextField } from "@/components/text-field";
+import { Text, View, ViewContent } from "@/components/Themed";
+import { db } from "@/database/db";
+import { AccountsSchema } from "@/database/schemas/accounts-schema";
+import { AccountGroup } from "@/database/types";
+import { eq } from "drizzle-orm";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
+import { Platform, ScrollView, StyleSheet } from "react-native";
 
 export default function EditAccountScreen() {
   const router = useRouter();
-  const isOn = useSharedValue(false);
 
-  const handlePress = () => {
-    isOn.value = !isOn.value;
-  };
   const [nickName, setNickName] = useState<string | undefined>("");
   const [notes, setNotes] = useState<string | undefined>("");
 
@@ -45,8 +27,6 @@ export default function EditAccountScreen() {
     accountGroup: AccountGroup;
   }>();
 
-  const [account, setAccount] = useState<AccountType | undefined>();
-
   useEffect(() => {
     if (!params.id) return;
 
@@ -54,11 +34,9 @@ export default function EditAccountScreen() {
     db.select()
       .from(AccountsSchema)
       .where(eq(AccountsSchema.id, id))
-
       .then(([result]) => {
-        // setAccount(result);
-        console.log("🍎result", { result });
         setNotes(result.notes ?? "");
+
         setBalance(result.balance);
         setNickName(result.name);
       });
@@ -75,19 +53,17 @@ export default function EditAccountScreen() {
     try {
       if (!params.id) return;
 
-      console.log("🐌 balance", { balance });
       const id = parseInt(params.id);
-      const response = db
+      const response = await db
         .update(AccountsSchema)
         .set({
           notes: notes,
           name: nickName,
           balance,
-          // account_group: params?.accountGroup,
         })
         .where(eq(AccountsSchema.id, id));
 
-      console.log("response", { response: (await response).lastInsertRowId });
+      // console.log("response", { response: (await response).lastInsertRowId });
       router.dismiss();
     } catch (error) {
       console.log("error", { error });
@@ -104,7 +80,7 @@ export default function EditAccountScreen() {
     setNotes(text);
   };
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Stack.Screen
         options={{
           headerTitle: "Edit Account",
@@ -113,10 +89,11 @@ export default function EditAccountScreen() {
       />
       <Text style={styles.sectionTitle}>Account information </Text>
 
-      <View style={styles.rowCard}>
+      <ViewContent style={styles.rowCard}>
         <TextField
           placeholder="Account Nickname"
           onChangeText={onChangeText}
+          style={{}}
           value={nickName}
         />
         <View style={styles.separator} />
@@ -125,7 +102,7 @@ export default function EditAccountScreen() {
           onChangeText={handleChangeNotes}
           value={notes}
         />
-      </View>
+      </ViewContent>
       <Text style={styles.sectionTitle}>Today's Balance </Text>
 
       <View style={styles.row}>
@@ -145,28 +122,18 @@ export default function EditAccountScreen() {
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // backgroundColor: "transparent",
-    // backgroundColor: "#EDF1F5",
-    // height: "50%",
-    borderWidth: 5,
-    borderColor: "red",
+    flex: 1,
   },
   sectionTitle: {
     marginHorizontal: 16,
     marginTop: 16,
-    // fontFamily: "SpaceMono",
-    // fontFamily: "NunitoSans",
     fontFamily: "NunitoSansSemiBold",
-    // fontFamily: "NunitoSansLight",
-    // fontFamily: "NunitoSansBold",
-    color: "#000",
   },
   title: {
     fontSize: 20,
@@ -174,20 +141,14 @@ const styles = StyleSheet.create({
     fontFamily: "LatoRegular",
   },
   separator: {
-    // borderTopWidth: 0.5,
-    // borderColor: "#ccc",
     backgroundColor: "#aaa",
     height: 0.2,
     width: "100%",
   },
   rowCard: {
-    // borderWidth: 1,
     borderRadius: 6,
     marginHorizontal: 16,
     paddingHorizontal: 16,
-    // paddingTop: 16,
-    backgroundColor: "#fff",
-    // marginBottom: 16,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -197,28 +158,13 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   row: {
-    backgroundColor: "transparent",
-    // borderWidth: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
-    // marginBottom: 16,
   },
-  input: {
-    height: 40,
 
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 6,
-    borderColor: "#999",
-    backgroundColor: "#fff",
-    fontFamily: "NunitoSansLight",
-  },
   info: {
-    fontWeight: "300",
     marginTop: 8,
     fontSize: 12,
-    color: "#000",
-
     fontFamily: "NunitoSansLight",
   },
 });

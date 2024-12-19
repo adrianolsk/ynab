@@ -1,4 +1,4 @@
-import { View, Platform } from "react-native";
+import { View, Platform, StatusBar } from "react-native";
 import { useLinkBuilder, useTheme } from "@react-navigation/native";
 import { Text, PlatformPressable } from "@react-navigation/elements";
 import {
@@ -12,7 +12,7 @@ function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
 }
 
 type Icon = React.ComponentProps<typeof FontAwesome>["name"];
@@ -39,7 +39,7 @@ export const TabBar = ({
     <View
       style={{
         flexDirection: "row",
-        height: 62,
+        height: StatusBar.currentHeight,
         backgroundColor: "white",
         borderTopColor: "#ccc",
         borderTopWidth: 1,
