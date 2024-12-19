@@ -44,11 +44,13 @@ const styles = StyleSheet.create({
   },
   primary: {
     color: "#4D9119",
+    fontFamily: "NunitoSansSemiBold",
   },
   secondary: {
     color: "#aaa",
   },
   destructive: {
     color: "#C72C1E",
+    fontFamily: "NunitoSansSemiBold",
   },
 });

@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     color: "gray",
+    fontFamily: "NunitoSansLight",
   },
   textInput: {
     height: 40,
@@ -83,5 +84,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     // paddingVertical: 5,
     marginBottom: 8,
+    fontFamily: "NunitoSansRegular",
   },
 });

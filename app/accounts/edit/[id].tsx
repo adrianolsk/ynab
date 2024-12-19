@@ -151,18 +151,27 @@ export default function EditAccountScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#EDF1F5",
-    height: "50%",
+    // flex: 1,
+    // backgroundColor: "transparent",
+    // backgroundColor: "#EDF1F5",
+    // height: "50%",
+    borderWidth: 5,
+    borderColor: "red",
   },
   sectionTitle: {
-    fontWeight: "bold",
     marginHorizontal: 16,
     marginTop: 16,
+    // fontFamily: "SpaceMono",
+    // fontFamily: "NunitoSans",
+    fontFamily: "NunitoSansSemiBold",
+    // fontFamily: "NunitoSansLight",
+    // fontFamily: "NunitoSansBold",
+    color: "#000",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    fontFamily: "LatoRegular",
   },
   separator: {
     // borderTopWidth: 0.5,
@@ -202,11 +211,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderColor: "#999",
     backgroundColor: "#fff",
+    fontFamily: "NunitoSansLight",
   },
   info: {
     fontWeight: "300",
     marginTop: 8,
-    fontSize: 10,
+    fontSize: 12,
     color: "#000",
+
+    fontFamily: "NunitoSansLight",
   },
 });

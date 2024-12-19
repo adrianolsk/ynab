@@ -44,15 +44,19 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
+    <ScrollView style={{ backgroundColor: "transparent" }}>
+      <View
+        style={styles.container}
+        lightColor="#eee"
+        darkColor="rgba(255,255,255,0.1)"
+      >
         <Text style={styles.title}>Tab add</Text>
         <View
           style={styles.separator}
           lightColor="#eee"
           darkColor="rgba(255,255,255,0.1)"
         />
-        <EditScreenInfo path="app/(tabs)/two.tsx" />
+        {/* <EditScreenInfo path="app/(tabs)/two.tsx" /> */}
         <Button title="teste2" onPress={add}></Button>
         <Button title="teste2" onPress={deleteAll}></Button>
         <Text>{JSON.stringify(data, null, 2)}</Text>
@@ -66,8 +70,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    // backgroundColor: "transparent",
   },
   title: {
+    color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
   },

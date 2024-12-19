@@ -5,10 +5,12 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
+  Text,
+  View,
 } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View } from "@/components/Themed";
+// import { Text, View } from "@/components/Themed";
 import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -91,14 +93,16 @@ export default function NewAccountScreen() {
       <View style={styles.row}>
         <Text>What type of account are you adding?</Text>
         <Link href="/modal" asChild>
-          <TextInput
-            editable={false}
-            placeholder="My checkings account"
-            style={styles.input}
-            placeholderTextColor={"#aaa"}
-            onChangeText={(text) => onChangeText(text)}
-            value={params.id}
-          />
+          <Pressable>
+            <TextInput
+              editable={false}
+              placeholder="My checkings account"
+              style={styles.input}
+              placeholderTextColor={"#aaa"}
+              onChangeText={(text) => onChangeText(text)}
+              value={params.id}
+            />
+          </Pressable>
         </Link>
       </View>
       <View style={styles.row}>
@@ -119,7 +123,7 @@ export default function NewAccountScreen() {
       <Button title="Next" onPress={addAccount} />
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      {/* <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} /> */}
     </View>
   );
 }
@@ -127,6 +131,7 @@ export default function NewAccountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // backgroundColor: "#EDF1F5",
   },
   title: {
     fontSize: 20,

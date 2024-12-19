@@ -129,7 +129,8 @@ export const BalanceField = (props: any) => {
     isOn.value = !isOn.value;
   };
 
-  const borderColor = props.value > 0 ? styles.positive : styles.negative;
+  const borderColor =
+    !props.value || props.value >= 0 ? styles.positive : styles.negative;
 
   return (
     <View style={[styles.container, borderColor]}>
@@ -139,6 +140,7 @@ export const BalanceField = (props: any) => {
           control={control}
           render={({ field: { onChange, value } }) => (
             <TextInput
+              style={styles.input}
               placeholder="Enter amount"
               value={value}
               keyboardType="numeric"
@@ -175,5 +177,8 @@ const styles = StyleSheet.create({
   },
   negative: {
     borderColor: "#C72C1E",
+  },
+  input: {
+    fontFamily: "NunitoSansMedium",
   },
 });

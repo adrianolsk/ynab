@@ -1,7 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
-  DarkTheme,
-  DefaultTheme,
+  // DarkTheme,
+  // DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -14,9 +14,12 @@ import { useColorScheme } from "@/components/useColorScheme";
 
 import { db } from "@/database/db";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 import migrations from "../drizzle/migrations";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import { StatusBar } from "expo-status-bar";
+import { LightTheme } from "@/constants/LightTheme";
+import { DarkTheme } from "@/constants/DarkTheme";
 // DATABASE
 
 // DATABASE
@@ -37,6 +40,17 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    LatoBlack: require("../assets/fonts/Lato-Black.ttf"),
+    LatoBold: require("../assets/fonts/Lato-Bold.ttf"),
+    LatoRegular: require("../assets/fonts/Lato-Regular.ttf"),
+    LatoThin: require("../assets/fonts/Lato-Thin.ttf"),
+    Light: require("../assets/fonts/Lato-Light.ttf"),
+    NunitoSansBold: require("../assets/fonts/NunitoSans-Bold.ttf"),
+    NunitoSansRegular: require("../assets/fonts/NunitoSans-Regular.ttf"),
+    NunitoSansSemiBold: require("../assets/fonts/NunitoSans-SemiBold.ttf"),
+    NunitoSansMedium: require("../assets/fonts/NunitoSans-Medium.ttf"),
+    NunitoSansLight: require("../assets/fonts/NunitoSans-Light.ttf"),
+    NunitoSans: require("../assets/fonts/NunitoSans.ttf"),
     ...FontAwesome.font,
   });
 
@@ -79,17 +93,26 @@ function RootLayoutNav() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* <SQLiteProvider databaseName={DATABASE_NAME}> */}
-      <Stack screenOptions={{}}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-        {/* <Stack.Screen
+    <>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
+        {/* <SQLiteProvider databaseName={DATABASE_NAME}> */}
+        <Stack
+          screenOptions={{
+            headerTitleStyle: {
+              fontFamily: "NunitoSansSemiBold",
+            },
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          {/* <Stack.Screen
           name="accounts/edit/[id]"
           options={{ presentation: "formSheet" }}
         /> */}
-      </Stack>
-      {/* </SQLiteProvider> */}
-    </ThemeProvider>
+        </Stack>
+        {/* </SQLiteProvider> */}
+      </ThemeProvider>
+      {/* <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} /> */}
+    </>
   );
 }

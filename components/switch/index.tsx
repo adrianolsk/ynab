@@ -24,7 +24,7 @@ export const Switch = ({
   value,
   onPress,
   style,
-  duration = 400,
+  duration = 300,
   trackColors = { on: "#C1EE9F", off: "#FAADA5" },
   thumbColors = { on: "#4D9119", off: "#C72C1E" },
 }: any) => {

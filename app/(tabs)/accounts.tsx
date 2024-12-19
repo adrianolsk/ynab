@@ -3,8 +3,9 @@ import {
   StyleSheet,
   ScrollView,
   SectionList,
-  StatusBar,
+  // StatusBar,
   Pressable,
+  Platform,
 } from "react-native";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
@@ -26,6 +27,7 @@ import { routeToScreen } from "expo-router/build/useScreens";
 import { useTranslation } from "react-i18next";
 import { AccountGroup } from "@/database/types";
 import { type AccountType } from "@/database/schemas/accounts-schema";
+import { StatusBar } from "expo-status-bar";
 
 type Account = {
   name: string;
@@ -115,42 +117,46 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <SectionList
-      style={styles.section}
-      sections={accounts}
-      keyExtractor={(item, index) => item.name + index}
-      renderItem={({ item }) => (
-        <Link href={`/accounts/edit/${item.id}`} asChild>
-          <Pressable style={styles.item}>
-            <Text style={styles.title}>
-              {item.name} -{item.balance}
-            </Text>
-          </Pressable>
-        </Link>
-      )}
-      renderSectionHeader={({ section: { title } }) => {
-        return title ? <Text style={styles.header}>{t(title)}</Text> : null;
-      }}
-      ListFooterComponent={() => {
-        return (
-          // <Link href="/accounts/new">Add Account</Link>
-          <View style={styles.footer}>
-            <Button
-              title="Add Account"
-              onPress={() => {
-                router.push("/accounts/new");
-              }}
-            />
-            {/* <Button
+    <>
+      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+
+      <SectionList
+        style={styles.section}
+        sections={accounts}
+        keyExtractor={(item, index) => item.name + index}
+        renderItem={({ item }) => (
+          <Link href={`/accounts/edit/${item.id}`} asChild>
+            <Pressable style={styles.item}>
+              <Text style={styles.title}>
+                {item.name} -{item.balance}
+              </Text>
+            </Pressable>
+          </Link>
+        )}
+        renderSectionHeader={({ section: { title } }) => {
+          return title ? <Text style={styles.header}>{t(title)}</Text> : null;
+        }}
+        ListFooterComponent={() => {
+          return (
+            // <Link href="/accounts/new">Add Account</Link>
+            <View style={styles.footer}>
+              <Button
+                title="Add Account"
+                onPress={() => {
+                  router.push("/accounts/new");
+                }}
+              />
+              {/* <Button
               title={t("budget")}
               onPress={() => {
                 deleteAll();
               }}
             /> */}
-          </View>
-        );
-      }}
-    />
+            </View>
+          );
+        }}
+      />
+    </>
   );
 }
 
@@ -170,7 +176,7 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
+    // paddingTop: StatusBar.currentHeight,
     marginHorizontal: 16,
   },
   section: {
@@ -190,11 +196,13 @@ const styles = StyleSheet.create({
     // alignSelf: "flex-start",
     fontSize: 14,
     marginTop: 16,
+    color: "#000",
     // borderWidth: 1,
     // backgroundColor: "#fff",
   },
   title: {
     fontSize: 14,
+    color: "#000",
   },
   footer: {
     marginTop: 32,
