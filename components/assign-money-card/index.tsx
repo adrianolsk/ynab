@@ -121,12 +121,13 @@ const Assigned = ({ value, onPress }: ReadyToAssignProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     borderRadius: 6,
     padding: 16,
     overflow: "hidden",
     flexDirection: "row",
-    marginVertical: 4,
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 4,
   },
   text: {
     fontSize: 12,
