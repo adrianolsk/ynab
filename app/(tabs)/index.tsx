@@ -1,27 +1,17 @@
 import {
-  Button,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SectionList,
   Pressable,
+  SectionList,
   StatusBar,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View, ViewContent } from "@/components/Themed";
-import { useSQLiteContext } from "expo-sqlite";
-import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
-import * as schema from "../../database/schemas/user-schema";
-import React, { useEffect, useMemo, useState } from "react";
-import { db } from "@/database/db";
-import { eq, isNull } from "drizzle-orm";
-import ScreenView from "@/components/screen-view";
-import { formatCurrency } from "@/utils/financials";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { AssignMoneyCard } from "@/components/assign-money-card";
+import { Text, View, ViewContent } from "@/components/Themed";
 import { AccountGroup } from "@/database/types";
 import { AccountType } from "@/types";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import React, { useState } from "react";
 
 type AccountItem = {
   name: string;
@@ -107,11 +97,12 @@ const DATA: SectionItem[] = [
   },
 ];
 
+interface Map {
+  [key: string]: boolean | undefined;
+}
+
 export default function BudgetScreen() {
-  // const { data } = useLiveQuery(
-  //   db.select().from(schema.users).where(isNull(schema.users.deleted_at))
-  // );
-  const [collapsedSections, setCollapsedSections] = useState({});
+  const [collapsedSections, setCollapsedSections] = useState<Map>({});
   const value = 1000;
 
   const onAssign = () => {
@@ -135,38 +126,56 @@ export default function BudgetScreen() {
       <SectionList
         stickySectionHeadersEnabled={false}
         style={styles.section}
-        // sections={DATA}
         sections={DATA.map((section) => ({
           ...section,
           data: collapsedSections[section.title] ? [] : section.data,
         }))}
         keyExtractor={(item, index) => item.type + index}
         renderItem={({ item, section: { accountGroup } }) => (
-          <Pressable
-            // style={styles.item}
-            onPress={() => select(item, accountGroup)}
-          >
+          <Pressable onPress={() => select(item, accountGroup)}>
             <ViewContent style={styles.item}>
               <Text style={styles.title}>{item.name}</Text>
             </ViewContent>
           </Pressable>
         )}
-        // renderSectionHeader={({ section: { title } }) => {
-        //   return title ? <Text style={styles.header}>{title}</Text> : null;
-        // }}
         renderSectionHeader={({ section: { title } }) => (
-          <TouchableOpacity
-            style={styles.header}
+          <Header
+            closed={!!collapsedSections[title]}
+            title={title}
             onPress={() => toggleSection(title)}
-          >
-            <Text style={styles.header}>{title}</Text>
-            <Text>{collapsedSections[title] ? "+" : "-"}</Text>
-          </TouchableOpacity>
+          />
         )}
       />
     </View>
   );
 }
+
+const Header = ({
+  title,
+  onPress,
+  closed,
+}: {
+  title: string;
+  onPress: () => void;
+  closed: boolean;
+}) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.header}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+        <View style={{ marginRight: 8 }}>
+          <FontAwesome
+            name={closed ? "chevron-down" : "chevron-up"}
+            size={12}
+            color="#555"
+          />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -178,20 +187,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   item: {
-    // backgroundColor: "#ffffff",
     padding: 20,
-    // borderBottomWidth: 1,
     marginBottom: 1,
     borderBottomColor: "#ccc",
-    // marginVertical: 8,
   },
   header: {
-    marginVertical: 8,
-    // alignSelf: "flex-start",
-    fontSize: 14,
-    marginTop: 16,
-    // borderWidth: 1,
-    // backgroundColor: "#fff",
+    flexDirection: "row",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   title: {
     fontSize: 14,
