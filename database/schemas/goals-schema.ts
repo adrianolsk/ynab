@@ -15,7 +15,7 @@ export const GoalsSchema = sqliteTable(
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    category_uuid: int("category_uuid")
+    category_uuid: text("category_uuid")
       .notNull()
       .references(() => CategorySchema.uuid, { onDelete: "cascade" }),
     target_amount: real("target_amount").notNull(),

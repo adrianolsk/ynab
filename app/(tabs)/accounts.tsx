@@ -25,11 +25,12 @@ import {
 } from "expo-router";
 import { routeToScreen } from "expo-router/build/useScreens";
 import { useTranslation } from "react-i18next";
-import { AccountGroup } from "@/database/types";
+
 import { type AccountSchemaType } from "@/database/schemas/accounts-schema";
 import { StatusBar } from "expo-status-bar";
 import { formatCurrency } from "@/utils/financials";
 import { CardButton } from "@/components/card-button";
+import { AccountGroup } from "@/types";
 
 type Account = {
   name: string;
@@ -103,7 +104,8 @@ export default function TabTwoScreen() {
         {
           name: "All transactions",
           account_type: "checking",
-          user_id: 0,
+          budget_uuid: "",
+          uuid: "",
         },
       ],
     });
@@ -122,8 +124,6 @@ export default function TabTwoScreen() {
 
   return (
     <>
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
-
       <SectionList
         style={styles.section}
         sections={accounts}

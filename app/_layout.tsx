@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import "@/i18n";
 import { useColorScheme } from "@/components/useColorScheme";
-
+import "react-native-get-random-values";
 import { db } from "@/database/db";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Platform, Text, View } from "react-native";
@@ -20,6 +20,7 @@ import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { StatusBar } from "expo-status-bar";
 import { LightTheme } from "@/constants/LightTheme";
 import { DarkTheme } from "@/constants/DarkTheme";
+import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
 // DATABASE
 
 // DATABASE
@@ -75,6 +76,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { success, error } = useMigrations(db, migrations);
+  useDatabaseSeed(success);
   // useDrizzleStudio(db);
 
   if (error) {
@@ -113,7 +115,7 @@ function RootLayoutNav() {
         /> */}
         </Stack>
       </ThemeProvider>
-      <StatusBar style={"auto"} />
+      <StatusBar style="auto" />
     </>
   );
 }

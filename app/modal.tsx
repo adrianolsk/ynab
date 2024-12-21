@@ -1,4 +1,4 @@
-// import { StatusBar } from "expo-status-bar";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import {
   Button,
   Platform,
@@ -11,8 +11,8 @@ import {
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View, ViewContent } from "@/components/Themed";
 import { useRouter } from "expo-router";
-import { AccountGroup } from "@/database/types";
-import { AccountType } from "@/types";
+
+import { AccountType, AccountGroup } from "@/types";
 
 type AccountItem = {
   name: string;
@@ -114,25 +114,29 @@ export default function ModalScreen() {
   }
 
   return (
-    <SectionList
-      stickySectionHeadersEnabled={false}
-      style={styles.section}
-      sections={DATA}
-      keyExtractor={(item, index) => item.type + index}
-      renderItem={({ item, section: { accountGroup } }) => (
-        <Pressable
-          // style={styles.item}
-          onPress={() => select(item, accountGroup)}
-        >
-          <ViewContent style={styles.item}>
-            <Text style={styles.title}>{item.name}</Text>
-          </ViewContent>
-        </Pressable>
-      )}
-      renderSectionHeader={({ section: { title } }) => {
-        return title ? <Text style={styles.header}>{title}</Text> : null;
-      }}
-    />
+    <>
+      {/* Use a light status bar on iOS to account for the black space above the modal */}
+      <ExpoStatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      <SectionList
+        stickySectionHeadersEnabled={false}
+        style={styles.section}
+        sections={DATA}
+        keyExtractor={(item, index) => item.type + index}
+        renderItem={({ item, section: { accountGroup } }) => (
+          <Pressable
+            // style={styles.item}
+            onPress={() => select(item, accountGroup)}
+          >
+            <ViewContent style={styles.item}>
+              <Text style={styles.title}>{item.name}</Text>
+            </ViewContent>
+          </Pressable>
+        )}
+        renderSectionHeader={({ section: { title } }) => {
+          return title ? <Text style={styles.header}>{title}</Text> : null;
+        }}
+      />
+    </>
   );
 }
 const styles = StyleSheet.create({

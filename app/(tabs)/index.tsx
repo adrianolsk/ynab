@@ -8,8 +8,8 @@ import {
 
 import { AssignMoneyCard } from "@/components/assign-money-card";
 import { Text, View, ViewContent } from "@/components/Themed";
-import { AccountGroup } from "@/database/types";
-import { AccountType } from "@/types";
+
+import { AccountGroup, AccountType } from "@/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React, { useState } from "react";
 

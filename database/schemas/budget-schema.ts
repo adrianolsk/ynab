@@ -16,7 +16,7 @@ export const BudgetSchema = sqliteTable(
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    user_uuid: int("user_uuid")
+    user_uuid: text("user_uuid")
       .notNull()
       .references(() => UserSchema.uuid, { onDelete: "cascade" }),
     name: text("name").notNull(),

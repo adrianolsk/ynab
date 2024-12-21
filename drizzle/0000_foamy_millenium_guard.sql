@@ -1,7 +1,7 @@
 CREATE TABLE `accounts` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`budget_uuid` integer NOT NULL,
+	`budget_uuid` text NOT NULL,
 	`name` text NOT NULL,
 	`notes` text,
 	`account_group` text DEFAULT 'budget' NOT NULL,
@@ -21,7 +21,7 @@ CREATE INDEX `account_uuid` ON `accounts` (`uuid`);--> statement-breakpoint
 CREATE TABLE `budgets` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`user_uuid` integer NOT NULL,
+	`user_uuid` text NOT NULL,
 	`name` text NOT NULL,
 	`start_date` text NOT NULL,
 	`end_date` text,
@@ -58,7 +58,7 @@ CREATE INDEX `category_uuid` ON `categories` (`uuid`);--> statement-breakpoint
 CREATE TABLE `goals` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`category_uuid` integer NOT NULL,
+	`category_uuid` text NOT NULL,
 	`target_amount` real NOT NULL,
 	`target_date` text NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
@@ -76,8 +76,8 @@ CREATE INDEX `goals_uuid` ON `goals` (`uuid`);--> statement-breakpoint
 CREATE TABLE `monthly_allocations` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`budget_uuid` integer NOT NULL,
-	`category_uuid` integer NOT NULL,
+	`budget_uuid` text NOT NULL,
+	`category_uuid` text NOT NULL,
 	`month` text NOT NULL,
 	`allocated_amount` real NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
@@ -96,8 +96,8 @@ CREATE INDEX `monthly_allocations_uuid` ON `monthly_allocations` (`uuid`);--> st
 CREATE TABLE `scheduled_transactions` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`account_uuid` integer NOT NULL,
-	`category_uuid` integer,
+	`account_uuid` text NOT NULL,
+	`category_uuid` text,
 	`amount` real NOT NULL,
 	`frequency` text NOT NULL,
 	`next_due_date` text NOT NULL,
@@ -116,8 +116,8 @@ CREATE INDEX `scheduled_transactions_account_uuid` ON `scheduled_transactions` (
 CREATE TABLE `shared_budgets` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`budget_uuid` integer NOT NULL,
-	`user_uuid` integer NOT NULL,
+	`budget_uuid` text NOT NULL,
+	`user_uuid` text NOT NULL,
 	`role` text NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
 	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
@@ -134,7 +134,7 @@ CREATE INDEX `shared_budgets_budget_uuid` ON `shared_budgets` (`budget_uuid`);--
 CREATE TABLE `tags` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`user_uuid` integer NOT NULL,
+	`user_uuid` text NOT NULL,
 	`name` text NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
 	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
@@ -149,8 +149,8 @@ CREATE UNIQUE INDEX `tags_uuid_unique` ON `tags` (`uuid`);--> statement-breakpoi
 CREATE INDEX `tags_user_uuid` ON `tags` (`user_uuid`);--> statement-breakpoint
 CREATE INDEX `tags_uuid` ON `tags` (`uuid`);--> statement-breakpoint
 CREATE TABLE `transaction_tags` (
-	`transaction_uuid` integer NOT NULL,
-	`tag_uuid` integer NOT NULL,
+	`transaction_uuid` text NOT NULL,
+	`tag_uuid` text NOT NULL,
 	`deleted_at` text,
 	`last_synced_at` text,
 	`sync_status` text DEFAULT 'pending' NOT NULL,
@@ -163,8 +163,8 @@ CREATE INDEX `transaction_tags_transaction_uuid` ON `transaction_tags` (`transac
 CREATE TABLE `transactions` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`account_uuid` integer NOT NULL,
-	`category_id` integer,
+	`account_uuid` text NOT NULL,
+	`category_id` text,
 	`date` text NOT NULL,
 	`amount` real NOT NULL,
 	`description` text,

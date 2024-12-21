@@ -34,7 +34,7 @@ export const AccountsSchema = sqliteTable(
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull(),
-    budget_uuid: int("budget_uuid")
+    budget_uuid: text("budget_uuid")
       .notNull()
       .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
     name: text("name").notNull(),

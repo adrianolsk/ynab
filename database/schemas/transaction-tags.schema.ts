@@ -14,10 +14,10 @@ import { TagsSchema } from "./tags.schema";
 export const transactionTags = sqliteTable(
   "transaction_tags",
   {
-    transaction_uuid: int("transaction_uuid")
+    transaction_uuid: text("transaction_uuid")
       .notNull()
       .references(() => TransactionsSchema.uuid, { onDelete: "cascade" }),
-    tag_uuid: int("tag_uuid")
+    tag_uuid: text("tag_uuid")
       .notNull()
       .references(() => TagsSchema.uuid, { onDelete: "cascade" }),
     deleted_at: text("deleted_at"),

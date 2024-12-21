@@ -16,10 +16,10 @@ export const ScheduledTransactionsSchema = sqliteTable(
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    account_uuid: int("account_uuid")
+    account_uuid: text("account_uuid")
       .notNull()
       .references(() => AccountsSchema.uuid, { onDelete: "cascade" }),
-    category_uuid: int("category_uuid").references(() => CategorySchema.uuid, {
+    category_uuid: text("category_uuid").references(() => CategorySchema.uuid, {
       onDelete: "set null",
     }),
     amount: real("amount").notNull(),

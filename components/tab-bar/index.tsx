@@ -56,7 +56,6 @@ export const TabBar = ({
       }}
     >
       {state.routes.map((route, index) => {
-        console.log("here", JSON.stringify(route, null, 2));
         const { options } = descriptors[route.key];
         const label = options.title;
 

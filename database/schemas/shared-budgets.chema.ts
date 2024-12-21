@@ -16,10 +16,10 @@ export const SharedBudgetsSchema = sqliteTable(
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    budget_uuid: int("budget_uuid")
+    budget_uuid: text("budget_uuid")
       .notNull()
       .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
-    user_uuid: int("user_uuid")
+    user_uuid: text("user_uuid")
       .notNull()
       .references(() => UserSchema.uuid, { onDelete: "cascade" }),
     role: text("role").notNull(),

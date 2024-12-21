@@ -18,6 +18,7 @@ import { TextInput, Text } from "@/components/Themed";
 import { useTranslation } from "react-i18next";
 import { AccountType } from "@/types";
 import { CardButton } from "@/components/card-button";
+import { uuidV4 } from "@/utils/helpers";
 
 export default function NewAccountScreen() {
   const { t } = useTranslation();
@@ -54,6 +55,8 @@ export default function NewAccountScreen() {
 
     try {
       const response = db.insert(AccountsSchema).values({
+        uuid: uuidV4(),
+        budget_uuid: 2,
         name: text,
         account_type: accountType,
         user_id: 2,
@@ -80,6 +83,7 @@ export default function NewAccountScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style={"auto"} />
       <Stack.Screen
         options={{
           headerTitle: "Add Account",
@@ -126,6 +130,7 @@ export default function NewAccountScreen() {
           onPress={addAccount}
         />
       </View>
+
       {/* Use a light status bar on iOS to account for the black space above the modal */}
     </View>
   );
