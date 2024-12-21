@@ -95,7 +95,6 @@ function RootLayoutNav() {
   return (
     <>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
-        {/* <SQLiteProvider databaseName={DATABASE_NAME}> */}
         <Stack
           screenOptions={{
             headerTitleStyle: {
@@ -113,9 +112,8 @@ function RootLayoutNav() {
           options={{ presentation: "formSheet" }}
         /> */}
         </Stack>
-        {/* </SQLiteProvider> */}
       </ThemeProvider>
-      {/* <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} /> */}
+      <StatusBar style={"auto"} />
     </>
   );
 }

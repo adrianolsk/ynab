@@ -15,12 +15,15 @@ export default function TabTwoScreen() {
 
   // const { data } = useLiveQuery(db.select().from(schema.users));
   const { data } = useLiveQuery(
-    db.select().from(schema.users).where(isNull(schema.users.deleted_at))
+    db
+      .select()
+      .from(schema.UserSchema)
+      .where(isNull(schema.UserSchema.deleted_at))
   );
 
   const add = async () => {
     try {
-      const response = db.insert(schema.users).values({
+      const response = db.insert(schema.UserSchema).values({
         name: "Adriano",
       });
       console.log("response", { response: (await response).lastInsertRowId });
@@ -32,11 +35,11 @@ export default function TabTwoScreen() {
   const deleteAll = async () => {
     try {
       const response = db
-        .update(schema.users)
+        .update(schema.UserSchema)
         .set({
           deleted_at: new Date().toISOString(),
         })
-        .where(eq(schema.users.id, 1));
+        .where(eq(schema.UserSchema.id, 1));
       console.log("response", { response: await response });
     } catch (error) {
       console.log("error", { error });

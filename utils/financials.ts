@@ -14,7 +14,7 @@ export function formatCurrency(numericValue: number | null | undefined) {
 }
 
 export function parseCurrencyToDecimal(currency: string) {
-  const numericString = currency.replace(/[^\d-]/g, "");
+  const numericString = currency?.replace(/[^\d-]/g, "");
   const parsed = parseFloat(numericString);
   if (Number.isNaN(parsed)) return 0;
 

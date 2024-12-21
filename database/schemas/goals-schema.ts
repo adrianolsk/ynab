@@ -8,17 +8,22 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
-//USERS TABLE
-export const UserSchema = sqliteTable(
-  "users",
+import { CategorySchema } from "./category-schema";
+// GOALS TABLE
+export const GoalsSchema = sqliteTable(
+  "goals",
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    name: text("name").notNull(),
-    createdAt: text("update_at")
+    category_uuid: int("category_uuid")
+      .notNull()
+      .references(() => CategorySchema.uuid, { onDelete: "cascade" }),
+    target_amount: real("target_amount").notNull(),
+    target_date: text("target_date").notNull(),
+    created_at: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
-    updated_at: text("update_at")
+    updated_at: text("updated_at")
       .notNull()
       .default(sql`(current_timestamp)`),
     deleted_at: text("deleted_at"),
@@ -28,5 +33,8 @@ export const UserSchema = sqliteTable(
       .default(sql`'pending'`),
     version: int("version").notNull().default(1),
   },
-  (t) => [index("user_uuid").on(t.uuid)]
+  (t) => [
+    index("goals_category_uuid").on(t.category_uuid),
+    index("goals_uuid").on(t.uuid),
+  ]
 );

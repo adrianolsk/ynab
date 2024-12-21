@@ -12,3 +12,5 @@ export type AccountType =
   | "other_debt"
   | "asset"
   | "liability";
+
+export type AccountGroup = "budget" | "loan" | "tracking";

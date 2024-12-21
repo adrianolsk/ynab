@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1733873498433,
-      "tag": "0000_late_night_thrasher",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1734461014554,
-      "tag": "0001_broken_ozymandias",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1734488928261,
-      "tag": "0002_crazy_micromacro",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1734619622006,
-      "tag": "0003_complete_toxin",
+      "when": 1734747369935,
+      "tag": "0000_sour_jack_flag",
       "breakpoints": true
     }
   ]
