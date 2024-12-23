@@ -1,6 +1,7 @@
 import {
   Pressable,
   SectionList,
+  SectionListProps,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
@@ -11,7 +12,13 @@ import { Text, View, ViewContent } from "@/components/Themed";
 
 import { AccountGroup, AccountType } from "@/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   CategoryGroupSchema,
   CategoryGroupSchemaType,
@@ -24,15 +31,34 @@ import {
 } from "@/database/schemas/category.schema";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { formatCurrency } from "@/utils/financials";
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetView,
+  BottomSheetDraggableView,
+} from "@gorhom/bottom-sheet";
+import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { NumericKeyboard } from "@/components/numeric-keyboard";
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
+const AnimatedSectionList =
+  Animated.createAnimatedComponent<SectionListProps<AccountItem, SectionType>>(
+    SectionList
+  );
 type AccountItem = {
   name: string;
-  type: AccountType;
+  // type: AccountType;
+  target: number | null | undefined;
 };
 
 type SectionItem = {
   title: string;
-  accountGroup: "budget" | "loan" | "tracking";
+  accountGroup: AccountGroup;
   data: AccountItem[];
 };
 
@@ -113,6 +139,12 @@ interface Map {
   [key: string]: boolean | undefined;
 }
 
+interface SectionType {
+  title: string;
+  // accountGroup: "budget" | "loan" | "tracking";
+  data: AccountItem[];
+}
+
 export default function BudgetScreen() {
   const [collapsedSections, setCollapsedSections] = useState<Map>({});
   const value = 1000;
@@ -144,7 +176,7 @@ export default function BudgetScreen() {
       )
   );
 
-  const leData = useMemo(() => {
+  const leData: SectionType[] = useMemo(() => {
     if (!liveData) return [];
     const result = liveData.reduce<
       Record<
@@ -169,7 +201,7 @@ export default function BudgetScreen() {
     const ledote = Object.values(result).map(({ group, categories }) => {
       return {
         title: group.name, // Use the category group name as the title
-        accountGroup: group.uuid, // Or another property to identify the group
+        // accountGroup: group., // Or another property to identify the group
         data: categories.map((category) => ({
           name: category.name, // Category name
           target: category.target_amount,
@@ -184,29 +216,130 @@ export default function BudgetScreen() {
   }, [liveData]);
 
   const select = (item: AccountItem, accountGroup: AccountGroup) => {};
+
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // variables
+  const snapPoints = useMemo(() => ["50%"], []);
+
+  // callbacks
+  const handleSnapPress = useCallback((index: number) => {
+    bottomSheetRef.current?.snapToIndex(index);
+  }, []);
+  const handleExpandPress = useCallback(() => {
+    bottomSheetRef.current?.expand();
+  }, []);
+  const handleCollapsePress = useCallback(() => {
+    bottomSheetRef.current?.collapse();
+  }, []);
+  const handleClosePress = useCallback(() => {
+    bottomSheetRef.current?.close();
+  }, []);
+
+  // const sectionListRef = useRef<SectionList<AccountType, SectionType>>(null);
+  // const sectionListRef = useRef<SectionList<AccountType, SectionType>>(null);
+
+  const [inputValue, setInputValue] = useState("");
+  const [activeItem, setActiveItem] = useState<{
+    section: number;
+    index: number;
+  } | null>(null);
+
+  const sectionListRef = useRef<SectionList<AccountItem, SectionType>>(null);
+
+  const bottomSheetHeight = useSharedValue(0);
+
+  const handlePress = useCallback(() => {
+    console.log("🍎 handlePress");
+    bottomSheetHeight.value = withTiming(300, { duration: 300 }); // Animate to 300px height
+  }, []);
+
+  const closeBottomSheet = useCallback(() => {
+    bottomSheetHeight.value = withTiming(0, { duration: 300 }); // Animate back to 0 height
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    // backgroundColor: "transparent",
+    height: bottomSheetHeight.value,
+    // marginBottom: , // Link the shared value to marginBottom
+  }));
+
+  const scrolltoindex = (sectionIndex: number, itemIndex: number) => {
+    sectionListRef.current?.scrollToLocation({
+      sectionIndex,
+      itemIndex,
+      viewPosition: 0.1, // Center the item in the viewport
+    });
+  };
+  const handleOpenKeyboard = (sectionIndex: number, itemIndex: number) => {
+    handlePress(); // Set the height of the bottom sheet
+    console.log("🍎 handleOpenKeyboard", {
+      sectionIndex,
+      itemIndex,
+    });
+
+    if (
+      activeItem?.section === sectionIndex &&
+      activeItem?.index === itemIndex
+    ) {
+      closeBottomSheet();
+      return;
+    } else {
+      setActiveItem({ section: sectionIndex, index: itemIndex });
+    }
+    bottomSheetRef.current?.present();
+
+    bottomSheetHeight.value = withTiming(250, { duration: 100 }, () => {
+      runOnJS(scrolltoindex)(sectionIndex, itemIndex);
+    });
+    // Scroll to the pressed item
+    // sectionListRef.current?.scrollToLocation({
+    //   sectionIndex,
+    //   itemIndex,
+    //   viewPosition: 0.1, // Center the item in the viewport
+    // });
+  };
+
+  const SECTIONS = leData.map<SectionType>((section) => ({
+    ...section,
+    data: collapsedSections[section.title] ? [] : section.data,
+  }));
+
   return (
     <View style={{ flex: 1 }}>
       <AssignMoneyCard value={value} />
-      <SectionList
+
+      <SectionList<AccountItem, SectionType>
+        ref={sectionListRef}
         stickySectionHeadersEnabled={false}
-        style={styles.section}
-        sections={leData.map((section) => ({
-          ...section,
-          data: collapsedSections[section.title] ? [] : section.data,
-        }))}
+        // style={styles.section}
+        sections={SECTIONS}
+        style={[styles.section]}
         keyExtractor={(item, index) => item.name + index}
-        renderItem={({ item, section: { accountGroup } }) => (
-          <Pressable onPress={() => select(item, accountGroup)}>
-            <ViewContent style={styles.item}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.title}>{item.name}</Text>
-              </View>
-              <Text style={styles.title}>
-                {formatCurrency(item.target ?? 0)}
-              </Text>
-            </ViewContent>
-          </Pressable>
-        )}
+        renderItem={({ item, index, section }) => {
+          // debugger;
+          return (
+            <Pressable
+              // onPress={() => {
+              //   bottomSheetRef.current?.present(item);
+              //   // handleSnapPress(0);
+              //   console.log("🍎 onPress");
+              // }}
+              onPress={() =>
+                handleOpenKeyboard(SECTIONS.indexOf(section), index)
+              }
+            >
+              <ViewContent style={styles.item}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.title}>{item.name}</Text>
+                </View>
+                <Text style={styles.title}>
+                  {formatCurrency(item.target ?? 0)}
+                </Text>
+              </ViewContent>
+            </Pressable>
+          );
+        }}
         renderSectionHeader={({ section: { title } }) => (
           <Header
             closed={!!collapsedSections[title]}
@@ -215,6 +348,64 @@ export default function BudgetScreen() {
           />
         )}
       />
+
+      <Animated.View
+        style={[
+          {
+            // justifyContent: "flex-end",
+            // backgroundColor: "transparent",
+            // borderWidth: 2,
+          },
+          animatedStyle,
+        ]}
+      >
+        <NumericKeyboard
+          onPress={function (value: string): void {
+            console.log("🍎 onPress", { value });
+          }}
+          onBackspace={function (): void {
+            console.log("🍎 onBackspace");
+          }}
+          onConfirm={function (): void {
+            console.log("🍎 onConfirm");
+          }}
+        />
+      </Animated.View>
+      {/* <BottomSheetModalProvider>
+        <BottomSheetModal
+          onDismiss={closeBottomSheet}
+          ref={bottomSheetRef}
+          // snapPoints={snapPoints}
+          // enablePanDownToClose
+
+          backgroundStyle={{
+        
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+          }}
+          detached
+      
+          onChange={() => {
+            console.log("🍎 onChange");
+          }}
+        >
+          <BottomSheetView style={{ padding: 16 }}>
+          
+            <NumericKeyboard
+              onPress={function (value: string): void {
+                console.log("🍎 onPress", { value });
+              }}
+              onBackspace={function (): void {
+                console.log("🍎 onBackspace");
+              }}
+              onConfirm={function (): void {
+                console.log("🍎 onConfirm");
+              }}
+            />
+          </BottomSheetView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider> */}
     </View>
   );
 }
@@ -253,7 +444,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   section: {
-    padding: 16,
+    // padding: 16,
+    // marginBottom: 300,
   },
   item: {
     flexDirection: "row",

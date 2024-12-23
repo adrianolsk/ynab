@@ -22,6 +22,7 @@ import { LightTheme } from "@/constants/LightTheme";
 import { DarkTheme } from "@/constants/DarkTheme";
 import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
 import SeedDatabase from "@/components/seed-database";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 // DATABASE
 
 // DATABASE
@@ -96,7 +97,7 @@ function RootLayoutNav() {
   }
 
   return (
-    <>
+    <GestureHandlerRootView>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
         <SeedDatabase />
         <Stack
@@ -118,6 +119,6 @@ function RootLayoutNav() {
         </Stack>
       </ThemeProvider>
       <StatusBar style="auto" />
-    </>
+    </GestureHandlerRootView>
   );
 }
