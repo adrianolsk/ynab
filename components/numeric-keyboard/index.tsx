@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 type NumericKeyboardProps = {
   onPress: (value: string) => void;
   onBackspace: () => void;
   onConfirm: () => void;
+  onCancel: () => void;
 };
 
 export const NumericKeyboard: React.FC<NumericKeyboardProps> = ({
   onPress,
   onBackspace,
   onConfirm,
+  onCancel,
 }) => {
   const keys = [
     ["1", "2", "3"],
@@ -40,9 +42,20 @@ export const NumericKeyboard: React.FC<NumericKeyboardProps> = ({
           ))}
         </View>
       ))}
-      <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-        <Text style={styles.confirmText}>Confirm</Text>
-      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: "row",
+
+          gap: 8,
+        }}
+      >
+        <TouchableOpacity style={styles.confirmButton} onPress={onCancel}>
+          <Text style={styles.confirmText}>CANCEL</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+          <Text style={styles.confirmText}>DONE</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -70,6 +83,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   confirmButton: {
+    flex: 1,
     marginTop: 16,
     backgroundColor: "#4CAF50",
     paddingVertical: 12,

@@ -30,7 +30,7 @@ import {
   CategorySchemaType,
 } from "@/database/schemas/category.schema";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { formatCurrency } from "@/utils/financials";
+import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import BottomSheet, {
   BottomSheetModal,
   BottomSheetModalProvider,
@@ -45,6 +45,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { set } from "date-fns";
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<AccountItem, SectionType>>(
@@ -54,6 +55,8 @@ type AccountItem = {
   name: string;
   // type: AccountType;
   target: number | null | undefined;
+  alocated: number | null | undefined;
+  uuid: string;
 };
 
 type SectionItem = {
@@ -139,6 +142,10 @@ interface Map {
   [key: string]: boolean | undefined;
 }
 
+interface ItemMap {
+  [key: string]: string;
+}
+
 interface SectionType {
   title: string;
   // accountGroup: "budget" | "loan" | "tracking";
@@ -146,6 +153,8 @@ interface SectionType {
 }
 
 export default function BudgetScreen() {
+  const [activeRow, setActiveRow] = useState<number | null | undefined>();
+  const [editedItems, setEditedItems] = useState<ItemMap>({});
   const [collapsedSections, setCollapsedSections] = useState<Map>({});
   const value = 1000;
 
@@ -205,6 +214,8 @@ export default function BudgetScreen() {
         data: categories.map((category) => ({
           name: category.name, // Category name
           target: category.target_amount,
+          alocated: category.allocated_amount,
+          uuid: category.uuid,
           // type: category.is_income ? "income" : "expense", // Example logic for type
         })),
       };
@@ -216,6 +227,11 @@ export default function BudgetScreen() {
   }, [liveData]);
 
   const select = (item: AccountItem, accountGroup: AccountGroup) => {};
+
+  const SECTIONS = leData.map<SectionType>((section) => ({
+    ...section,
+    data: collapsedSections[section.title] ? [] : section.data,
+  }));
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -243,18 +259,22 @@ export default function BudgetScreen() {
   const [activeItem, setActiveItem] = useState<{
     section: number;
     index: number;
+    item: AccountItem;
   } | null>(null);
 
   const sectionListRef = useRef<SectionList<AccountItem, SectionType>>(null);
 
   const bottomSheetHeight = useSharedValue(0);
-
+  const [isOpen, setIsOpen] = useState(false);
+  // const [selectedAlocated, setSelectedAlocated] = useState<string>("");
   const handlePress = useCallback(() => {
+    setIsOpen(true);
     console.log("🍎 handlePress");
-    bottomSheetHeight.value = withTiming(300, { duration: 300 }); // Animate to 300px height
+    bottomSheetHeight.value = withTiming(250, { duration: 100 }); // Animate to 300px height
   }, []);
 
   const closeBottomSheet = useCallback(() => {
+    setIsOpen(false);
     bottomSheetHeight.value = withTiming(0, { duration: 300 }); // Animate back to 0 height
   }, []);
 
@@ -283,27 +303,21 @@ export default function BudgetScreen() {
       activeItem?.index === itemIndex
     ) {
       closeBottomSheet();
+      setActiveItem(null);
       return;
     } else {
-      setActiveItem({ section: sectionIndex, index: itemIndex });
+      setActiveItem({
+        section: sectionIndex,
+        index: itemIndex,
+        item: SECTIONS[sectionIndex].data[itemIndex],
+      });
     }
     bottomSheetRef.current?.present();
 
     bottomSheetHeight.value = withTiming(250, { duration: 100 }, () => {
       runOnJS(scrolltoindex)(sectionIndex, itemIndex);
     });
-    // Scroll to the pressed item
-    // sectionListRef.current?.scrollToLocation({
-    //   sectionIndex,
-    //   itemIndex,
-    //   viewPosition: 0.1, // Center the item in the viewport
-    // });
   };
-
-  const SECTIONS = leData.map<SectionType>((section) => ({
-    ...section,
-    data: collapsedSections[section.title] ? [] : section.data,
-  }));
 
   return (
     <View style={{ flex: 1 }}>
@@ -312,30 +326,42 @@ export default function BudgetScreen() {
       <SectionList<AccountItem, SectionType>
         ref={sectionListRef}
         stickySectionHeadersEnabled={false}
-        // style={styles.section}
         sections={SECTIONS}
         style={[styles.section]}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item, index, section }) => {
           // debugger;
+          const sectionIndex = SECTIONS.indexOf(section);
+          const isSelected =
+            activeItem?.section === sectionIndex && activeItem?.index === index;
+          const selectedStyle = isSelected ? styles.selected : {};
           return (
             <Pressable
-              // onPress={() => {
-              //   bottomSheetRef.current?.present(item);
-              //   // handleSnapPress(0);
-              //   console.log("🍎 onPress");
-              // }}
-              onPress={() =>
-                handleOpenKeyboard(SECTIONS.indexOf(section), index)
-              }
+              onPress={() => {
+                setActiveRow(item.alocated);
+                handleOpenKeyboard(SECTIONS.indexOf(section), index);
+              }}
             >
-              <ViewContent style={styles.item}>
-                <View style={{ flex: 1 }}>
+              <ViewContent style={[styles.item, selectedStyle]}>
+                <View style={{ flex: 2 }}>
                   <Text style={styles.title}>{item.name}</Text>
                 </View>
-                <Text style={styles.title}>
-                  {formatCurrency(item.target ?? 0)}
-                </Text>
+                <View style={{ flex: 1 }}>
+                  {isOpen && (
+                    <Text style={styles.title}>
+                      {editedItems[item.uuid]
+                        ? formatCurrency(
+                            parseCurrencyToDecimal(editedItems[item.uuid])
+                          )
+                        : formatCurrency(item.alocated ?? 0)}
+                    </Text>
+                  )}
+                </View>
+                <View style={{ width: 60, alignItems: "flex-end" }}>
+                  <Text style={styles.title}>
+                    {formatCurrency(item.target ?? 0)}
+                  </Text>
+                </View>
               </ViewContent>
             </Pressable>
           );
@@ -352,60 +378,110 @@ export default function BudgetScreen() {
       <Animated.View
         style={[
           {
-            // justifyContent: "flex-end",
-            // backgroundColor: "transparent",
-            // borderWidth: 2,
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
           },
           animatedStyle,
         ]}
       >
         <NumericKeyboard
-          onPress={function (value: string): void {
+          onCancel={async () => {
+            const key = activeItem!.item.uuid;
+            await db
+              .update(CategorySchema)
+              .set({
+                allocated_amount: activeRow,
+                updated_at: new Date().toISOString(),
+              })
+              .where(eq(CategorySchema.uuid, key));
+            setActiveRow(undefined);
+            setIsOpen(false);
+            setEditedItems({});
+          }}
+          onPress={async function (value: string) {
+            const key = activeItem!.item.uuid;
+            const lastValue = editedItems[activeItem!.item.uuid] ?? "";
+            const newValue = lastValue + value;
+            setEditedItems((items) => {
+              return {
+                ...items,
+                [key]: newValue,
+              };
+            });
+
+            await db
+              .update(CategorySchema)
+              .set({
+                allocated_amount: parseCurrencyToDecimal(newValue),
+                updated_at: new Date().toISOString(),
+              })
+              .where(eq(CategorySchema.uuid, key));
+            // setSelectedAlocated((v) => v + value);
             console.log("🍎 onPress", { value });
           }}
           onBackspace={function (): void {
+            setEditedItems((items) => {
+              const key = activeItem!.item.uuid;
+              const lastValue = items[activeItem!.item.uuid] ?? "";
+              const newValue = lastValue.slice(0, -1);
+              return {
+                ...items,
+                [key]: newValue,
+              };
+            });
+            // setSelectedAlocated((v) => v.slice(0, -1));
             console.log("🍎 onBackspace");
           }}
-          onConfirm={function (): void {
-            console.log("🍎 onConfirm");
+          onConfirm={async function () {
+            // Object.keys(editedItems).forEach(async (key) => {
+            //   const value = editedItems[key];
+            //   console.log("🍎 onConfirm", { value });
+            //   // await db
+            //   //   .update(CategorySchema)
+            //   //   .set({
+            //   //     allocated_amount: parseCurrencyToDecimal(value),
+            //   //     updated_at: new Date().toISOString(),
+            //   //   })
+            //   //   .where(eq(CategorySchema.uuid, key));
+            // });
+            console.log("🍎 onConfirm", { value });
+            setIsOpen(false);
+            setEditedItems({});
           }}
         />
       </Animated.View>
-      {/* <BottomSheetModalProvider>
-        <BottomSheetModal
-          onDismiss={closeBottomSheet}
-          ref={bottomSheetRef}
-          // snapPoints={snapPoints}
-          // enablePanDownToClose
 
-          backgroundStyle={{
-        
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.5,
-            shadowRadius: 2,
-          }}
-          detached
-      
-          onChange={() => {
-            console.log("🍎 onChange");
-          }}
-        >
-          <BottomSheetView style={{ padding: 16 }}>
-          
-            <NumericKeyboard
-              onPress={function (value: string): void {
-                console.log("🍎 onPress", { value });
-              }}
-              onBackspace={function (): void {
-                console.log("🍎 onBackspace");
-              }}
-              onConfirm={function (): void {
-                console.log("🍎 onConfirm");
-              }}
-            />
-          </BottomSheetView>
-        </BottomSheetModal>
-      </BottomSheetModalProvider> */}
+      <BottomSheetModal
+        onDismiss={closeBottomSheet}
+        ref={bottomSheetRef}
+        // snapPoints={snapPoints}
+        // enablePanDownToClose
+
+        backgroundStyle={{
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.5,
+          shadowRadius: 2,
+        }}
+        detached
+        onChange={() => {
+          console.log("🍎 onChange");
+        }}
+      >
+        <BottomSheetView style={{ padding: 16 }}>
+          <NumericKeyboard
+            onPress={function (value: string): void {
+              console.log("🍎 onPress", { value });
+            }}
+            onBackspace={function (): void {
+              console.log("🍎 onBackspace");
+            }}
+            onConfirm={function (): void {
+              console.log("🍎 onConfirm");
+            }}
+          />
+        </BottomSheetView>
+      </BottomSheetModal>
     </View>
   );
 }
@@ -443,8 +519,11 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
     marginHorizontal: 16,
   },
+  selected: {
+    backgroundColor: "#006699",
+  },
   section: {
-    // padding: 16,
+    padding: 16,
     // marginBottom: 300,
   },
   item: {
@@ -460,6 +539,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ccc",
   },
   title: {
-    fontSize: 14,
+    fontSize: 12,
+    fontFamily: "NunitoSansMedium",
   },
 });

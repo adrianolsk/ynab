@@ -23,6 +23,7 @@ import { DarkTheme } from "@/constants/DarkTheme";
 import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
 import SeedDatabase from "@/components/seed-database";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 // DATABASE
 
 // DATABASE
@@ -100,23 +101,25 @@ function RootLayoutNav() {
     <GestureHandlerRootView>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
         <SeedDatabase />
-        <Stack
-          screenOptions={{
-            headerTitleStyle: {
-              fontFamily: "NunitoSansSemiBold",
-            },
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ title: "Select Account Type", presentation: "modal" }}
-          />
-          {/* <Stack.Screen
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{
+              headerTitleStyle: {
+                fontFamily: "NunitoSansSemiBold",
+              },
+            }}
+          >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="modal"
+              options={{ title: "Select Account Type", presentation: "modal" }}
+            />
+            {/* <Stack.Screen
           name="accounts/edit/[id]"
           options={{ presentation: "formSheet" }}
         /> */}
-        </Stack>
+          </Stack>
+        </BottomSheetModalProvider>
       </ThemeProvider>
       <StatusBar style="auto" />
     </GestureHandlerRootView>
