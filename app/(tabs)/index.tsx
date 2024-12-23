@@ -249,6 +249,7 @@ export default function BudgetScreen() {
     bottomSheetRef.current?.collapse();
   }, []);
   const handleClosePress = useCallback(() => {
+    setActiveItem(null);
     bottomSheetRef.current?.close();
   }, []);
 
@@ -270,12 +271,12 @@ export default function BudgetScreen() {
   const handlePress = useCallback(() => {
     setIsOpen(true);
     console.log("🍎 handlePress");
-    bottomSheetHeight.value = withTiming(250, { duration: 100 }); // Animate to 300px height
+    // bottomSheetHeight.value = withTiming(200, { duration: 100 }); // Animate to 300px height
   }, []);
 
   const closeBottomSheet = useCallback(() => {
     setIsOpen(false);
-    bottomSheetHeight.value = withTiming(0, { duration: 300 }); // Animate back to 0 height
+    bottomSheetHeight.value = withTiming(0, { duration: 100 }); // Animate back to 0 height
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -304,6 +305,7 @@ export default function BudgetScreen() {
     ) {
       closeBottomSheet();
       setActiveItem(null);
+      handleClosePress();
       return;
     } else {
       setActiveItem({
@@ -314,7 +316,7 @@ export default function BudgetScreen() {
     }
     bottomSheetRef.current?.present();
 
-    bottomSheetHeight.value = withTiming(250, { duration: 100 }, () => {
+    bottomSheetHeight.value = withTiming(240, { duration: 50 }, () => {
       runOnJS(scrolltoindex)(sectionIndex, itemIndex);
     });
   };
@@ -373,19 +375,33 @@ export default function BudgetScreen() {
             onPress={() => toggleSection(title)}
           />
         )}
+        ListFooterComponent={() => (
+          <Animated.View
+            style={[
+              // {
+              //   shadowOffset: { width: 0, height: -2 },
+              //   shadowOpacity: 0.5,
+              //   shadowRadius: 2,
+              // },
+              animatedStyle,
+            ]}
+          />
+        )}
       />
 
       <Animated.View
-        style={[
-          {
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.5,
-            shadowRadius: 2,
-          },
-          animatedStyle,
-        ]}
+        style={
+          [
+            // {
+            //   shadowOffset: { width: 0, height: -2 },
+            //   shadowOpacity: 0.5,
+            //   shadowRadius: 2,
+            // },
+            // animatedStyle,
+          ]
+        }
       >
-        <NumericKeyboard
+        {/* <NumericKeyboard
           onCancel={async () => {
             const key = activeItem!.item.uuid;
             await db
@@ -449,7 +465,7 @@ export default function BudgetScreen() {
             setIsOpen(false);
             setEditedItems({});
           }}
-        />
+        /> */}
       </Animated.View>
 
       <BottomSheetModal
@@ -470,14 +486,72 @@ export default function BudgetScreen() {
       >
         <BottomSheetView style={{ padding: 16 }}>
           <NumericKeyboard
-            onPress={function (value: string): void {
+            onCancel={async () => {
+              const key = activeItem!.item.uuid;
+              await db
+                .update(CategorySchema)
+                .set({
+                  allocated_amount: activeRow,
+                  updated_at: new Date().toISOString(),
+                })
+                .where(eq(CategorySchema.uuid, key));
+              setActiveRow(undefined);
+              setIsOpen(false);
+              setEditedItems({});
+              handleClosePress();
+              closeBottomSheet();
+            }}
+            onPress={async function (value: string) {
+              const key = activeItem!.item.uuid;
+              const lastValue = editedItems[activeItem!.item.uuid] ?? "";
+              const newValue = lastValue + value;
+              setEditedItems((items) => {
+                return {
+                  ...items,
+                  [key]: newValue,
+                };
+              });
+
+              await db
+                .update(CategorySchema)
+                .set({
+                  allocated_amount: parseCurrencyToDecimal(newValue),
+                  updated_at: new Date().toISOString(),
+                })
+                .where(eq(CategorySchema.uuid, key));
+              // setSelectedAlocated((v) => v + value);
               console.log("🍎 onPress", { value });
             }}
             onBackspace={function (): void {
+              setEditedItems((items) => {
+                const key = activeItem!.item.uuid;
+                const lastValue = items[activeItem!.item.uuid] ?? "";
+                const newValue = lastValue.slice(0, -1);
+                return {
+                  ...items,
+                  [key]: newValue,
+                };
+              });
+              // setSelectedAlocated((v) => v.slice(0, -1));
               console.log("🍎 onBackspace");
             }}
-            onConfirm={function (): void {
-              console.log("🍎 onConfirm");
+            onConfirm={async function () {
+              // Object.keys(editedItems).forEach(async (key) => {
+              //   const value = editedItems[key];
+              //   console.log("🍎 onConfirm", { value });
+              //   // await db
+              //   //   .update(CategorySchema)
+              //   //   .set({
+              //   //     allocated_amount: parseCurrencyToDecimal(value),
+              //   //     updated_at: new Date().toISOString(),
+              //   //   })
+              //   //   .where(eq(CategorySchema.uuid, key));
+              // });
+              console.log("🍎 onConfirm", { value });
+              setIsOpen(false);
+              setEditedItems({});
+              handleClosePress();
+              closeBottomSheet();
             }}
           />
         </BottomSheetView>
