@@ -12,7 +12,7 @@ import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View, ViewContent } from "@/components/Themed";
 import { useSQLiteContext } from "expo-sqlite";
 import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { AccountsSchema } from "../../database/schemas/accounts-schema";
+import { AccountsSchema } from "../../database/schemas/accounts.schema";
 import { useEffect, useMemo } from "react";
 import { db } from "@/database/db";
 import { eq, isNull } from "drizzle-orm";
@@ -26,7 +26,7 @@ import {
 import { routeToScreen } from "expo-router/build/useScreens";
 import { useTranslation } from "react-i18next";
 
-import { type AccountSchemaType } from "@/database/schemas/accounts-schema";
+import { type AccountSchemaType } from "@/database/schemas/accounts.schema";
 import { StatusBar } from "expo-status-bar";
 import { formatCurrency } from "@/utils/financials";
 import { CardButton } from "@/components/card-button";

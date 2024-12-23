@@ -7,20 +7,22 @@ import {
   text,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { UserSchema } from "./user-schema";
-import { BudgetSchema } from "./budget-schema";
+import { UserSchema } from "./user.schema";
 
-// CATEGORIES TABLE
-export const CategorySchema = sqliteTable(
-  "categories",
+// BUDGETS TABLE
+
+export const BudgetSchema = sqliteTable(
+  "budgets",
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    budget_uuid: int("budget_uuid")
+    user_uuid: text("user_uuid")
       .notNull()
-      .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
+      .references(() => UserSchema.uuid, { onDelete: "cascade" }),
     name: text("name").notNull(),
-    target_amount: real("target_amount").notNull(),
+    start_date: text("start_date").notNull(),
+    end_date: text("end_date"),
+    currency: text("currency").notNull(),
     created_at: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
@@ -34,8 +36,5 @@ export const CategorySchema = sqliteTable(
       .default(sql`'pending'`),
     version: int("version").notNull().default(1),
   },
-  (t) => [
-    index("category_budget_uuid").on(t.budget_uuid),
-    index("category_uuid").on(t.uuid),
-  ]
+  (t) => [index("budget_user_uuid").on(t.user_uuid)]
 );

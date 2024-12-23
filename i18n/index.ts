@@ -7,15 +7,15 @@ import translationPt from "./locales/pt-BR/translation.json";
 
 const resources = {
   "pt-BR": { translation: translationPt },
-  "en-US": { translation: translationEn },
+  "en-CA": { translation: translationEn },
 };
 
 const initI18n = async () => {
-  //   let savedLanguage = await AsyncStorage.getItem("language");
+  let savedLanguage = (await AsyncStorage.getItem("language")) ?? undefined;
 
-  //   if (!savedLanguage) {
-  //     savedLanguage = Localization.getLocales()[0].languageCode;
-  //   }
+  if (!savedLanguage) {
+    savedLanguage = Localization.getLocales()[0].languageCode ?? undefined;
+  }
 
   //   i18n.use(initReactI18next).init({
   //     // compatibilityJSON: "v3",
@@ -41,8 +41,9 @@ const initI18n = async () => {
       //     }
       //   }
       // },
-      lng: "pt-BR", // if you're using a language detector, do not define the lng option
-      fallbackLng: "en",
+      lng: savedLanguage,
+      //   lng: "pt-BR", // if you're using a language detector, do not define the lng option
+      fallbackLng: "en-CA",
 
       interpolation: {
         escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape

@@ -37,12 +37,11 @@ CREATE TABLE `budgets` (
 --> statement-breakpoint
 CREATE UNIQUE INDEX `budgets_uuid_unique` ON `budgets` (`uuid`);--> statement-breakpoint
 CREATE INDEX `budget_user_uuid` ON `budgets` (`user_uuid`);--> statement-breakpoint
-CREATE TABLE `categories` (
+CREATE TABLE `category_group` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
-	`budget_uuid` integer NOT NULL,
+	`budget_uuid` text NOT NULL,
 	`name` text NOT NULL,
-	`target_amount` real NOT NULL,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
 	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
 	`deleted_at` text,
@@ -50,6 +49,28 @@ CREATE TABLE `categories` (
 	`sync_status` text DEFAULT 'pending' NOT NULL,
 	`version` integer DEFAULT 1 NOT NULL,
 	FOREIGN KEY (`budget_uuid`) REFERENCES `budgets`(`uuid`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `category_group_uuid_unique` ON `category_group` (`uuid`);--> statement-breakpoint
+CREATE INDEX `category_group_budget_uuid` ON `category_group` (`budget_uuid`);--> statement-breakpoint
+CREATE INDEX `category_group_uuid` ON `category_group` (`uuid`);--> statement-breakpoint
+CREATE TABLE `categories` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`uuid` text NOT NULL,
+	`budget_uuid` text NOT NULL,
+	`category_group_uuid` text NOT NULL,
+	`name` text NOT NULL,
+	`target_amount` real DEFAULT 0,
+	`allocated_amount` real DEFAULT 0,
+	`is_income` integer DEFAULT 0,
+	`created_at` text DEFAULT (current_timestamp) NOT NULL,
+	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
+	`deleted_at` text,
+	`last_synced_at` text,
+	`sync_status` text DEFAULT 'pending' NOT NULL,
+	`version` integer DEFAULT 1 NOT NULL,
+	FOREIGN KEY (`budget_uuid`) REFERENCES `budgets`(`uuid`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`category_group_uuid`) REFERENCES `category_group`(`uuid`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `categories_uuid_unique` ON `categories` (`uuid`);--> statement-breakpoint
@@ -61,6 +82,7 @@ CREATE TABLE `goals` (
 	`category_uuid` text NOT NULL,
 	`target_amount` real NOT NULL,
 	`target_date` text NOT NULL,
+	`current_amount` real DEFAULT 0,
 	`created_at` text DEFAULT (current_timestamp) NOT NULL,
 	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
 	`deleted_at` text,

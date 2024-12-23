@@ -12,6 +12,8 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { ViewContent } from "@/components/Themed";
+import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -22,7 +24,7 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
 
   return (
@@ -46,44 +48,50 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Budget",
+            title: t("screens.budget"),
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="money" color={color} />
             ),
             headerRight: () => (
-              <Link href="/modal" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <FontAwesome
-                      name="info-circle"
-                      size={25}
-                      color={Colors[colorScheme ?? "light"].text}
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
-              </Link>
+              <Pressable
+                onPress={async () => {
+                  i18n.language === "pt-BR"
+                    ? i18n.changeLanguage("en-CA")
+                    : i18n.changeLanguage("pt-BR");
+
+                  await AsyncStorage.setItem("language", i18n.language);
+                }}
+              >
+                {({ pressed }) => (
+                  <FontAwesome
+                    name="info-circle"
+                    size={25}
+                    color={Colors[colorScheme ?? "light"].text}
+                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
             ),
           }}
         />
         <Tabs.Screen
           name="accounts"
           options={{
-            title: "Accounts",
+            title: t("screens.accounts"),
             tabBarIcon: ({ color }) => <TabBarIcon name="bank" color={color} />,
           }}
         />
         <Tabs.Screen
           name="transaction"
           options={{
-            title: "transaction",
+            title: t("screens.transaction"),
             tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
           }}
         />
         <Tabs.Screen
           name="report"
           options={{
-            title: "Reflect",
+            title: t("screens.report"),
             tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
           }}
         />
@@ -92,7 +100,7 @@ export default function TabLayout() {
           name="help"
           options={{
             // href: null,
-            title: "Help",
+            title: t("screens.help"),
             tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
           }}
         />

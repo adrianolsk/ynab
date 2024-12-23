@@ -6,7 +6,7 @@ import { db } from "@/database/db";
 import {
   AccountsSchema,
   AccountSchemaType,
-} from "@/database/schemas/accounts-schema";
+} from "@/database/schemas/accounts.schema";
 import { AccountGroup } from "@/database/types";
 import { eq } from "drizzle-orm";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";

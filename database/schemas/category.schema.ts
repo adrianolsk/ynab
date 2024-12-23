@@ -7,22 +7,26 @@ import {
   text,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { BudgetSchema } from "./budget.schema";
 import { UserSchema } from "./user.schema";
+import { BudgetSchema } from "./budget.schema";
+import { CategoryGroupSchema } from "./category-group.schema";
 
-// // SHARED BUDGETS TABLE
-export const SharedBudgetsSchema = sqliteTable(
-  "shared_budgets",
+// CATEGORIES TABLE
+export const CategorySchema = sqliteTable(
+  "categories",
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
     budget_uuid: text("budget_uuid")
       .notNull()
       .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
-    user_uuid: text("user_uuid")
+    category_group_uuid: text("category_group_uuid")
       .notNull()
-      .references(() => UserSchema.uuid, { onDelete: "cascade" }),
-    role: text("role").notNull(),
+      .references(() => CategoryGroupSchema.uuid, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    target_amount: real("target_amount").default(0),
+    allocated_amount: real("allocated_amount").default(0),
+    is_income: int("is_income").default(0),
     created_at: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
@@ -36,5 +40,9 @@ export const SharedBudgetsSchema = sqliteTable(
       .default(sql`'pending'`),
     version: int("version").notNull().default(1),
   },
-  (t) => [index("shared_budgets_budget_uuid").on(t.budget_uuid)]
+  (t) => [
+    index("category_budget_uuid").on(t.budget_uuid),
+    index("category_uuid").on(t.uuid),
+  ]
 );
+export type CategorySchemaType = typeof CategorySchema.$inferInsert;

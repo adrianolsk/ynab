@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 
 export function formatCurrency(numericValue: number | null | undefined) {
-  if (!numericValue) {
+  if (numericValue === null || numericValue === undefined) {
     return "";
   }
   const formattedValue = new Intl.NumberFormat("pt-BR", {

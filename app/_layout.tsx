@@ -21,6 +21,7 @@ import { StatusBar } from "expo-status-bar";
 import { LightTheme } from "@/constants/LightTheme";
 import { DarkTheme } from "@/constants/DarkTheme";
 import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
+import SeedDatabase from "@/components/seed-database";
 // DATABASE
 
 // DATABASE
@@ -76,12 +77,12 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { success, error } = useMigrations(db, migrations);
-  useDatabaseSeed(success);
+
   // useDrizzleStudio(db);
 
   if (error) {
     return (
-      <View>
+      <View style={{ flex: 1, paddingTop: 100 }}>
         <Text>Migration error: {error.message}</Text>
       </View>
     );
@@ -97,6 +98,7 @@ function RootLayoutNav() {
   return (
     <>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
+        <SeedDatabase />
         <Stack
           screenOptions={{
             headerTitleStyle: {

@@ -8,9 +8,9 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
-import { UserSchema } from "./user-schema";
+import { UserSchema } from "./user.schema";
 import { AccountGroup, AccountType } from "@/types";
-import { BudgetSchema } from "./budget-schema";
+import { BudgetSchema } from "./budget.schema";
 
 const accountGroupColumn = customType<{
   data: AccountGroup;

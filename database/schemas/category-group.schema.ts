@@ -7,19 +7,19 @@ import {
   text,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
+import { UserSchema } from "./user.schema";
+import { BudgetSchema } from "./budget.schema";
 
-import { CategorySchema } from "./category-schema";
-// GOALS TABLE
-export const GoalsSchema = sqliteTable(
-  "goals",
+// CATEGORIES TABLE
+export const CategoryGroupSchema = sqliteTable(
+  "category_group",
   {
     id: int("id").primaryKey(),
     uuid: text("uuid").notNull().unique(),
-    category_uuid: text("category_uuid")
+    budget_uuid: text("budget_uuid")
       .notNull()
-      .references(() => CategorySchema.uuid, { onDelete: "cascade" }),
-    target_amount: real("target_amount").notNull(),
-    target_date: text("target_date").notNull(),
+      .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
+    name: text("name").notNull(),
     created_at: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
@@ -34,7 +34,9 @@ export const GoalsSchema = sqliteTable(
     version: int("version").notNull().default(1),
   },
   (t) => [
-    index("goals_category_uuid").on(t.category_uuid),
-    index("goals_uuid").on(t.uuid),
+    index("category_group_budget_uuid").on(t.budget_uuid),
+    index("category_group_uuid").on(t.uuid),
   ]
 );
+
+export type CategoryGroupSchemaType = typeof CategoryGroupSchema.$inferInsert;

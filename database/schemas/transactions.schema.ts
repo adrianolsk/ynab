@@ -7,8 +7,8 @@ import {
   text,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { AccountsSchema } from "./accounts-schema";
-import { CategorySchema } from "./category-schema";
+import { AccountsSchema } from "./accounts.schema";
+import { CategorySchema } from "./category.schema";
 
 // TRANSACTIONS TABLE
 export const TransactionsSchema = sqliteTable(

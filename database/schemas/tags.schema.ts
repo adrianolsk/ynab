@@ -7,7 +7,7 @@ import {
   text,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { UserSchema } from "./user-schema";
+import { UserSchema } from "./user.schema";
 
 // TAGS TABLE
 export const TagsSchema = sqliteTable(

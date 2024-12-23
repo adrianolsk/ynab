@@ -19,5 +19,36 @@
         "asset": "Asset",
         "liability": "Liability",
         "placeholder": "Select Account Type"
+    },
+    "cagegoryGroups": {
+        "bills": "Bills",
+        "needs": "Needs",
+        "wants": "Wants",
+        "placeholder": "Select Category Group"  ,
+        "categories": {
+            "rent_mortgage": "Rent/Mortgage",
+            "phone": "Phone",
+            "internet": "Internet",
+            "utilities": "Utilities",
+            "placeholder": "Select Category",
+            "groceries": "Groceries",
+            "transportation": "Transportation",
+            "medical_expenses": "Medical expenses",
+            "emergency_fund": "Emergency fund",
+            "entertainment": "Entertainment",
+            "vacation": "Vacation",
+            "stuff_i_forgot_to_budget_for": "Stuff I forgot to budget for",
+            "dining_out": "Dining out" 
+        }
+    },
+    "screens": {
+        "budget": "Budget",  
+        "accounts": "Accounts",
+        "accounts.add": "Add Account",
+        "accounts.edit": "Edit Account",
+        "accounts.accountType": "Sellect Account Type",
+        "transaction": "Transaction",
+        "report": "Report",
+        "help": "Help"
     }
 }

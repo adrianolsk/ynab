@@ -7,11 +7,11 @@ import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { db } from "@/database/db";
-import * as schema from "@/database/schemas/user-schema";
+import * as schema from "@/database/schemas/user.schema";
 import {
   AccountsSchema,
   AccountSchemaType,
-} from "@/database/schemas/accounts-schema";
+} from "@/database/schemas/accounts.schema";
 import { AccountGroup } from "@/database/types";
 import { BalanceField } from "@/components/balance-field";
 import { TextInput, Text } from "@/components/Themed";
