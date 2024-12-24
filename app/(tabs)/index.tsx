@@ -1,5 +1,4 @@
 import {
-  Pressable,
   SectionList,
   SectionListProps,
   StatusBar,
@@ -46,6 +45,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { set } from "date-fns";
+import { Pressable } from "react-native-gesture-handler";
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<AccountItem, SectionType>>(
@@ -221,8 +221,6 @@ export default function BudgetScreen() {
       };
     });
 
-    console.log("🍎 leData", JSON.stringify(ledote, null, 2));
-
     return ledote;
   }, [liveData]);
 
@@ -270,7 +268,7 @@ export default function BudgetScreen() {
   // const [selectedAlocated, setSelectedAlocated] = useState<string>("");
   const handlePress = useCallback(() => {
     setIsOpen(true);
-    console.log("🍎 handlePress");
+
     // bottomSheetHeight.value = withTiming(200, { duration: 100 }); // Animate to 300px height
   }, []);
 
@@ -294,10 +292,6 @@ export default function BudgetScreen() {
   };
   const handleOpenKeyboard = (sectionIndex: number, itemIndex: number) => {
     handlePress(); // Set the height of the bottom sheet
-    console.log("🍎 handleOpenKeyboard", {
-      sectionIndex,
-      itemIndex,
-    });
 
     if (
       activeItem?.section === sectionIndex &&
@@ -316,7 +310,7 @@ export default function BudgetScreen() {
     }
     bottomSheetRef.current?.present();
 
-    bottomSheetHeight.value = withTiming(240, { duration: 50 }, () => {
+    bottomSheetHeight.value = withTiming(240, { duration: 300 }, () => {
       runOnJS(scrolltoindex)(sectionIndex, itemIndex);
     });
   };
@@ -349,7 +343,17 @@ export default function BudgetScreen() {
                 <View style={{ flex: 2 }}>
                   <Text style={styles.title}>{item.name}</Text>
                 </View>
-                <View style={{ flex: 1 }}>
+                <View
+                  style={
+                    {
+                      // flex: 1,
+                      // alignContent: "flex-end",
+                      // alignItems: "flex-end",
+                      // justifyContent: "center",
+                      // borderWidth: 1,
+                    }
+                  }
+                >
                   {isOpen && (
                     <Text style={styles.title}>
                       {editedItems[item.uuid]
@@ -360,7 +364,7 @@ export default function BudgetScreen() {
                     </Text>
                   )}
                 </View>
-                <View style={{ width: 60, alignItems: "flex-end" }}>
+                <View style={{ width: 120, alignItems: "flex-end" }}>
                   <Text style={styles.title}>
                     {formatCurrency(item.target ?? 0)}
                   </Text>
@@ -405,9 +409,6 @@ export default function BudgetScreen() {
           shadowRadius: 2,
         }}
         detached
-        onChange={() => {
-          console.log("🍎 onChange");
-        }}
       >
         <BottomSheetView style={{ padding: 16 }}>
           <NumericKeyboard
@@ -446,7 +447,6 @@ export default function BudgetScreen() {
                 })
                 .where(eq(CategorySchema.uuid, key));
               // setSelectedAlocated((v) => v + value);
-              console.log("🍎 onPress", { value });
             }}
             onBackspace={function (): void {
               setEditedItems((items) => {
@@ -459,21 +459,8 @@ export default function BudgetScreen() {
                 };
               });
               // setSelectedAlocated((v) => v.slice(0, -1));
-              console.log("🍎 onBackspace");
             }}
             onConfirm={async function () {
-              // Object.keys(editedItems).forEach(async (key) => {
-              //   const value = editedItems[key];
-              //   console.log("🍎 onConfirm", { value });
-              //   // await db
-              //   //   .update(CategorySchema)
-              //   //   .set({
-              //   //     allocated_amount: parseCurrencyToDecimal(value),
-              //   //     updated_at: new Date().toISOString(),
-              //   //   })
-              //   //   .where(eq(CategorySchema.uuid, key));
-              // });
-              console.log("🍎 onConfirm", { value });
               setIsOpen(false);
               setEditedItems({});
               handleClosePress();

@@ -19,7 +19,6 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
     const [user] = await db.select().from(UserSchema);
 
     if (user) {
-      console.log("🍎 seed done", user.uuid);
       return user.uuid;
     } else {
       try {
@@ -32,7 +31,6 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
           })
           .returning({ user_uuid: UserSchema.uuid });
 
-        console.log("🍎 seed done", { user_uuid });
         return user_uuid;
       } catch (error) {
         console.log("🍎 error", { error });
@@ -45,9 +43,7 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
 
     const [budget] = await db.select().from(BudgetSchema);
 
-    console.log("🎾 seedBudget", { budget });
     if (budget) {
-      console.log("🍎 seed done", { budget_uuid: budget.uuid });
       return budget.uuid;
     } else {
       try {
@@ -61,8 +57,7 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
             currency: "BRL",
           })
           .returning({ budget_uuid: BudgetSchema.uuid });
-        console.log(budget_uuid);
-        console.log("🍎 seed done", { budget_uuid });
+
         return budget_uuid;
       } catch (error) {
         console.log("🍎 error", { error });
@@ -79,14 +74,9 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
         .from(CategoryGroupSchema)
         .where(eq(CategoryGroupSchema.budget_uuid, budget_uuid));
 
-      console.log("🎾 total", { total });
       if (total === 0) {
         try {
           for (const categoryGroup of categoryGroupSeed) {
-            console.log("🦁 translating ", {
-              categoryGroup,
-              translation: t(`cagegoryGroups.${categoryGroup.key}`),
-            });
             const [{ category_group_uuid }] = await db
               .insert(CategoryGroupSchema)
               .values({
@@ -111,13 +101,8 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
                   target_amount: 0,
                 })
                 .returning({ category_uuid: CategorySchema.uuid });
-              console.log("🍎 seed group done", {
-                category_group_uuid,
-                category_uuid: result.category_uuid,
-              });
             }
           }
-          console.log("🍎 seed group done");
         } catch (error) {
           console.log("🍎 error", { error });
         }
@@ -127,9 +112,7 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
   );
 
   const seed = useCallback(async () => {
-    console.log("🍎 seed");
     if (isMigrationDone) {
-      console.log("🍎 seeding");
       const user_uuid = await seedUser();
       const budget_uuid = await seedBudget(user_uuid);
       await seedGategoryGroup(budget_uuid);

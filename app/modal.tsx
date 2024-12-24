@@ -2,7 +2,6 @@ import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import {
   Button,
   Platform,
-  Pressable,
   SectionList,
   StatusBar,
   StyleSheet,
@@ -11,7 +10,7 @@ import {
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View, ViewContent } from "@/components/Themed";
 import { useRouter } from "expo-router";
-
+import { TouchableOpacity, Pressable } from "react-native-gesture-handler";
 import { AccountType, AccountGroup } from "@/types";
 
 type AccountItem = {

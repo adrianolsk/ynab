@@ -29,12 +29,8 @@ export const AssignMoneyCard = ({ value }: AssignMoneyCardProps) => {
       ? styles.assigned
       : styles.negative;
 
-  const onAssign = () => {
-    alert("🍎 Assign");
-  };
-  const onFix = () => {
-    alert("🍎 Fix");
-  };
+  const onAssign = () => {};
+  const onFix = () => {};
 
   if (type === "positive") {
     return <ReadyToAssign value={value} onPress={onAssign} />;
