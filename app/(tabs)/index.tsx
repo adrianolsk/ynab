@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import { AssignMoneyCard } from "@/components/assign-money-card";
-import { Text, View, ViewContent } from "@/components/Themed";
+import { Text, useThemeColor, View, ViewContent } from "@/components/Themed";
 
 import { AccountGroup, AccountType } from "@/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -321,6 +321,7 @@ export default function BudgetScreen() {
     });
   };
 
+  const backgroundColor = useThemeColor({}, "backgroundContent");
   return (
     <View style={{ flex: 1 }}>
       <AssignMoneyCard value={value} />
@@ -329,7 +330,7 @@ export default function BudgetScreen() {
         ref={sectionListRef}
         stickySectionHeadersEnabled={false}
         sections={SECTIONS}
-        style={[styles.section]}
+        // style={[styles.section]}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item, index, section }) => {
           // debugger;
@@ -389,92 +390,16 @@ export default function BudgetScreen() {
         )}
       />
 
-      <Animated.View
-        style={
-          [
-            // {
-            //   shadowOffset: { width: 0, height: -2 },
-            //   shadowOpacity: 0.5,
-            //   shadowRadius: 2,
-            // },
-            // animatedStyle,
-          ]
-        }
-      >
-        {/* <NumericKeyboard
-          onCancel={async () => {
-            const key = activeItem!.item.uuid;
-            await db
-              .update(CategorySchema)
-              .set({
-                allocated_amount: activeRow,
-                updated_at: new Date().toISOString(),
-              })
-              .where(eq(CategorySchema.uuid, key));
-            setActiveRow(undefined);
-            setIsOpen(false);
-            setEditedItems({});
-          }}
-          onPress={async function (value: string) {
-            const key = activeItem!.item.uuid;
-            const lastValue = editedItems[activeItem!.item.uuid] ?? "";
-            const newValue = lastValue + value;
-            setEditedItems((items) => {
-              return {
-                ...items,
-                [key]: newValue,
-              };
-            });
-
-            await db
-              .update(CategorySchema)
-              .set({
-                allocated_amount: parseCurrencyToDecimal(newValue),
-                updated_at: new Date().toISOString(),
-              })
-              .where(eq(CategorySchema.uuid, key));
-            // setSelectedAlocated((v) => v + value);
-            console.log("🍎 onPress", { value });
-          }}
-          onBackspace={function (): void {
-            setEditedItems((items) => {
-              const key = activeItem!.item.uuid;
-              const lastValue = items[activeItem!.item.uuid] ?? "";
-              const newValue = lastValue.slice(0, -1);
-              return {
-                ...items,
-                [key]: newValue,
-              };
-            });
-            // setSelectedAlocated((v) => v.slice(0, -1));
-            console.log("🍎 onBackspace");
-          }}
-          onConfirm={async function () {
-            // Object.keys(editedItems).forEach(async (key) => {
-            //   const value = editedItems[key];
-            //   console.log("🍎 onConfirm", { value });
-            //   // await db
-            //   //   .update(CategorySchema)
-            //   //   .set({
-            //   //     allocated_amount: parseCurrencyToDecimal(value),
-            //   //     updated_at: new Date().toISOString(),
-            //   //   })
-            //   //   .where(eq(CategorySchema.uuid, key));
-            // });
-            console.log("🍎 onConfirm", { value });
-            setIsOpen(false);
-            setEditedItems({});
-          }}
-        /> */}
-      </Animated.View>
-
       <BottomSheetModal
+        enableContentPanningGesture={false}
+        handleComponent={() => null}
+        handleStyle={{
+          backgroundColor: backgroundColor,
+        }}
         onDismiss={closeBottomSheet}
         ref={bottomSheetRef}
-        // snapPoints={snapPoints}
-        // enablePanDownToClose
-
         backgroundStyle={{
+          backgroundColor: backgroundColor,
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.5,
           shadowRadius: 2,
@@ -516,6 +441,7 @@ export default function BudgetScreen() {
                 .update(CategorySchema)
                 .set({
                   allocated_amount: parseCurrencyToDecimal(newValue),
+                  target_amount: parseCurrencyToDecimal(newValue),
                   updated_at: new Date().toISOString(),
                 })
                 .where(eq(CategorySchema.uuid, key));
@@ -594,7 +520,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   selected: {
-    backgroundColor: "#006699",
+    backgroundColor: "#233883",
   },
   section: {
     padding: 16,
@@ -608,6 +534,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
+    paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
