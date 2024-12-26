@@ -44,8 +44,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { set } from "date-fns";
+import { format, set } from "date-fns";
 import { Pressable } from "react-native-gesture-handler";
+import CategoryCard from "@/components/category-card";
+import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
+import { uuidV4 } from "@/utils/helpers";
 
 const AnimatedSectionList =
   Animated.createAnimatedComponent<SectionListProps<AccountItem, SectionType>>(
@@ -149,7 +152,7 @@ interface ItemMap {
 interface SectionType {
   title: string;
   // accountGroup: "budget" | "loan" | "tracking";
-  data: AccountItem[];
+  data: CategorySchemaType[];
 }
 
 export default function BudgetScreen() {
@@ -211,13 +214,14 @@ export default function BudgetScreen() {
       return {
         title: group.name, // Use the category group name as the title
         // accountGroup: group., // Or another property to identify the group
-        data: categories.map((category) => ({
-          name: category.name, // Category name
-          target: category.target_amount,
-          alocated: category.allocated_amount,
-          uuid: category.uuid,
-          // type: category.is_income ? "income" : "expense", // Example logic for type
-        })),
+        // data: categories.map((category) => ({
+        //   name: category.name, // Category name
+        //   target: category.target_amount,
+        //   alocated: category.allocated_amount,
+        //   uuid: category.uuid,
+        //   // type: category.is_income ? "income" : "expense", // Example logic for type
+        // })),
+        data: categories,
       };
     });
 
@@ -258,10 +262,11 @@ export default function BudgetScreen() {
   const [activeItem, setActiveItem] = useState<{
     section: number;
     index: number;
-    item: AccountItem;
+    item: CategorySchemaType;
   } | null>(null);
 
-  const sectionListRef = useRef<SectionList<AccountItem, SectionType>>(null);
+  const sectionListRef =
+    useRef<SectionList<CategorySchemaType, SectionType>>(null);
 
   const bottomSheetHeight = useSharedValue(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -320,7 +325,7 @@ export default function BudgetScreen() {
     <View style={{ flex: 1 }}>
       <AssignMoneyCard value={value} />
 
-      <SectionList<AccountItem, SectionType>
+      <SectionList<CategorySchemaType, SectionType>
         ref={sectionListRef}
         stickySectionHeadersEnabled={false}
         sections={SECTIONS}
@@ -332,10 +337,23 @@ export default function BudgetScreen() {
           const isSelected =
             activeItem?.section === sectionIndex && activeItem?.index === index;
           const selectedStyle = isSelected ? styles.selected : {};
+
+          return (
+            <CategoryCard
+              item={item}
+              uuid={item.uuid}
+              isSelected={isSelected}
+              onPress={() => {
+                setActiveRow(item.allocated_amount);
+                handleOpenKeyboard(SECTIONS.indexOf(section), index);
+              }}
+              isOpen={isOpen}
+            />
+          );
           return (
             <Pressable
               onPress={() => {
-                setActiveRow(item.alocated);
+                setActiveRow(item.allocated_amount);
                 handleOpenKeyboard(SECTIONS.indexOf(section), index);
               }}
             >
@@ -343,30 +361,20 @@ export default function BudgetScreen() {
                 <View style={{ flex: 2 }}>
                   <Text style={styles.title}>{item.name}</Text>
                 </View>
-                <View
-                  style={
-                    {
-                      // flex: 1,
-                      // alignContent: "flex-end",
-                      // alignItems: "flex-end",
-                      // justifyContent: "center",
-                      // borderWidth: 1,
-                    }
-                  }
-                >
+                <View>
                   {isOpen && (
                     <Text style={styles.title}>
                       {editedItems[item.uuid]
                         ? formatCurrency(
                             parseCurrencyToDecimal(editedItems[item.uuid])
                           )
-                        : formatCurrency(item.alocated ?? 0)}
+                        : formatCurrency(item.allocated_amount ?? 0)}
                     </Text>
                   )}
                 </View>
                 <View style={{ width: 120, alignItems: "flex-end" }}>
                   <Text style={styles.title}>
-                    {formatCurrency(item.target ?? 0)}
+                    {formatCurrency(item.target_amount ?? 0)}
                   </Text>
                 </View>
               </ViewContent>
@@ -414,13 +422,38 @@ export default function BudgetScreen() {
           <NumericKeyboard
             onCancel={async () => {
               const key = activeItem!.item.uuid;
-              await db
-                .update(CategorySchema)
-                .set({
-                  allocated_amount: activeRow,
-                  updated_at: new Date().toISOString(),
+              // await db
+              //   .update(CategorySchema)
+              //   .set({
+              //     allocated_amount: activeRow,
+              //     updated_at: new Date().toISOString(),
+              //   })
+              //   .where(eq(CategorySchema.uuid, key));
+              // await db
+              //   .update(MonthlyAllocationsSchema)
+              //   .set({
+              //     allocated_amount: activeRow,
+              //     updated_at: new Date().toISOString(),
+              //   })
+              //   .where(eq(CategorySchema.uuid, key));
+              console.log("🍎 result", { result: key });
+              const result = await db
+                .insert(MonthlyAllocationsSchema)
+                .values({
+                  uuid: uuidV4(),
+                  budget_uuid: activeItem!.item.budget_uuid,
+                  category_uuid: key,
+                  month: format(new Date(), "yyyy-MM"),
+                  allocated_amount: activeRow ?? 0,
                 })
-                .where(eq(CategorySchema.uuid, key));
+                .onConflictDoUpdate({
+                  target: [
+                    MonthlyAllocationsSchema.category_uuid,
+                    MonthlyAllocationsSchema.month,
+                  ], // Columns that define the conflict
+                  set: { allocated_amount: activeRow ?? 0 }, // What to update
+                });
+              console.log("🍎 result", { result: result.lastInsertRowId });
               setActiveRow(undefined);
               setIsOpen(false);
               setEditedItems({});
@@ -438,15 +471,37 @@ export default function BudgetScreen() {
                 };
               });
 
-              await db
-                .update(CategorySchema)
-                .set({
-                  allocated_amount: parseCurrencyToDecimal(newValue),
-                  target_amount: parseCurrencyToDecimal(newValue),
-                  updated_at: new Date().toISOString(),
-                })
-                .where(eq(CategorySchema.uuid, key));
+              // await db
+              //   .update(CategorySchema)
+              //   .set({
+              //     allocated_amount: parseCurrencyToDecimal(newValue),
+              //     target_amount: parseCurrencyToDecimal(newValue),
+              //     updated_at: new Date().toISOString(),
+              //   })
+              //   .where(eq(CategorySchema.uuid, key));
               // setSelectedAlocated((v) => v + value);
+              console.log("🍎 result", { newValue: newValue });
+              try {
+                const result = await db
+                  .insert(MonthlyAllocationsSchema)
+                  .values({
+                    uuid: uuidV4(),
+                    budget_uuid: activeItem!.item.budget_uuid,
+                    category_uuid: key,
+                    month: format(new Date(), "yyyy-MM"),
+                    allocated_amount: parseCurrencyToDecimal(newValue),
+                  })
+                  .onConflictDoUpdate({
+                    target: [
+                      MonthlyAllocationsSchema.category_uuid,
+                      MonthlyAllocationsSchema.month,
+                    ], // Columns that define the conflict
+                    set: { allocated_amount: parseCurrencyToDecimal(newValue) }, // What to update
+                  });
+                console.log("🍎 result", { result: result.lastInsertRowId });
+              } catch (error) {
+                console.log("🍎 error", { error: error });
+              }
             }}
             onBackspace={function (): void {
               setEditedItems((items) => {

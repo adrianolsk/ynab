@@ -5,6 +5,7 @@ import {
   real,
   sqliteTable,
   text,
+  unique,
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 import { CategorySchema } from "./category.schema";
@@ -23,7 +24,9 @@ export const MonthlyAllocationsSchema = sqliteTable(
       .notNull()
       .references(() => CategorySchema.uuid, { onDelete: "cascade" }),
     month: text("month").notNull(), // Format: YYYY-MM
-    allocated_amount: real("allocated_amount").notNull(),
+    allocated_amount: real("allocated_amount").notNull().default(0),
+    rollover_amount: real("rollover_amount").notNull().default(0),
+    spent_amount: real("spent_amount").notNull().default(0),
     created_at: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
@@ -40,5 +43,6 @@ export const MonthlyAllocationsSchema = sqliteTable(
   (t) => [
     index("monthly_allocations_budget_uuid").on(t.budget_uuid),
     index("monthly_allocations_uuid").on(t.uuid),
+    unique("unique_category_month").on(t.category_uuid, t.month),
   ]
 );

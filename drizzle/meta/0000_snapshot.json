@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b143c7aa-191b-4b89-8b95-a52f32f13517",
+  "id": "b34767dc-933b-48c7-b675-b91d16f02dfd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -743,7 +743,24 @@
           "type": "real",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": 0
+        },
+        "rollover_amount": {
+          "name": "rollover_amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "spent_amount": {
+          "name": "spent_amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "created_at": {
           "name": "created_at",
@@ -813,6 +830,14 @@
             "uuid"
           ],
           "isUnique": false
+        },
+        "unique_category_month": {
+          "name": "unique_category_month",
+          "columns": [
+            "category_uuid",
+            "month"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {

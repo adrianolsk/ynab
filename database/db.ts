@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { openDatabaseSync } from "expo-sqlite";
 
-const DATABASE_NAME = "ynab10.db";
+export const DATABASE_NAME = "ynab11.db";
 
 const expoDb = openDatabaseSync(DATABASE_NAME, {
   enableChangeListener: true,

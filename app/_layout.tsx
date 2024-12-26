@@ -12,7 +12,7 @@ import "react-native-reanimated";
 import "@/i18n";
 import { useColorScheme } from "@/components/useColorScheme";
 import "react-native-get-random-values";
-import { db } from "@/database/db";
+import { DATABASE_NAME, db } from "@/database/db";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { Platform, Text, View } from "react-native";
 import migrations from "../drizzle/migrations";
@@ -25,7 +25,8 @@ import SeedDatabase from "@/components/seed-database";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 // DATABASE
-
+import * as SQLite from "expo-sqlite";
+const actualDatabse = SQLite.openDatabaseSync(DATABASE_NAME);
 // DATABASE
 
 export {
@@ -42,6 +43,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useDrizzleStudio(actualDatabse);
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     LatoBlack: require("../assets/fonts/Lato-Black.ttf"),
