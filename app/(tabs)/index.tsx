@@ -295,18 +295,25 @@ export default function BudgetScreen() {
       viewPosition: 0.1, // Center the item in the viewport
     });
   };
-  const handleOpenKeyboard = (sectionIndex: number, itemIndex: number) => {
+  const handleOpenKeyboard = async (
+    sectionIndex: number,
+    itemIndex: number
+  ) => {
     handlePress(); // Set the height of the bottom sheet
-
+    await saveAllocation();
+    console.log("AQUI", { editedItems });
     if (
       activeItem?.section === sectionIndex &&
       activeItem?.index === itemIndex
     ) {
+      //
       closeBottomSheet();
       setActiveItem(null);
+      setEditedItems({});
       handleClosePress();
       return;
     } else {
+      setEditedItems({});
       setActiveItem({
         section: sectionIndex,
         index: itemIndex,
@@ -318,6 +325,35 @@ export default function BudgetScreen() {
     bottomSheetHeight.value = withTiming(240, { duration: 300 }, () => {
       runOnJS(scrolltoindex)(sectionIndex, itemIndex);
     });
+  };
+
+  const saveAllocation = async () => {
+    if (!editedItems[activeItem?.item?.uuid ?? ""]) return;
+    try {
+      const key = activeItem!.item.uuid;
+      const newValue = editedItems[activeItem!.item.uuid] ?? "";
+      // const newValue = lastValue + value;
+      console.log("🍎 saveAllocation", { key, newValue });
+      const result = await db
+        .insert(MonthlyAllocationsSchema)
+        .values({
+          uuid: uuidV4(),
+          budget_uuid: activeItem!.item.budget_uuid,
+          category_uuid: key,
+          month: format(new Date(), "yyyy-MM"),
+          allocated_amount: parseCurrencyToDecimal(newValue),
+        })
+        .onConflictDoUpdate({
+          target: [
+            MonthlyAllocationsSchema.category_uuid,
+            MonthlyAllocationsSchema.month,
+          ], // Columns that define the conflict
+          set: { allocated_amount: parseCurrencyToDecimal(newValue) }, // What to update
+        });
+      console.log("🍎 result", { result: result.lastInsertRowId });
+    } catch (error) {
+      console.log("🍎 error", { error: error });
+    }
   };
 
   const backgroundColor = useThemeColor({}, "backgroundContent");
@@ -348,6 +384,7 @@ export default function BudgetScreen() {
                 handleOpenKeyboard(SECTIONS.indexOf(section), index);
               }}
               isOpen={isOpen}
+              currentEditedAmount={editedItems[item.uuid]}
             />
           );
           return (
@@ -437,23 +474,23 @@ export default function BudgetScreen() {
               //   })
               //   .where(eq(CategorySchema.uuid, key));
               console.log("🍎 result", { result: key });
-              const result = await db
-                .insert(MonthlyAllocationsSchema)
-                .values({
-                  uuid: uuidV4(),
-                  budget_uuid: activeItem!.item.budget_uuid,
-                  category_uuid: key,
-                  month: format(new Date(), "yyyy-MM"),
-                  allocated_amount: activeRow ?? 0,
-                })
-                .onConflictDoUpdate({
-                  target: [
-                    MonthlyAllocationsSchema.category_uuid,
-                    MonthlyAllocationsSchema.month,
-                  ], // Columns that define the conflict
-                  set: { allocated_amount: activeRow ?? 0 }, // What to update
-                });
-              console.log("🍎 result", { result: result.lastInsertRowId });
+              // const result = await db
+              //   .insert(MonthlyAllocationsSchema)
+              //   .values({
+              //     uuid: uuidV4(),
+              //     budget_uuid: activeItem!.item.budget_uuid,
+              //     category_uuid: key,
+              //     month: format(new Date(), "yyyy-MM"),
+              //     allocated_amount: activeRow ?? 0,
+              //   })
+              //   .onConflictDoUpdate({
+              //     target: [
+              //       MonthlyAllocationsSchema.category_uuid,
+              //       MonthlyAllocationsSchema.month,
+              //     ], // Columns that define the conflict
+              //     set: { allocated_amount: activeRow ?? 0 }, // What to update
+              //   });
+              // console.log("🍎 result", { result: result.lastInsertRowId });
               setActiveRow(undefined);
               setIsOpen(false);
               setEditedItems({});
@@ -481,27 +518,27 @@ export default function BudgetScreen() {
               //   .where(eq(CategorySchema.uuid, key));
               // setSelectedAlocated((v) => v + value);
               console.log("🍎 result", { newValue: newValue });
-              try {
-                const result = await db
-                  .insert(MonthlyAllocationsSchema)
-                  .values({
-                    uuid: uuidV4(),
-                    budget_uuid: activeItem!.item.budget_uuid,
-                    category_uuid: key,
-                    month: format(new Date(), "yyyy-MM"),
-                    allocated_amount: parseCurrencyToDecimal(newValue),
-                  })
-                  .onConflictDoUpdate({
-                    target: [
-                      MonthlyAllocationsSchema.category_uuid,
-                      MonthlyAllocationsSchema.month,
-                    ], // Columns that define the conflict
-                    set: { allocated_amount: parseCurrencyToDecimal(newValue) }, // What to update
-                  });
-                console.log("🍎 result", { result: result.lastInsertRowId });
-              } catch (error) {
-                console.log("🍎 error", { error: error });
-              }
+              // try {
+              //   const result = await db
+              //     .insert(MonthlyAllocationsSchema)
+              //     .values({
+              //       uuid: uuidV4(),
+              //       budget_uuid: activeItem!.item.budget_uuid,
+              //       category_uuid: key,
+              //       month: format(new Date(), "yyyy-MM"),
+              //       allocated_amount: parseCurrencyToDecimal(newValue),
+              //     })
+              //     .onConflictDoUpdate({
+              //       target: [
+              //         MonthlyAllocationsSchema.category_uuid,
+              //         MonthlyAllocationsSchema.month,
+              //       ], // Columns that define the conflict
+              //       set: { allocated_amount: parseCurrencyToDecimal(newValue) }, // What to update
+              //     });
+              //   console.log("🍎 result", { result: result.lastInsertRowId });
+              // } catch (error) {
+              //   console.log("🍎 error", { error: error });
+              // }
             }}
             onBackspace={function (): void {
               setEditedItems((items) => {
@@ -516,6 +553,7 @@ export default function BudgetScreen() {
               // setSelectedAlocated((v) => v.slice(0, -1));
             }}
             onConfirm={async function () {
+              await saveAllocation();
               setIsOpen(false);
               setEditedItems({});
               handleClosePress();

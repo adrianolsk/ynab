@@ -15,6 +15,7 @@ interface CategoryCardProps {
   uuid: string;
   item: CategorySchemaType;
   isOpen: boolean;
+  currentEditedAmount: string;
 }
 const CategoryCard = ({
   uuid,
@@ -22,6 +23,7 @@ const CategoryCard = ({
   isOpen,
   isSelected,
   onPress,
+  currentEditedAmount,
 }: CategoryCardProps) => {
   const {
     data: [monthlyAllocation],
@@ -38,6 +40,12 @@ const CategoryCard = ({
   const spentAmount = monthlyAllocation?.spent_amount ?? 0;
   const allocatedAmount = monthlyAllocation?.allocated_amount ?? 0;
   const availableAmount = allocatedAmount + rolloverAmount - spentAmount;
+  const amountToShow = currentEditedAmount
+    ? parseCurrencyToDecimal(currentEditedAmount)
+    : allocatedAmount;
+  if (isSelected) {
+    console.log("AQUI", { currentEditedAmount, amountToShow, allocatedAmount });
+  }
 
   return (
     <Pressable onPress={onPress}>
@@ -47,10 +55,18 @@ const CategoryCard = ({
           <Text style={styles.title}>{item.name}</Text>
         </View>
         <View>
-          {isOpen && (
+          {/* {isOpen && (
             <Text style={styles.title}>
               {formatCurrency(monthlyAllocation?.allocated_amount ?? 0)}
             </Text>
+          )} */}
+          {isOpen && isSelected && (
+            <Text style={[styles.title, styles.titleSelected]}>
+              {formatCurrency(amountToShow)}
+            </Text>
+          )}
+          {isOpen && !isSelected && (
+            <Text style={styles.title}>{formatCurrency(amountToShow)}</Text>
           )}
         </View>
         <View style={{ width: 120, alignItems: "flex-end" }}>
@@ -73,7 +89,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   selected: {
-    backgroundColor: "#233883",
+    backgroundColor: "#005583",
   },
   section: {
     padding: 16,
@@ -95,5 +111,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 12,
     fontFamily: "NunitoSansMedium",
+  },
+  titleSelected: {
+    // fontSize: 13,
+    fontFamily: "NunitoSansBold",
+    // color: "#4D9119",
   },
 });
