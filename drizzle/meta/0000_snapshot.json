@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4294769b-5042-4b9a-9671-2a994fa9bcfc",
+  "id": "ea8fb560-fe08-42a6-99ae-9b9149431ce6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -429,7 +429,7 @@
           "name": "category_group_uuid",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "name": {
@@ -728,7 +728,7 @@
           "name": "category_uuid",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "month": {
@@ -831,11 +831,12 @@
           ],
           "isUnique": false
         },
-        "unique_category_month": {
-          "name": "unique_category_month",
+        "unique_category_month_budget": {
+          "name": "unique_category_month_budget",
           "columns": [
             "category_uuid",
-            "month"
+            "month",
+            "budget_uuid"
           ],
           "isUnique": true
         }

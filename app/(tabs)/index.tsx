@@ -49,14 +49,10 @@ import { Pressable } from "react-native-gesture-handler";
 import CategoryCard from "@/components/category-card";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { uuidV4 } from "@/utils/helpers";
+import { updateReadyToAssign } from "@/database/services/monthly-allocations.service";
 
-const AnimatedSectionList =
-  Animated.createAnimatedComponent<SectionListProps<AccountItem, SectionType>>(
-    SectionList
-  );
 type AccountItem = {
   name: string;
-  // type: AccountType;
   target: number | null | undefined;
   alocated: number | null | undefined;
   uuid: string;
@@ -68,7 +64,6 @@ type SectionItem = {
   data: AccountItem[];
 };
 
-// const DATA: SectionItem[] = [
 //   {
 //     title: "Budget Accounts",
 //     accountGroup: "budget",
@@ -151,15 +146,14 @@ interface ItemMap {
 
 interface SectionType {
   title: string;
-  // accountGroup: "budget" | "loan" | "tracking";
   data: CategorySchemaType[];
 }
 
 export default function BudgetScreen() {
-  const [activeRow, setActiveRow] = useState<number | null | undefined>();
+  const [currentAllocatedAmount, setCurrentAllocatedAmount] =
+    useState<number>(0);
   const [editedItems, setEditedItems] = useState<ItemMap>({});
   const [collapsedSections, setCollapsedSections] = useState<Map>({});
-  const value = 1000;
 
   const onAssign = () => {
     console.log("🍎 Assign");
@@ -212,15 +206,7 @@ export default function BudgetScreen() {
 
     const ledote = Object.values(result).map(({ group, categories }) => {
       return {
-        title: group.name, // Use the category group name as the title
-        // accountGroup: group., // Or another property to identify the group
-        // data: categories.map((category) => ({
-        //   name: category.name, // Category name
-        //   target: category.target_amount,
-        //   alocated: category.allocated_amount,
-        //   uuid: category.uuid,
-        //   // type: category.is_income ? "income" : "expense", // Example logic for type
-        // })),
+        title: group.name,
         data: categories,
       };
     });
@@ -237,28 +223,11 @@ export default function BudgetScreen() {
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  // variables
-  const snapPoints = useMemo(() => ["50%"], []);
-
-  // callbacks
-  const handleSnapPress = useCallback((index: number) => {
-    bottomSheetRef.current?.snapToIndex(index);
-  }, []);
-  const handleExpandPress = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
-  const handleCollapsePress = useCallback(() => {
-    bottomSheetRef.current?.collapse();
-  }, []);
   const handleClosePress = useCallback(() => {
     setActiveItem(null);
     bottomSheetRef.current?.close();
   }, []);
 
-  // const sectionListRef = useRef<SectionList<AccountType, SectionType>>(null);
-  // const sectionListRef = useRef<SectionList<AccountType, SectionType>>(null);
-
-  const [inputValue, setInputValue] = useState("");
   const [activeItem, setActiveItem] = useState<{
     section: number;
     index: number;
@@ -331,9 +300,21 @@ export default function BudgetScreen() {
     if (!editedItems[activeItem?.item?.uuid ?? ""]) return;
     try {
       const key = activeItem!.item.uuid;
-      const newValue = editedItems[activeItem!.item.uuid] ?? "";
+
+      const newValue = parseCurrencyToDecimal(
+        editedItems[activeItem!.item.uuid] ?? "0"
+      );
+      const budget_uuid = activeItem!.item.budget_uuid;
+      const month = format(new Date(), "yyyy-MM");
       // const newValue = lastValue + value;
-      console.log("🍎 saveAllocation", { key, newValue });
+      console.log("🍎 saveAllocation", { key, newValue, budget_uuid, month });
+      const valueToDecrease = currentAllocatedAmount - newValue;
+      console.log("VALUE TO DECREASE", { valueToDecrease });
+      await updateReadyToAssign({
+        budget_uuid,
+        month,
+        value: valueToDecrease,
+      });
       const result = await db
         .insert(MonthlyAllocationsSchema)
         .values({
@@ -341,14 +322,15 @@ export default function BudgetScreen() {
           budget_uuid: activeItem!.item.budget_uuid,
           category_uuid: key,
           month: format(new Date(), "yyyy-MM"),
-          allocated_amount: parseCurrencyToDecimal(newValue),
+          allocated_amount: newValue,
         })
         .onConflictDoUpdate({
           target: [
             MonthlyAllocationsSchema.category_uuid,
             MonthlyAllocationsSchema.month,
+            MonthlyAllocationsSchema.budget_uuid,
           ], // Columns that define the conflict
-          set: { allocated_amount: parseCurrencyToDecimal(newValue) }, // What to update
+          set: { allocated_amount: newValue }, // What to update
         });
       console.log("🍎 result", { result: result.lastInsertRowId });
     } catch (error) {
@@ -359,7 +341,7 @@ export default function BudgetScreen() {
   const backgroundColor = useThemeColor({}, "backgroundContent");
   return (
     <View style={{ flex: 1 }}>
-      <AssignMoneyCard value={value} />
+      <AssignMoneyCard />
 
       <SectionList<CategorySchemaType, SectionType>
         ref={sectionListRef}
@@ -368,7 +350,6 @@ export default function BudgetScreen() {
         // style={[styles.section]}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item, index, section }) => {
-          // debugger;
           const sectionIndex = SECTIONS.indexOf(section);
           const isSelected =
             activeItem?.section === sectionIndex && activeItem?.index === index;
@@ -379,43 +360,13 @@ export default function BudgetScreen() {
               item={item}
               uuid={item.uuid}
               isSelected={isSelected}
-              onPress={() => {
-                setActiveRow(item.allocated_amount);
+              onPress={(currentAllocatedAmount) => {
+                setCurrentAllocatedAmount(currentAllocatedAmount);
                 handleOpenKeyboard(SECTIONS.indexOf(section), index);
               }}
               isOpen={isOpen}
               currentEditedAmount={editedItems[item.uuid]}
             />
-          );
-          return (
-            <Pressable
-              onPress={() => {
-                setActiveRow(item.allocated_amount);
-                handleOpenKeyboard(SECTIONS.indexOf(section), index);
-              }}
-            >
-              <ViewContent style={[styles.item, selectedStyle]}>
-                <View style={{ flex: 2 }}>
-                  <Text style={styles.title}>{item.name}</Text>
-                </View>
-                <View>
-                  {isOpen && (
-                    <Text style={styles.title}>
-                      {editedItems[item.uuid]
-                        ? formatCurrency(
-                            parseCurrencyToDecimal(editedItems[item.uuid])
-                          )
-                        : formatCurrency(item.allocated_amount ?? 0)}
-                    </Text>
-                  )}
-                </View>
-                <View style={{ width: 120, alignItems: "flex-end" }}>
-                  <Text style={styles.title}>
-                    {formatCurrency(item.target_amount ?? 0)}
-                  </Text>
-                </View>
-              </ViewContent>
-            </Pressable>
           );
         }}
         renderSectionHeader={({ section: { title } }) => (
@@ -425,18 +376,7 @@ export default function BudgetScreen() {
             onPress={() => toggleSection(title)}
           />
         )}
-        ListFooterComponent={() => (
-          <Animated.View
-            style={[
-              // {
-              //   shadowOffset: { width: 0, height: -2 },
-              //   shadowOpacity: 0.5,
-              //   shadowRadius: 2,
-              // },
-              animatedStyle,
-            ]}
-          />
-        )}
+        ListFooterComponent={() => <Animated.View style={[animatedStyle]} />}
       />
 
       <BottomSheetModal
@@ -491,7 +431,7 @@ export default function BudgetScreen() {
               //     set: { allocated_amount: activeRow ?? 0 }, // What to update
               //   });
               // console.log("🍎 result", { result: result.lastInsertRowId });
-              setActiveRow(undefined);
+
               setIsOpen(false);
               setEditedItems({});
               handleClosePress();

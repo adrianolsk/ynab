@@ -69,9 +69,9 @@ export const categoryGroupSeed = [
   },
 ] as const;
 
-export const systemCategories = [
-  {
-    name: "ready_to_assign",
-    system: 1,
-  },
-];
+// export const systemCategories = [
+//   {
+//     name: "ready_to_assign",
+//     system: 1,
+//   },
+// ];

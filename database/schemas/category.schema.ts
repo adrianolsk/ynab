@@ -21,7 +21,7 @@ export const CategorySchema = sqliteTable(
       .notNull()
       .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
     category_group_uuid: text("category_group_uuid")
-      // .notNull()
+      .notNull()
       .references(() => CategoryGroupSchema.uuid, { onDelete: "cascade" }),
     name: text("name").notNull(),
 

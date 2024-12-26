@@ -41,9 +41,6 @@ export const TabBar = ({
       style={{
         flexDirection: "row",
         height: StatusBar.currentHeight,
-        // backgroundColor: "white",
-        // borderTopColor: "#ccc",
-        // borderTopWidth: 1,
         shadowOffset: {
           width: 0,
           height: -2,

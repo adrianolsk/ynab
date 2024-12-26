@@ -58,7 +58,7 @@ CREATE TABLE `categories` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
 	`budget_uuid` text NOT NULL,
-	`category_group_uuid` text,
+	`category_group_uuid` text NOT NULL,
 	`name` text NOT NULL,
 	`is_income` integer DEFAULT 0,
 	`is_hidden` integer DEFAULT 0,
@@ -99,7 +99,7 @@ CREATE TABLE `monthly_allocations` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
 	`budget_uuid` text NOT NULL,
-	`category_uuid` text NOT NULL,
+	`category_uuid` text,
 	`month` text NOT NULL,
 	`allocated_amount` real DEFAULT 0 NOT NULL,
 	`rollover_amount` real DEFAULT 0 NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE `monthly_allocations` (
 CREATE UNIQUE INDEX `monthly_allocations_uuid_unique` ON `monthly_allocations` (`uuid`);--> statement-breakpoint
 CREATE INDEX `monthly_allocations_budget_uuid` ON `monthly_allocations` (`budget_uuid`);--> statement-breakpoint
 CREATE INDEX `monthly_allocations_uuid` ON `monthly_allocations` (`uuid`);--> statement-breakpoint
-CREATE UNIQUE INDEX `unique_category_month` ON `monthly_allocations` (`category_uuid`,`month`);--> statement-breakpoint
+CREATE UNIQUE INDEX `unique_category_month_budget` ON `monthly_allocations` (`category_uuid`,`month`,`budget_uuid`);--> statement-breakpoint
 CREATE TABLE `scheduled_transactions` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,

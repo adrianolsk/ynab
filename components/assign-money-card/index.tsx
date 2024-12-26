@@ -8,9 +8,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/database/db";
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
+// import { getMonthlyAllocations } from "@/database/services/monthly-allocations.service";
 
 interface AssignMoneyCardProps {
-  value: number;
+  // value: number;
 }
 
 type AssignType = "positive" | "assigned" | "negative";
@@ -20,20 +21,13 @@ export const AssignMoneyCard = ({}: AssignMoneyCardProps) => {
     data: [readyToAssign],
   } = useLiveQuery(
     db
-      .select({
-        category: CategorySchema,
-        allocation: MonthlyAllocationsSchema,
-      })
-      .from(CategorySchema)
-      .leftJoin(
-        MonthlyAllocationsSchema,
-        eq(MonthlyAllocationsSchema.category_uuid, CategorySchema.uuid)
-      )
-      .where(eq(CategorySchema.is_system, 1))
+      .select()
+      .from(MonthlyAllocationsSchema)
+      .where(eq(MonthlyAllocationsSchema.category_uuid, "ready_to_assign"))
   );
   console.log("🍎 data", { readyToAssign });
 
-  const value = readyToAssign?.allocation?.allocated_amount ?? 0;
+  const value = readyToAssign?.allocated_amount ?? 0;
 
   const type = useMemo<AssignType>(() => {
     if (value > 0) {

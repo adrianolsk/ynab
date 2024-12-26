@@ -21,7 +21,7 @@ export const MonthlyAllocationsSchema = sqliteTable(
       .notNull()
       .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
     category_uuid: text("category_uuid")
-      .notNull()
+      // .notNull()
       .references(() => CategorySchema.uuid, { onDelete: "cascade" }),
     month: text("month").notNull(), // Format: YYYY-MM
     allocated_amount: real("allocated_amount").notNull().default(0),
@@ -43,6 +43,10 @@ export const MonthlyAllocationsSchema = sqliteTable(
   (t) => [
     index("monthly_allocations_budget_uuid").on(t.budget_uuid),
     index("monthly_allocations_uuid").on(t.uuid),
-    unique("unique_category_month").on(t.category_uuid, t.month),
+    unique("unique_category_month_budget").on(
+      t.category_uuid,
+      t.month,
+      t.budget_uuid
+    ),
   ]
 );

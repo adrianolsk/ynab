@@ -11,7 +11,7 @@ import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 
 interface CategoryCardProps {
   isSelected: boolean;
-  onPress: () => void;
+  onPress: (currentAllocatedAmount: number) => void;
   uuid: string;
   item: CategorySchemaType;
   isOpen: boolean;
@@ -58,7 +58,11 @@ const CategoryCard = ({
   }, [availableAmount]);
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={() => {
+        onPress(monthlyAllocation?.allocated_amount ?? 0);
+      }}
+    >
       <ViewContent style={[styles.item, selectedStyle]}>
         {/* <Text>{JSON.stringify(monthlyAllocation, null, 2)}</Text> */}
         <View style={{ flex: 2 }}>
