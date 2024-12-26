@@ -19,6 +19,9 @@ import { useTranslation } from "react-i18next";
 import { AccountType } from "@/types";
 import { CardButton } from "@/components/card-button";
 import { uuidV4 } from "@/utils/helpers";
+import { getBudgetUuid } from "@/services/storage";
+import { updateReadyToAssign } from "@/database/services/monthly-allocations.service";
+import { format } from "date-fns";
 
 export default function NewAccountScreen() {
   const { t } = useTranslation();
@@ -40,6 +43,10 @@ export default function NewAccountScreen() {
     setAccountType(params.id);
   }, [params.id]);
 
+  getBudgetUuid().then((budgetUuid) =>
+    console.log("🍎 budgetUuid", { budgetUuid })
+  );
+
   const addAccount = async () => {
     const value: number = balance ?? 0; //parseFloat(balance);
 
@@ -60,6 +67,13 @@ export default function NewAccountScreen() {
         account_type: accountType as any, //: todo fix types
         balance: value,
         account_group: params?.accountGroup,
+      });
+
+      const budgetUuid = (await getBudgetUuid()) ?? "";
+      await updateReadyToAssign({
+        budget_uuid: budgetUuid,
+        month: format(new Date(), "yyyy-MM"),
+        value: value,
       });
 
       router.dismiss();

@@ -12,6 +12,8 @@ import {
 } from "./seed/category-group.seed";
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setBudgetUuid } from "@/services/storage";
 
 export const useDatabaseSeed = () => {
   const { t } = useTranslation();
@@ -47,6 +49,7 @@ export const useDatabaseSeed = () => {
     const [budget] = await db.select().from(BudgetSchema);
 
     if (budget) {
+      await setBudgetUuid(budget.uuid);
       return budget.uuid;
     } else {
       try {
@@ -60,7 +63,7 @@ export const useDatabaseSeed = () => {
             currency: "BRL",
           })
           .returning({ budget_uuid: BudgetSchema.uuid });
-
+        await setBudgetUuid(budget_uuid);
         return budget_uuid;
       } catch (error) {
         console.log("🍎 error", { error });
