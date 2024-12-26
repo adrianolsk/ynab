@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b34767dc-933b-48c7-b675-b91d16f02dfd",
+  "id": "4294769b-5042-4b9a-9671-2a994fa9bcfc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -429,7 +429,7 @@
           "name": "category_group_uuid",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "name": {
@@ -439,24 +439,24 @@
           "notNull": true,
           "autoincrement": false
         },
-        "target_amount": {
-          "name": "target_amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
-        "allocated_amount": {
-          "name": "allocated_amount",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
         "is_income": {
           "name": "is_income",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "is_hidden": {
+          "name": "is_hidden",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "is_system": {
+          "name": "is_system",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,

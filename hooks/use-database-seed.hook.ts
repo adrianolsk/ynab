@@ -1,12 +1,15 @@
 import { db } from "@/database/db";
 import { UserSchema } from "@/database/schemas/user.schema";
-import { count, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { useState, useEffect, useCallback } from "react";
 import { v4 as uuidV4 } from "uuid";
 import { format } from "date-fns";
 import { BudgetSchema } from "@/database/schemas/budget.schema";
 import { CategoryGroupSchema } from "@/database/schemas/category-group.schema";
-import { categoryGroupSeed } from "./seed/category-group.seed";
+import {
+  categoryGroupSeed,
+  systemCategories,
+} from "./seed/category-group.seed";
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { useTranslation } from "react-i18next";
 
@@ -88,20 +91,52 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
               .returning({ category_group_uuid: CategoryGroupSchema.uuid });
 
             for (const category of categoryGroup.categories) {
-              const [result] = await db
+              await db
                 .insert(CategorySchema)
                 .values({
                   uuid: uuidV4(),
                   budget_uuid: budget_uuid,
-
                   name: t(`cagegoryGroups.categories.${category.key}`),
                   category_group_uuid: category_group_uuid,
-                  is_income: 0,
-                  allocated_amount: 0,
-                  target_amount: 0,
                 })
                 .returning({ category_uuid: CategorySchema.uuid });
             }
+          }
+        } catch (error) {
+          console.log("🍎 error", { error });
+        }
+      }
+    },
+    []
+  );
+
+  const seedSystemCategories = useCallback(
+    async (budget_uuid: string | undefined) => {
+      if (!budget_uuid) return;
+
+      const [{ total }] = await db
+        .select({ total: count() })
+        .from(CategorySchema)
+        .where(
+          and(
+            eq(CategorySchema.budget_uuid, budget_uuid),
+            eq(CategorySchema.is_system, 1)
+          )
+        );
+
+      if (total === 0) {
+        try {
+          for (const category of systemCategories) {
+            await db
+              .insert(CategorySchema)
+              .values({
+                uuid: uuidV4(),
+                budget_uuid: budget_uuid,
+                name: category.name,
+                category_group_uuid: null,
+                is_system: 1,
+              })
+              .returning({ category_uuid: CategorySchema.uuid });
           }
         } catch (error) {
           console.log("🍎 error", { error });
@@ -116,6 +151,7 @@ export const useDatabaseSeed = (isMigrationDone: boolean) => {
       const user_uuid = await seedUser();
       const budget_uuid = await seedBudget(user_uuid);
       await seedGategoryGroup(budget_uuid);
+      await seedSystemCategories(budget_uuid);
       setReady(true);
     } else {
       console.log("🍎 useDatabaseSeed waiting migration");

@@ -3,6 +3,11 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Text } from "@/components/Themed";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { eq } from "drizzle-orm";
+import { db } from "@/database/db";
+import { CategorySchema } from "@/database/schemas/category.schema";
+import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 
 interface AssignMoneyCardProps {
   value: number;
@@ -10,7 +15,26 @@ interface AssignMoneyCardProps {
 
 type AssignType = "positive" | "assigned" | "negative";
 
-export const AssignMoneyCard = ({ value }: AssignMoneyCardProps) => {
+export const AssignMoneyCard = ({}: AssignMoneyCardProps) => {
+  const {
+    data: [readyToAssign],
+  } = useLiveQuery(
+    db
+      .select({
+        category: CategorySchema,
+        allocation: MonthlyAllocationsSchema,
+      })
+      .from(CategorySchema)
+      .leftJoin(
+        MonthlyAllocationsSchema,
+        eq(MonthlyAllocationsSchema.category_uuid, CategorySchema.uuid)
+      )
+      .where(eq(CategorySchema.is_system, 1))
+  );
+  console.log("🍎 data", { readyToAssign });
+
+  const value = readyToAssign?.allocation?.allocated_amount ?? 0;
+
   const type = useMemo<AssignType>(() => {
     if (value > 0) {
       return "positive";

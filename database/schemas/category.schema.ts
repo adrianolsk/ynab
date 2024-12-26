@@ -21,12 +21,15 @@ export const CategorySchema = sqliteTable(
       .notNull()
       .references(() => BudgetSchema.uuid, { onDelete: "cascade" }),
     category_group_uuid: text("category_group_uuid")
-      .notNull()
+      // .notNull()
       .references(() => CategoryGroupSchema.uuid, { onDelete: "cascade" }),
     name: text("name").notNull(),
-    target_amount: real("target_amount").default(0),
-    allocated_amount: real("allocated_amount").default(0),
+
+    // target_amount: real("target_amount").default(0),
+    // allocated_amount: real("allocated_amount").default(0),
     is_income: int("is_income").default(0),
+    is_hidden: int("is_hidden").default(0),
+    is_system: int("is_system").default(0),
     created_at: text("created_at")
       .notNull()
       .default(sql`(current_timestamp)`),
