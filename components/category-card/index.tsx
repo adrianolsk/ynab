@@ -1,5 +1,5 @@
 import { View, StyleSheet, StatusBar } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { eq } from "drizzle-orm";
 import { db } from "@/database/db";
@@ -47,6 +47,16 @@ const CategoryCard = ({
     console.log("AQUI", { currentEditedAmount, amountToShow, allocatedAmount });
   }
 
+  const tagStyle = useMemo(() => {
+    if (availableAmount > 0) {
+      return styles.tagPositive;
+    } else if (availableAmount === 0) {
+      return styles.tagGray;
+    } else {
+      return styles.tagNegative;
+    }
+  }, [availableAmount]);
+
   return (
     <Pressable onPress={onPress}>
       <ViewContent style={[styles.item, selectedStyle]}>
@@ -60,6 +70,7 @@ const CategoryCard = ({
               {formatCurrency(monthlyAllocation?.allocated_amount ?? 0)}
             </Text>
           )} */}
+
           {isOpen && isSelected && (
             <Text style={[styles.title, styles.titleSelected]}>
               {formatCurrency(amountToShow)}
@@ -70,7 +81,9 @@ const CategoryCard = ({
           )}
         </View>
         <View style={{ width: 120, alignItems: "flex-end" }}>
-          <Text style={styles.title}>{formatCurrency(availableAmount)}</Text>
+          <View style={[styles.tag, tagStyle]}>
+            <Text style={styles.title}>{formatCurrency(availableAmount)}</Text>
+          </View>
         </View>
       </ViewContent>
       <View>
@@ -116,5 +129,22 @@ const styles = StyleSheet.create({
     // fontSize: 13,
     fontFamily: "NunitoSansBold",
     // color: "#4D9119",
+  },
+  tag: {
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  tagPositive: {
+    backgroundColor: "#4D9119",
+  },
+  tagNegative: {
+    backgroundColor: "#C72C1E",
+  },
+  tagWarning: {
+    backgroundColor: "yellow",
+  },
+  tagGray: {
+    backgroundColor: "#aaa",
   },
 });
