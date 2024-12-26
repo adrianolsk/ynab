@@ -3,7 +3,7 @@ import React from "react";
 import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
 
 const SeedDatabase = () => {
-  useDatabaseSeed(true);
+  useDatabaseSeed();
   return null;
 };
 

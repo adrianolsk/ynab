@@ -64,78 +64,6 @@ type SectionItem = {
   data: AccountItem[];
 };
 
-//   {
-//     title: "Budget Accounts",
-//     accountGroup: "budget",
-//     data: [
-//       {
-//         name: "Checking",
-//         type: "checking",
-//       },
-//       {
-//         name: "Savings",
-//         type: "savings",
-//       },
-//       {
-//         name: "Cash",
-//         type: "cash",
-//       },
-//       {
-//         name: "Credit Card",
-//         type: "credit_card",
-//       },
-//       {
-//         name: "Line of Credit",
-//         type: "line_of_credit",
-//       },
-//     ],
-//   },
-//   {
-//     title: "Mortgage and Loans",
-//     accountGroup: "loan",
-//     data: [
-//       {
-//         name: "Mortgage",
-//         type: "mortgage",
-//       },
-//       {
-//         name: "Auto Loan",
-//         type: "auto_loan",
-//       },
-//       {
-//         name: "Student Loan",
-//         type: "student_loan",
-//       },
-//       {
-//         name: "Personal Loan",
-//         type: "personal_loan",
-//       },
-//       {
-//         name: "Medical Debt",
-//         type: "medical_debt",
-//       },
-//       {
-//         name: "Other Debt",
-//         type: "other_debt",
-//       },
-//     ],
-//   },
-//   {
-//     title: "Tracking Accounts",
-//     accountGroup: "tracking",
-//     data: [
-//       {
-//         name: "Asset",
-//         type: "asset",
-//       },
-//       {
-//         name: "Liability",
-//         type: "liability",
-//       },
-//     ],
-//   },
-// ];
-
 interface Map {
   [key: string]: boolean | undefined;
 }
@@ -154,13 +82,6 @@ export default function BudgetScreen() {
     useState<number>(0);
   const [editedItems, setEditedItems] = useState<ItemMap>({});
   const [collapsedSections, setCollapsedSections] = useState<Map>({});
-
-  const onAssign = () => {
-    console.log("🍎 Assign");
-  };
-  const onFix = () => {
-    console.log("🍎 Fix");
-  };
 
   const toggleSection = (title: string) => {
     setCollapsedSections((prevState) => ({
@@ -214,8 +135,6 @@ export default function BudgetScreen() {
     return ledote;
   }, [liveData]);
 
-  const select = (item: AccountItem, accountGroup: AccountGroup) => {};
-
   const SECTIONS = leData.map<SectionType>((section) => ({
     ...section,
     data: collapsedSections[section.title] ? [] : section.data,
@@ -239,11 +158,9 @@ export default function BudgetScreen() {
 
   const bottomSheetHeight = useSharedValue(0);
   const [isOpen, setIsOpen] = useState(false);
-  // const [selectedAlocated, setSelectedAlocated] = useState<string>("");
+
   const handlePress = useCallback(() => {
     setIsOpen(true);
-
-    // bottomSheetHeight.value = withTiming(200, { duration: 100 }); // Animate to 300px height
   }, []);
 
   const closeBottomSheet = useCallback(() => {
@@ -252,16 +169,14 @@ export default function BudgetScreen() {
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    // backgroundColor: "transparent",
     height: bottomSheetHeight.value,
-    // marginBottom: , // Link the shared value to marginBottom
   }));
 
   const scrolltoindex = (sectionIndex: number, itemIndex: number) => {
     sectionListRef.current?.scrollToLocation({
       sectionIndex,
       itemIndex,
-      viewPosition: 0.1, // Center the item in the viewport
+      viewPosition: 0.1,
     });
   };
   const handleOpenKeyboard = async (
@@ -270,12 +185,11 @@ export default function BudgetScreen() {
   ) => {
     handlePress(); // Set the height of the bottom sheet
     await saveAllocation();
-    console.log("AQUI", { editedItems });
+
     if (
       activeItem?.section === sectionIndex &&
       activeItem?.index === itemIndex
     ) {
-      //
       closeBottomSheet();
       setActiveItem(null);
       setEditedItems({});
@@ -307,9 +221,9 @@ export default function BudgetScreen() {
       const budget_uuid = activeItem!.item.budget_uuid;
       const month = format(new Date(), "yyyy-MM");
       // const newValue = lastValue + value;
-      console.log("🍎 saveAllocation", { key, newValue, budget_uuid, month });
+
       const valueToDecrease = currentAllocatedAmount - newValue;
-      console.log("VALUE TO DECREASE", { valueToDecrease });
+
       await updateReadyToAssign({
         budget_uuid,
         month,
@@ -332,7 +246,6 @@ export default function BudgetScreen() {
           ], // Columns that define the conflict
           set: { allocated_amount: newValue }, // What to update
         });
-      console.log("🍎 result", { result: result.lastInsertRowId });
     } catch (error) {
       console.log("🍎 error", { error: error });
     }
@@ -398,40 +311,7 @@ export default function BudgetScreen() {
         <BottomSheetView style={{ padding: 16 }}>
           <NumericKeyboard
             onCancel={async () => {
-              const key = activeItem!.item.uuid;
-              // await db
-              //   .update(CategorySchema)
-              //   .set({
-              //     allocated_amount: activeRow,
-              //     updated_at: new Date().toISOString(),
-              //   })
-              //   .where(eq(CategorySchema.uuid, key));
-              // await db
-              //   .update(MonthlyAllocationsSchema)
-              //   .set({
-              //     allocated_amount: activeRow,
-              //     updated_at: new Date().toISOString(),
-              //   })
-              //   .where(eq(CategorySchema.uuid, key));
-              console.log("🍎 result", { result: key });
-              // const result = await db
-              //   .insert(MonthlyAllocationsSchema)
-              //   .values({
-              //     uuid: uuidV4(),
-              //     budget_uuid: activeItem!.item.budget_uuid,
-              //     category_uuid: key,
-              //     month: format(new Date(), "yyyy-MM"),
-              //     allocated_amount: activeRow ?? 0,
-              //   })
-              //   .onConflictDoUpdate({
-              //     target: [
-              //       MonthlyAllocationsSchema.category_uuid,
-              //       MonthlyAllocationsSchema.month,
-              //     ], // Columns that define the conflict
-              //     set: { allocated_amount: activeRow ?? 0 }, // What to update
-              //   });
-              // console.log("🍎 result", { result: result.lastInsertRowId });
-
+              setCurrentAllocatedAmount(0);
               setIsOpen(false);
               setEditedItems({});
               handleClosePress();
@@ -447,50 +327,20 @@ export default function BudgetScreen() {
                   [key]: newValue,
                 };
               });
-
-              // await db
-              //   .update(CategorySchema)
-              //   .set({
-              //     allocated_amount: parseCurrencyToDecimal(newValue),
-              //     target_amount: parseCurrencyToDecimal(newValue),
-              //     updated_at: new Date().toISOString(),
-              //   })
-              //   .where(eq(CategorySchema.uuid, key));
-              // setSelectedAlocated((v) => v + value);
-              console.log("🍎 result", { newValue: newValue });
-              // try {
-              //   const result = await db
-              //     .insert(MonthlyAllocationsSchema)
-              //     .values({
-              //       uuid: uuidV4(),
-              //       budget_uuid: activeItem!.item.budget_uuid,
-              //       category_uuid: key,
-              //       month: format(new Date(), "yyyy-MM"),
-              //       allocated_amount: parseCurrencyToDecimal(newValue),
-              //     })
-              //     .onConflictDoUpdate({
-              //       target: [
-              //         MonthlyAllocationsSchema.category_uuid,
-              //         MonthlyAllocationsSchema.month,
-              //       ], // Columns that define the conflict
-              //       set: { allocated_amount: parseCurrencyToDecimal(newValue) }, // What to update
-              //     });
-              //   console.log("🍎 result", { result: result.lastInsertRowId });
-              // } catch (error) {
-              //   console.log("🍎 error", { error: error });
-              // }
             }}
             onBackspace={function (): void {
               setEditedItems((items) => {
                 const key = activeItem!.item.uuid;
-                const lastValue = items[activeItem!.item.uuid] ?? "";
+                const lastValue =
+                  items[activeItem!.item.uuid] ??
+                  formatCurrency(currentAllocatedAmount);
+
                 const newValue = lastValue.slice(0, -1);
                 return {
                   ...items,
                   [key]: newValue,
                 };
               });
-              // setSelectedAlocated((v) => v.slice(0, -1));
             }}
             onConfirm={async function () {
               await saveAllocation();
@@ -544,7 +394,6 @@ const styles = StyleSheet.create({
   },
   section: {
     padding: 16,
-    // marginBottom: 300,
   },
   item: {
     flexDirection: "row",

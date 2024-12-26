@@ -27,8 +27,6 @@ export const TextField = ({ placeholder, style, ...props }: any) => {
   };
 
   useEffect(() => {
-    console.log("isFocused", isFocused);
-    console.log("props.value", props.value?.length);
     if (!isFocused && props.value?.length === 0) {
       labelPosition.value = 0;
     } else {

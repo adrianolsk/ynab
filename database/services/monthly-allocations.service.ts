@@ -23,7 +23,6 @@ export const getMonthlyAllocation = async ({
       )
     );
 
-  console.log("🦧 result", { result: result });
   return result;
 };
 
@@ -48,21 +47,13 @@ export const updateReadyToAssign = async ({
   } else {
     const currentAllocatedAmount = current.allocated_amount;
     const newAllocatedAmount = current.allocated_amount + value;
-    console.log("");
-    console.log("🅰 values to assing", {
-      currentAllocatedAmount,
-      value,
-      newAllocatedAmount,
-    });
-    console.log("");
+
     const result = await db
       .update(MonthlyAllocationsSchema)
       .set({
         allocated_amount: newAllocatedAmount,
       })
       .where(eq(MonthlyAllocationsSchema.id, current.id));
-
-    console.log("updated", result);
   }
 };
 
@@ -93,5 +84,4 @@ export const insertReadyToAssign = async ({
       ], // Columns that define the conflict
       set: { allocated_amount: value }, // What to update
     });
-  console.log("inserted", result.lastInsertRowId);
 };

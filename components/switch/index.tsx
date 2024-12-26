@@ -80,7 +80,7 @@ export const Switch = ({
       runOnJS(setIsOn)(currentValue);
     }
   );
-  // console.log("🍎value", value.value);
+
   return (
     <Pressable onPress={onPress}>
       <Animated.View

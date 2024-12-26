@@ -43,9 +43,6 @@ const CategoryCard = ({
   const amountToShow = currentEditedAmount
     ? parseCurrencyToDecimal(currentEditedAmount)
     : allocatedAmount;
-  if (isSelected) {
-    console.log("AQUI", { currentEditedAmount, amountToShow, allocatedAmount });
-  }
 
   const tagStyle = useMemo(() => {
     if (availableAmount > 0) {
@@ -64,17 +61,10 @@ const CategoryCard = ({
       }}
     >
       <ViewContent style={[styles.item, selectedStyle]}>
-        {/* <Text>{JSON.stringify(monthlyAllocation, null, 2)}</Text> */}
         <View style={{ flex: 2 }}>
           <Text style={styles.title}>{item.name}</Text>
         </View>
         <View>
-          {/* {isOpen && (
-            <Text style={styles.title}>
-              {formatCurrency(monthlyAllocation?.allocated_amount ?? 0)}
-            </Text>
-          )} */}
-
           {isOpen && isSelected && (
             <Text style={[styles.title, styles.titleSelected]}>
               {formatCurrency(amountToShow)}
@@ -90,9 +80,7 @@ const CategoryCard = ({
           </View>
         </View>
       </ViewContent>
-      <View>
-        {/* <Text>{JSON.stringify(monthlyAllocation, null, 2)}</Text> */}
-      </View>
+      <View></View>
     </Pressable>
   );
 };
@@ -110,7 +98,6 @@ const styles = StyleSheet.create({
   },
   section: {
     padding: 16,
-    // marginBottom: 300,
   },
   item: {
     flexDirection: "row",
@@ -130,9 +117,7 @@ const styles = StyleSheet.create({
     fontFamily: "NunitoSansMedium",
   },
   titleSelected: {
-    // fontSize: 13,
     fontFamily: "NunitoSansBold",
-    // color: "#4D9119",
   },
   tag: {
     borderRadius: 12,

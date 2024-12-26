@@ -46,8 +46,6 @@ export default function EditAccountScreen() {
   }, [params.id]);
 
   const addAccount = async () => {
-    console.log("addAccount", { nickName, notes, balance });
-
     if (!nickName) {
       alert("Please enter a valid name and type");
       return;
@@ -66,7 +64,6 @@ export default function EditAccountScreen() {
         })
         .where(eq(AccountsSchema.id, id));
 
-      // console.log("response", { response: (await response).lastInsertRowId });
       router.dismiss();
     } catch (error) {
       console.log("error", { error });
@@ -74,8 +71,6 @@ export default function EditAccountScreen() {
   };
 
   const handleChangeText = (numericValue: number) => {
-    // Allow only numeric values
-
     setBalance(numericValue);
   };
 
@@ -123,7 +118,6 @@ export default function EditAccountScreen() {
         <CardButton title="Close Account" type="destructive" />
       </View>
 
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </ScrollView>
   );

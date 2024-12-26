@@ -10,55 +10,10 @@ import { db } from "@/database/db";
 import { eq, isNull } from "drizzle-orm";
 
 export default function TabTwoScreen() {
-  // const database = useSQLiteContext();
-  // const db = drizzle(database, { schema });
-
-  // const { data } = useLiveQuery(db.select().from(schema.users));
-  const { data } = useLiveQuery(
-    db
-      .select()
-      .from(schema.UserSchema)
-      .where(isNull(schema.UserSchema.deleted_at))
-  );
-
-  const add = async () => {
-    try {
-      const response = db.insert(schema.UserSchema).values({
-        name: "Adriano",
-      });
-      console.log("response", { response: (await response).lastInsertRowId });
-    } catch (error) {
-      console.log("error", { error });
-    }
-  };
-
-  const deleteAll = async () => {
-    try {
-      const response = db
-        .update(schema.UserSchema)
-        .set({
-          deleted_at: new Date().toISOString(),
-        })
-        .where(eq(schema.UserSchema.id, 1));
-      console.log("response", { response: await response });
-    } catch (error) {
-      console.log("error", { error });
-    }
-  };
-
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.title}>Tab add</Text>
-        <View
-          style={styles.separator}
-          lightColor="#eee"
-          darkColor="rgba(255,255,255,0.1)"
-        />
-        <EditScreenInfo path="app/(tabs)/two.tsx" />
-        <Button title="teste2" onPress={add}></Button>
-        <Button title="teste2" onPress={deleteAll}></Button>
-        <Text>{JSON.stringify(data, null, 2)}</Text>
+        <Text style={styles.title}>Reports</Text>
       </View>
     </ScrollView>
   );

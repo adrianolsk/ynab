@@ -43,7 +43,6 @@ export default function NewAccountScreen() {
   const addAccount = async () => {
     const value: number = balance ?? 0; //parseFloat(balance);
 
-    console.log("addAccount", { text, accountType, balance, value });
     if (isNaN(value)) {
       alert("Please enter a valid number");
       return;
@@ -54,16 +53,15 @@ export default function NewAccountScreen() {
     }
 
     try {
-      const response = db.insert(AccountsSchema).values({
+      const response = await db.insert(AccountsSchema).values({
         uuid: uuidV4(),
-        budget_uuid: 2,
+        budget_uuid: "2",
         name: text,
-        account_type: accountType,
-        user_id: 2,
+        account_type: accountType as any, //: todo fix types
         balance: value,
         account_group: params?.accountGroup,
       });
-      console.log("response", { response: (await response).lastInsertRowId });
+
       router.dismiss();
     } catch (error) {
       console.log("error", { error });
@@ -71,12 +69,9 @@ export default function NewAccountScreen() {
   };
 
   const handleChangeText = (numericValue: number) => {
-    // Allow only numeric values
-    // const numericValue = text.replace(/[^0-9]/g, "");
     setBalance(numericValue);
   };
 
-  console.log("🍎params", { id: params.id });
   const accountTypeText = params.id
     ? t(`accountTypes.${params.id}`)
     : t("accountTypes.placeholder");
@@ -103,19 +98,17 @@ export default function NewAccountScreen() {
       </View>
       <View style={styles.row}>
         <Text>What type of account are you adding?</Text>
-        {/* <Link href="/modal" asChild> */}
+
         <Pressable onPress={() => router.push("/modal")}>
           <TextInput
             pointerEvents="none"
             editable={false}
             placeholder="My checkings account"
             style={styles.input}
-            // placeholderTextColor={"#aaa"}
             onChangeText={(text) => onChangeText(text)}
             value={accountTypeText}
           />
         </Pressable>
-        {/* </Link> */}
       </View>
       <View style={styles.row}>
         <Text>What is your current account balance? </Text>
@@ -123,15 +116,8 @@ export default function NewAccountScreen() {
         <BalanceField onChangeText={handleChangeText} value={balance} />
       </View>
       <View style={styles.row}>
-        <CardButton
-          //   disabled={true}
-          title="Save Account"
-          type="primary"
-          onPress={addAccount}
-        />
+        <CardButton title="Save Account" type="primary" onPress={addAccount} />
       </View>
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
     </View>
   );
 }
@@ -150,10 +136,8 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   row: {
-    // borderWidth: 1,
     paddingHorizontal: 16,
     paddingTop: 16,
-    // marginBottom: 16,
   },
   input: {
     height: 40,
@@ -161,6 +145,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 6,
-    // borderColor: "#999",
   },
 });

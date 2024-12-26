@@ -76,10 +76,8 @@ type MyObject = {
 export default function TabTwoScreen() {
   const { t } = useTranslation();
 
-  // const database = useSQLiteContext();
-  // const db = drizzle(database, { schema });
   const router = useRouter();
-  // const { data } = useLiveQuery(db.select().from(schema.users));
+
   const { data } = useLiveQuery(db.select().from(AccountsSchema));
 
   const accounts = useMemo(() => {
@@ -97,7 +95,6 @@ export default function TabTwoScreen() {
       data: value.data,
     }));
 
-    // todo: add item at beginning of array
     arr.unshift({
       title: undefined,
       data: [
@@ -111,16 +108,6 @@ export default function TabTwoScreen() {
     });
     return arr;
   }, [data]);
-
-  const deleteAll = async () => {
-    try {
-      const response = db.delete(AccountsSchema).all();
-
-      console.log("response", { response: await response });
-    } catch (error) {
-      console.log("error", { error });
-    }
-  };
 
   return (
     <>

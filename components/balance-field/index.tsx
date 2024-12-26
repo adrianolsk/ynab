@@ -20,7 +20,7 @@ export const BalanceField = (props: any) => {
 
   useEffect(() => {
     const currency = getValues("amount");
-    console.log("🍎WATCH", { currency, value: props.value });
+
     if (!currency && props.value) {
       reset({
         amount: formatCurrency(props.value),
@@ -33,7 +33,6 @@ export const BalanceField = (props: any) => {
 
   const handlePress = () => {
     const isPositive = !isOn.value;
-    console.log("🥭isOn", isPositive);
     const multiplyer = -1;
     const currency = getValues("amount");
     const numericValue = parseCurrencyToDecimal(currency);
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 1,
     borderRadius: 6,
-    // backgroundColor: "#fff",
+
     paddingHorizontal: 16,
     borderColor: "#bbb",
     alignItems: "center",

@@ -25,7 +25,6 @@ export const AssignMoneyCard = ({}: AssignMoneyCardProps) => {
       .from(MonthlyAllocationsSchema)
       .where(eq(MonthlyAllocationsSchema.category_uuid, "ready_to_assign"))
   );
-  console.log("🍎 data", { readyToAssign });
 
   const value = readyToAssign?.allocated_amount ?? 0;
 
