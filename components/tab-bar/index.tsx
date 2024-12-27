@@ -1,5 +1,5 @@
 import { View, Platform, StatusBar } from "react-native";
-import { useLinkBuilder, useTheme } from "@react-navigation/native";
+import { useLinkBuilder, useRoute, useTheme } from "@react-navigation/native";
 import { PlatformPressable } from "@react-navigation/elements";
 import {
   BottomTabBarProps,
@@ -8,6 +8,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useThemeColor, ViewContent } from "../Themed";
 import { Text } from "@/components/Themed";
+import { useRouter } from "expo-router";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -32,6 +33,7 @@ export const TabBar = ({
   navigation,
 }: BottomTabBarProps) => {
   const { colors } = useTheme();
+  const router = useRouter();
   const tabIconDefault = useThemeColor({}, "tabIconDefault");
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
   const { buildHref } = useLinkBuilder();
@@ -59,14 +61,19 @@ export const TabBar = ({
         const isFocused = state.index === index;
 
         const onPress = () => {
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          });
+          console.log("onPress", { route });
+          if (route.name === "transaction") {
+            router.push("/transaction/new");
+          } else {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name, route.params);
+            }
           }
         };
 
