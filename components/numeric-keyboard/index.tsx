@@ -8,10 +8,17 @@ type NumericKeyboardProps = {
   onBackspace: () => void;
   onConfirm: () => void;
   onCancel: () => void;
+  hideButtons?: boolean;
 };
 
 export const NumericKeyboard = React.memo(
-  ({ onPress, onBackspace, onConfirm, onCancel }: NumericKeyboardProps) => {
+  ({
+    onPress,
+    onBackspace,
+    onConfirm,
+    onCancel,
+    hideButtons,
+  }: NumericKeyboardProps) => {
     const keys = [
       ["1", "2", "3", "-"],
       ["4", "5", "6", "+"],
@@ -21,32 +28,34 @@ export const NumericKeyboard = React.memo(
 
     return (
       <View style={styles.container}>
-        <View style={{ flexDirection: "row", gap: 16, paddingBottom: 12 }}>
-          <TouchableOpacity style={styles.flex1} onPress={() => {}}>
-            <ViewContent darkColor="#1D2B3A" style={styles.button}>
-              <FontAwesome name="money" size={20} color="#aaa" />
-              <Text style={{ fontSize: 12 }}>Assign</Text>
-            </ViewContent>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.flex1} onPress={() => {}}>
-            <ViewContent darkColor="#1D2B3A" style={styles.button}>
-              <FontAwesome name="bolt" size={20} color="#aaa" />
-              <Text style={{ fontSize: 12 }}>Auto-Assign</Text>
-            </ViewContent>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.flex1} onPress={() => {}}>
-            <ViewContent darkColor="#1D2B3A" style={styles.button}>
-              <FontAwesome name="arrow-right" size={20} color="#aaa" />
-              <Text style={{ fontSize: 12 }}>Move Money</Text>
-            </ViewContent>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.flex1} onPress={() => {}}>
-            <ViewContent darkColor="#1D2B3A" style={styles.button}>
-              <FontAwesome name="ellipsis-h" size={20} color="#aaa" />
-              <Text style={{ fontSize: 12 }}>Details</Text>
-            </ViewContent>
-          </TouchableOpacity>
-        </View>
+        {!hideButtons && (
+          <View style={{ flexDirection: "row", gap: 16, paddingBottom: 12 }}>
+            <TouchableOpacity style={styles.flex1} onPress={() => {}}>
+              <ViewContent darkColor="#1D2B3A" style={styles.button}>
+                <FontAwesome name="money" size={20} color="#aaa" />
+                <Text style={{ fontSize: 12 }}>Assign</Text>
+              </ViewContent>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.flex1} onPress={() => {}}>
+              <ViewContent darkColor="#1D2B3A" style={styles.button}>
+                <FontAwesome name="bolt" size={20} color="#aaa" />
+                <Text style={{ fontSize: 12 }}>Auto-Assign</Text>
+              </ViewContent>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.flex1} onPress={() => {}}>
+              <ViewContent darkColor="#1D2B3A" style={styles.button}>
+                <FontAwesome name="arrow-right" size={20} color="#aaa" />
+                <Text style={{ fontSize: 12 }}>Move Money</Text>
+              </ViewContent>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.flex1} onPress={() => {}}>
+              <ViewContent darkColor="#1D2B3A" style={styles.button}>
+                <FontAwesome name="ellipsis-h" size={20} color="#aaa" />
+                <Text style={{ fontSize: 12 }}>Details</Text>
+              </ViewContent>
+            </TouchableOpacity>
+          </View>
+        )}
         {keys.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((key) => (

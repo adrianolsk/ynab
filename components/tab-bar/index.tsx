@@ -9,6 +9,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useThemeColor, ViewContent } from "../Themed";
 import { Text } from "@/components/Themed";
 import { useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -61,6 +62,7 @@ export const TabBar = ({
         const isFocused = state.index === index;
 
         const onPress = () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           console.log("onPress", { route });
           if (route.name === "transaction") {
             router.push("/transaction/new");
