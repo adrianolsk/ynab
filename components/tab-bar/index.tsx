@@ -10,6 +10,9 @@ import { useThemeColor, ViewContent } from "../Themed";
 import { Text } from "@/components/Themed";
 import { useRouter } from "expo-router";
 import * as Haptics from "expo-haptics";
+import { Pressable } from "react-native-gesture-handler";
+import { TabBarButton } from "./tab-bar-button";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -38,26 +41,35 @@ export const TabBar = ({
   const tabIconDefault = useThemeColor({}, "tabIconDefault");
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
   const { buildHref } = useLinkBuilder();
+  const insets = useSafeAreaInsets();
+  console.log("🍎 insets", { insets, palt: Platform.OS });
 
   return (
     <ViewContent
       style={{
+        borderTopWidth: 1,
+        borderTopColor: "#222",
         flexDirection: "row",
-        height: StatusBar.currentHeight,
+        // height: 90,
+        // height: 100 - insets.bottom,
+        // height: StatusBar.currentHeight,
         shadowOffset: {
           width: 0,
           height: -2,
         },
         shadowOpacity: 0.15,
         shadowRadius: 2,
+        // shadowColor: "#006699",
         // shadowColor: "#555",
 
         paddingTop: 8,
+        // paddingBottom: insets.bottom,
+        // backgroundColor: "red",
       }}
     >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
-        const label = options.title;
+        const label = options.title ?? "";
 
         const isFocused = state.index === index;
 
@@ -79,47 +91,16 @@ export const TabBar = ({
           }
         };
 
-        const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
-        };
-
         return (
-          <PlatformPressable
+          <TabBarButton
             key={index}
-            href={buildHref(route.name, route.params)}
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarButtonTestID}
             onPress={onPress}
-            onLongPress={onLongPress}
-            style={{ flex: 1 }}
-          >
-            <ViewContent
-              style={{
-                paddingTop: 4,
-                alignItems: "center",
-              }}
-            >
-              <TabBarIcon
-                name={ROUTE_ICONS[route.name]}
-                color={isFocused ? tabIconSelected : tabIconDefault}
-              />
-
-              <Text
-                style={{
-                  marginTop: 8,
-                  fontSize: 12,
-                  fontFamily: "NunitoSansLight",
-                  color: isFocused ? tabIconSelected : tabIconDefault,
-                }}
-              >
-                {label}
-              </Text>
-            </ViewContent>
-          </PlatformPressable>
+            isFocused={isFocused}
+            label={label}
+            route={route}
+            options={options}
+            index={index}
+          />
         );
       })}
     </ViewContent>

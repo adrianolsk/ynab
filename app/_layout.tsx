@@ -101,6 +101,7 @@ function RootLayoutNav() {
 
   return (
     <GestureHandlerRootView>
+      <StatusBar style="auto" />
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
         <SeedDatabase />
         <BottomSheetModalProvider>
@@ -123,7 +124,6 @@ function RootLayoutNav() {
           </Stack>
         </BottomSheetModalProvider>
       </ThemeProvider>
-      <StatusBar style="auto" />
     </GestureHandlerRootView>
   );
 }

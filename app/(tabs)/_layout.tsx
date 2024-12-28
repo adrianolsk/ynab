@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import { Pressable, View, Text } from "react-native";
@@ -14,6 +14,8 @@ import {
 import { ViewContent } from "@/components/Themed";
 import { useTranslation } from "react-i18next";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from "expo-status-bar";
+import changeNavigationBarColor from "react-native-navigation-bar-color";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -27,6 +29,10 @@ export default function TabLayout() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
 
+  useEffect(() => {
+    changeNavigationBarColor("#0C1722", false);
+  }, []);
+
   return (
     <ViewContent
       style={{
@@ -35,6 +41,8 @@ export default function TabLayout() {
         paddingBottom: insets.bottom,
       }}
     >
+      {" "}
+      {/* <StatusBar style="light" backgroundColor="blue" /> */}
       <Tabs
         tabBar={(props) => <TabBar {...props} />}
         screenOptions={{
