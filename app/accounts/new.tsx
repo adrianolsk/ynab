@@ -22,6 +22,7 @@ import { uuidV4 } from "@/utils/helpers";
 import { getBudgetUuid } from "@/services/storage";
 import { updateReadyToAssign } from "@/database/services/monthly-allocations.service";
 import { format } from "date-fns";
+import ScreenView from "@/components/screen-view";
 
 export default function NewAccountScreen() {
   const { t } = useTranslation();
@@ -91,7 +92,7 @@ export default function NewAccountScreen() {
     : t("accountTypes.placeholder");
 
   return (
-    <View style={styles.container}>
+    <ScreenView>
       <StatusBar style={"auto"} />
       <Stack.Screen
         options={{
@@ -132,7 +133,7 @@ export default function NewAccountScreen() {
       <View style={styles.row}>
         <CardButton title="Save Account" type="primary" onPress={addAccount} />
       </View>
-    </View>
+    </ScreenView>
   );
 }
 

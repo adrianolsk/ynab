@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInputProps, View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,22 +7,37 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { Text, TextInput } from "@/components/Themed";
+import { Pressable } from "react-native-gesture-handler";
+import { FontAwesome } from "@expo/vector-icons";
+import { Icon } from "@expo/vector-icons/build/createIconSet";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-export const TextField = ({ placeholder, style, ...props }: any) => {
+interface TextFieldProps extends TextInputProps {
+  placeholder: string;
+  style?: any;
+  value?: string;
+  onPress?: () => void;
+  icon?: keyof typeof FontAwesome.glyphMap;
+}
+export const TextField = ({
+  placeholder,
+  style,
+  onPress,
+  ...props
+}: TextFieldProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const labelPosition = useSharedValue(!!props.value ? 0 : 1);
 
   const handleFocus = () => {
     setIsFocused(true);
-    labelPosition.value = 1; // Move label up
+    labelPosition.value = 1;
   };
 
   const handleBlur = () => {
     if (!props.value) {
       setIsFocused(false);
-      labelPosition.value = 0; // Move label back down
+      labelPosition.value = 0;
     }
   };
 
@@ -38,7 +53,7 @@ export const TextField = ({ placeholder, style, ...props }: any) => {
     return {
       transform: [
         {
-          translateY: withTiming(labelPosition.value ? -10 : 10, {
+          translateY: withTiming(labelPosition.value ? -10 : 2, {
             duration: 200,
             easing: Easing.out(Easing.ease),
           }),
@@ -51,18 +66,32 @@ export const TextField = ({ placeholder, style, ...props }: any) => {
     };
   });
 
+  const iconName = props.icon ?? "user";
   return (
-    <View style={[styles.container, style]}>
-      <AnimatedText style={[styles.label, animatedLabelStyle]}>
-        {placeholder}
-      </AnimatedText>
-      <TextInput
-        {...props}
-        style={styles.textInput}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-      />
-    </View>
+    <Pressable onPress={onPress}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ width: 32, justifyContent: "center" }}>
+          <FontAwesome name={iconName} size={20} color="#aaa" />
+        </View>
+        <View style={[styles.container, style]}>
+          <AnimatedText style={[styles.label, animatedLabelStyle]}>
+            {placeholder}
+          </AnimatedText>
+          <View style={styles.textInputContainer}>
+            {!onPress ? (
+              <TextInput
+                {...props}
+                style={styles.textInput}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+            ) : (
+              <Text style={styles.textOnlyInput}>{props.value}</Text>
+            )}
+          </View>
+        </View>
+      </View>
+    </Pressable>
   );
 };
 
@@ -75,17 +104,22 @@ const styles = StyleSheet.create({
   label: {
     position: "absolute",
     left: 0,
-    // color: "gray",
+
     fontFamily: "NunitoSansRegular",
   },
   textInput: {
     height: 40,
     backgroundColor: "transparent",
-    // borderBottomWidth: 1,
-    // borderBottomColor: "gray",
     fontSize: 14,
-    // paddingVertical: 5,
-    // marginBottom: 8,
     fontFamily: "NunitoSansMedium",
+  },
+  textOnlyInput: {
+    fontSize: 14,
+    fontFamily: "NunitoSansMedium",
+
+    marginTop: 8,
+  },
+  textInputContainer: {
+    height: 40,
   },
 });

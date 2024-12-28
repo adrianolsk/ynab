@@ -41,7 +41,6 @@ export default function TabLayout() {
         paddingBottom: insets.bottom,
       }}
     >
-      {" "}
       {/* <StatusBar style="light" backgroundColor="blue" /> */}
       <Tabs
         tabBar={(props) => <TabBar {...props} />}
