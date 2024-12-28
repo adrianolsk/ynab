@@ -102,43 +102,39 @@ export default function BudgetScreen() {
         eq(CategoryGroupSchema.uuid, CategorySchema.category_group_uuid)
       )
   );
-
-  const leData: SectionType[] = useMemo(() => {
+  const sectionData = useMemo((): SectionType[] => {
     if (!liveData) return [];
-    const result = liveData.reduce<
-      Record<
-        number,
-        {
-          group: CategoryGroupSchemaType;
-          categories: CategorySchemaType[];
-        }
-      >
-    >((acc, row) => {
-      const group = row.group;
-      const category = row.category;
-      if (!acc[group.id]) {
-        acc[group.id] = { group, categories: [] };
+
+    // Use a Map to group categories by their group ID
+    const groupMap = new Map<
+      number,
+      { group: CategoryGroupSchemaType; categories: CategorySchemaType[] }
+    >();
+
+    for (const { group, category } of liveData) {
+      if (!groupMap.has(group.id)) {
+        groupMap.set(group.id, { group, categories: [] });
       }
+
       if (category) {
-        acc[group.id].categories.push(category);
+        groupMap.get(group.id)!.categories.push(category); // `!` is safe due to the previous check
       }
-      return acc;
-    }, {});
+    }
 
-    const ledote = Object.values(result).map(({ group, categories }) => {
-      return {
-        title: group.name,
-        data: categories,
-      };
-    });
-
-    return ledote;
+    // Convert the Map to an array of sections
+    return Array.from(groupMap.values()).map(({ group, categories }) => ({
+      title: group.name,
+      data: categories,
+    }));
   }, [liveData]);
 
-  const SECTIONS = leData.map<SectionType>((section) => ({
-    ...section,
-    data: collapsedSections[section.title] ? [] : section.data,
-  }));
+  // Adjust sections based on collapsed state
+  const SECTIONS = useMemo((): SectionType[] => {
+    return sectionData.map((section) => ({
+      ...section,
+      data: collapsedSections[section.title] ? [] : section.data,
+    }));
+  }, [sectionData, collapsedSections]);
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 

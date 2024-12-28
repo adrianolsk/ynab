@@ -24,6 +24,18 @@ import {
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useCallback, useMemo } from "react";
+import {
+  AccountSchemaType,
+  AccountsSchema,
+} from "@/database/schemas/accounts.schema";
+
+type AccountGroupItem = {
+  title?: AccountGroup;
+  data: AccountSchemaType[];
+};
+type MyObject = {
+  [key in AccountGroup]: AccountGroupItem;
+};
 
 type AccountItem = {
   name: string;
@@ -121,52 +133,34 @@ export default function ModalScreen() {
   }>();
   console.log("🍎 values", params.type);
 
-  const { data: liveData } = useLiveQuery(
-    db
-      .select({
-        category: CategorySchema,
-        group: CategoryGroupSchema,
-      })
-      .from(CategorySchema)
-      .innerJoin(
-        CategoryGroupSchema,
-        eq(CategoryGroupSchema.uuid, CategorySchema.category_group_uuid)
-      )
-  );
-  const sectionData = useMemo((): SectionType[] => {
-    if (!liveData) return [];
+  const { data } = useLiveQuery(db.select().from(AccountsSchema));
 
-    // Use a Map to group categories by their group ID
-    const groupMap = new Map<
-      number,
-      { group: CategoryGroupSchemaType; categories: CategorySchemaType[] }
-    >();
+  const accounts = useMemo(() => {
+    const result = data?.reduce((acc, item) => {
+      acc[item.account_group] = acc[item.account_group] || {
+        title: item.account_group,
+        data: [],
+      };
+      acc[item.account_group].data.push(item);
+      return acc;
+    }, {} as MyObject);
 
-    for (const { group, category } of liveData) {
-      if (!groupMap.has(group.id)) {
-        groupMap.set(group.id, { group, categories: [] });
-      }
-
-      if (category) {
-        groupMap.get(group.id)!.categories.push(category); // `!` is safe due to the previous check
-      }
-    }
-
-    // Convert the Map to an array of sections
-    return Array.from(groupMap.values()).map(({ group, categories }) => ({
-      title: group.name,
-      data: categories,
+    const arr = Object.entries(result).map(([key, value]) => ({
+      title: value.title,
+      data: value.data,
     }));
-  }, [liveData]);
+
+    return arr;
+  }, [data]);
 
   const onSelect = useCallback(
-    (item: CategorySchemaType) => {
+    (item: AccountSchemaType) => {
       if (params.type === "transaction") {
         router.dismissTo({
           pathname: "/transaction/new",
           params: {
-            categoryUuid: item.uuid,
-            categoryName: item.name,
+            accountUuid: item.uuid,
+            accountName: item.name ?? "All transactions",
           },
         });
       }
@@ -180,14 +174,14 @@ export default function ModalScreen() {
       <ExpoStatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
       <Stack.Screen
         options={{
-          headerTitle: "Choose a Category",
+          headerTitle: "Select an Account",
           headerBackButtonDisplayMode: "minimal",
         }}
       />
       <SectionList
         stickySectionHeadersEnabled={false}
         style={styles.section}
-        sections={sectionData}
+        sections={accounts}
         keyExtractor={(item, index) => item.uuid}
         renderItem={({ item }) => (
           <Pressable

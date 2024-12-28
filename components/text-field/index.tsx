@@ -42,6 +42,10 @@ export const TextField = ({
   };
 
   useEffect(() => {
+    if (!isFocused && !props.value) {
+      labelPosition.value = 0;
+      return;
+    }
     if (!isFocused && props.value?.length === 0) {
       labelPosition.value = 0;
     } else {
@@ -49,11 +53,16 @@ export const TextField = ({
     }
   }, [isFocused, props.value]);
 
+  console.log("🍎 animatedLabelStyle", {
+    labelPosition: labelPosition.value,
+    placeholder,
+    value: props.value,
+  });
   const animatedLabelStyle = useAnimatedStyle(() => {
     return {
       transform: [
         {
-          translateY: withTiming(labelPosition.value ? -10 : 2, {
+          translateY: withTiming(labelPosition.value ? -12 : 2, {
             duration: 200,
             easing: Easing.out(Easing.ease),
           }),

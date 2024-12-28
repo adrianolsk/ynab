@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -24,12 +24,42 @@ import DateTimePicker, {
 import { format } from "date-fns";
 import ScreenView from "@/components/screen-view";
 
+interface SelectedItem {
+  uuid: string;
+  name: string;
+}
+
 const NewTransactionScreen = () => {
   const [nickName, setNickName] = useState<string | undefined>("oi");
   const [notes, setNotes] = useState<string | undefined>("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedCategory, setSelectedCategory] = useState<SelectedItem>();
+  const [selectedAccount, setSelectedAccount] = useState<SelectedItem>();
   const router = useRouter();
+
+  const params = useLocalSearchParams<{
+    categoryUuid: string;
+    categoryName: string;
+    accountUuid: string;
+    accountName: string;
+  }>();
+
+  useEffect(() => {
+    if (!params.categoryUuid) return;
+    setSelectedCategory({
+      uuid: params.categoryUuid,
+      name: params.categoryName,
+    });
+  }, [params.categoryUuid]);
+
+  useEffect(() => {
+    if (!params.accountUuid) return;
+    setSelectedAccount({
+      uuid: params.accountUuid,
+      name: params.accountName,
+    });
+  }, [params.accountUuid]);
 
   const onChangeText = (text: string) => {
     setNickName(text);
@@ -102,14 +132,22 @@ const NewTransactionScreen = () => {
               },
             })
           }
-          value={notes}
+          value={selectedCategory?.name}
           icon="money"
         />
         <View style={styles.separator} />
         <TextField
           placeholder="Account"
-          onChangeText={handleChangeNotes}
-          value={notes}
+          onPress={() =>
+            router.push({
+              pathname: "/accounts.modal",
+              params: {
+                id: 1,
+                type: "transaction",
+              },
+            })
+          }
+          value={selectedAccount?.name}
           icon="bank"
         />
         <View style={styles.separator} />

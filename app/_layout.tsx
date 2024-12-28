@@ -117,6 +117,10 @@ function RootLayoutNav() {
               name="modal"
               options={{ title: "Select Account Type", presentation: "modal" }}
             />
+            <Stack.Screen
+              name="category.modal"
+              options={{ presentation: "card" }}
+            />
             {/* <Stack.Screen
           name="accounts/edit/[id]"
           options={{ presentation: "formSheet" }}
