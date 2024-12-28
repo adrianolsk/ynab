@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -22,12 +22,15 @@ import DateTimePicker, {
   DateTimePickerAndroid,
 } from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
+import ScreenView from "@/components/screen-view";
 
 const NewTransactionScreen = () => {
   const [nickName, setNickName] = useState<string | undefined>("oi");
   const [notes, setNotes] = useState<string | undefined>("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const router = useRouter();
+
   const onChangeText = (text: string) => {
     setNickName(text);
   };
@@ -65,7 +68,7 @@ const NewTransactionScreen = () => {
     setSelectedDate(selectedDate);
   }, []);
   return (
-    <View style={{ flex: 1, padding: 16 }}>
+    <ScreenView>
       <Stack.Screen
         options={{
           headerTitle: "Add Transaction",
@@ -90,7 +93,15 @@ const NewTransactionScreen = () => {
         <View style={styles.separator} />
         <TextField
           placeholder="Choose a Category"
-          onChangeText={handleChangeNotes}
+          onPress={() =>
+            router.push({
+              pathname: "/category.modal",
+              params: {
+                id: 1,
+                type: "transaction",
+              },
+            })
+          }
           value={notes}
           icon="money"
         />
@@ -112,7 +123,7 @@ const NewTransactionScreen = () => {
 
         <IOSDatePicker onChange={handleDateChange} show={showDatePicker} />
       </ViewContent>
-    </View>
+    </ScreenView>
   );
 };
 
