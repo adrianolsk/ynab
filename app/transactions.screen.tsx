@@ -1,3 +1,4 @@
+import { Checkbox } from "@/components/checkbox/inde";
 import { Text, TextInput, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
 import {
@@ -12,7 +13,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { eq, sql, sum } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import Checkbox from "expo-checkbox";
+
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useState } from "react";

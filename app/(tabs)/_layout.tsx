@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, Tabs } from "expo-router";
+import { Link, router, Tabs } from "expo-router";
 import { Pressable, View, Text } from "react-native";
 
 import Colors from "@/constants/Colors";
@@ -66,7 +66,8 @@ export default function TabLayout() {
                     ? i18n.changeLanguage("en-CA")
                     : i18n.changeLanguage("pt-BR");
 
-                  await AsyncStorage.setItem("language", i18n.language);
+                  // await AsyncStorage.setItem("language", i18n.language);
+                  router.push("/test");
                 }}
               >
                 {({ pressed }) => (
