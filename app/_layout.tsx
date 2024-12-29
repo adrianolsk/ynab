@@ -14,7 +14,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 import "react-native-get-random-values";
 import { DATABASE_NAME, db } from "@/database/db";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Platform, Text, View } from "react-native";
+import { Platform, View } from "react-native";
 import migrations from "../drizzle/migrations";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { StatusBar } from "expo-status-bar";
@@ -24,6 +24,7 @@ import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
 import SeedDatabase from "@/components/seed-database";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { Text } from "@/components/Themed";
 // DATABASE
 import * as SQLite from "expo-sqlite";
 const actualDatabse = SQLite.openDatabaseSync(DATABASE_NAME);

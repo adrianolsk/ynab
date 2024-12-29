@@ -118,6 +118,25 @@ CREATE UNIQUE INDEX `monthly_allocations_uuid_unique` ON `monthly_allocations` (
 CREATE INDEX `monthly_allocations_budget_uuid` ON `monthly_allocations` (`budget_uuid`);--> statement-breakpoint
 CREATE INDEX `monthly_allocations_uuid` ON `monthly_allocations` (`uuid`);--> statement-breakpoint
 CREATE UNIQUE INDEX `unique_category_month_budget` ON `monthly_allocations` (`category_uuid`,`month`,`budget_uuid`);--> statement-breakpoint
+CREATE TABLE `payees` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`uuid` text NOT NULL,
+	`budget_uuid` text NOT NULL,
+	`last_category_uuid` text,
+	`name` text NOT NULL,
+	`created_at` text DEFAULT (current_timestamp) NOT NULL,
+	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
+	`deleted_at` text,
+	`last_synced_at` text,
+	`sync_status` text DEFAULT 'pending' NOT NULL,
+	`version` integer DEFAULT 1 NOT NULL,
+	FOREIGN KEY (`budget_uuid`) REFERENCES `budgets`(`uuid`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`last_category_uuid`) REFERENCES `categories`(`uuid`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `payees_uuid_unique` ON `payees` (`uuid`);--> statement-breakpoint
+CREATE INDEX `payee_budget_uuid` ON `payees` (`budget_uuid`);--> statement-breakpoint
+CREATE INDEX `payee_uuid` ON `payees` (`uuid`);--> statement-breakpoint
 CREATE TABLE `scheduled_transactions` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
