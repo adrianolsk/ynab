@@ -7,10 +7,10 @@ import {
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { PayeeSchema } from "@/database/schemas/payee.schema";
 import { TransactionsSchema } from "@/database/schemas/transactions.schema";
-import { formatCurrency } from "@/utils/financials";
+import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { FontAwesome } from "@expo/vector-icons";
 import { format } from "date-fns";
-import { eq } from "drizzle-orm";
+import { eq, sql, sum } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import Checkbox from "expo-checkbox";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -152,6 +152,7 @@ export default function ModalScreen() {
           headerBackButtonDisplayMode: "minimal",
         }}
       />
+      {!!account && <AccountDetails account={account} />}
       <ViewContent style={{ padding: 16, flexDirection: "row", height: 52 }}>
         <View style={{ flex: 1 }}>
           <TextInput
@@ -165,7 +166,6 @@ export default function ModalScreen() {
 
       <SectionList
         stickySectionHeadersEnabled={false}
-        style={styles.section}
         sections={filteredAccounts}
         keyExtractor={(item, index) => item.uuid}
         renderItem={({ item }) => (
@@ -208,8 +208,6 @@ const TransactionItemRow = ({
   onPress,
   onCheck,
 }: TransactionItemRowProps) => {
-  // const [isChecked, setChecked] = useState(false);
-
   return (
     <ViewContent style={styles.item}>
       <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -241,14 +239,60 @@ const TransactionItemRow = ({
     </ViewContent>
   );
 };
+
+const AccountDetails = ({ account }: { account: AccountSchemaType }) => {
+  const [clearedAmount, setClearedAmount] = useState(0);
+  const [unclearedAmount, setUnclearedAmount] = useState(0);
+
+  useEffect(() => {
+    db.select({
+      cleared: TransactionsSchema.cleared,
+      total: sum(TransactionsSchema.amount).mapWith(Number),
+    })
+      .from(TransactionsSchema)
+      .where(eq(TransactionsSchema.account_uuid, account.uuid))
+      .groupBy(TransactionsSchema.cleared)
+
+      .then((result) => {
+        for (const { cleared, total } of result) {
+          if (cleared) {
+            setClearedAmount(total);
+          } else {
+            setUnclearedAmount(total);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("🍎 error 1", { error });
+      });
+  }, [account]);
+  return (
+    <View style={styles.accountDetails}>
+      <View style={{ flex: 1 }}>
+        <Text>Working balance</Text>
+        <Text>{formatCurrency(account?.balance ?? 0)}</Text>
+      </View>
+      <View style={{ flex: 1, alignItems: "flex-end" }}>
+        <Text>Cleared</Text>
+        <Text>Uncleared</Text>
+      </View>
+      <View style={{ flex: 1, alignItems: "flex-end" }}>
+        <Text> {formatCurrency(clearedAmount)}</Text>
+        <Text> {formatCurrency(unclearedAmount)}</Text>
+      </View>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
     marginHorizontal: 16,
   },
-  section: {
-    // padding: 16,
+  accountDetails: {
+    padding: 16,
+    flexDirection: "row",
   },
   item: {
     padding: 16,

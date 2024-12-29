@@ -108,13 +108,13 @@ export default function ModalScreen() {
       .values({
         uuid: uuidV4(),
         budget_uuid: budgetUuid,
-        name: searchTerm,
+        name: searchTerm?.trim(),
       })
       .returning({ payee_uuid: PayeeSchema.uuid });
 
     onSelect({
       uuid: payee_uuid,
-      name: searchTerm,
+      name: searchTerm?.trim(),
     });
   };
 
@@ -132,13 +132,19 @@ export default function ModalScreen() {
           headerBackButtonDisplayMode: "minimal",
         }}
       />
-      <ViewContent style={{ padding: 16, flexDirection: "row", height: 52 }}>
+      <ViewContent
+        style={{ padding: 16, flexDirection: "row", alignItems: "center" }}
+      >
         <View style={{ flex: 1 }}>
           <TextInput
             placeholder="Search"
             autoComplete="off"
             onChangeText={setSearchTerm}
             value={searchTerm}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+            }}
           />
         </View>
         {searchTerm && (
@@ -155,12 +161,14 @@ export default function ModalScreen() {
               alignItems: "center",
               gap: 8,
               marginTop: 16,
-              height: 48,
+              // height: 48,
               padding: 16,
             }}
           >
             <FontAwesome name="plus" size={20} color="green" />
-            <Text style={styles.addPayeeText}>Create "{searchTerm}" payee</Text>
+            <Text style={styles.addPayeeText}>
+              Create "{searchTerm?.trim()}" payee
+            </Text>
           </View>
         </TouchableOpacity>
       )}

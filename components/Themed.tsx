@@ -3,12 +3,8 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import {
-  Text as DefaultText,
-  View as DefaultView,
-  TextInput as DefaultTextInput,
-} from "react-native";
-
+import { Text as DefaultText, View as DefaultView } from "react-native";
+import { TextInput as DefaultTextInput } from "react-native-gesture-handler";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "./useColorScheme";
 import React from "react";
