@@ -12,12 +12,13 @@ import { format, set } from "date-fns";
 import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { NumericKeyboard } from "../numeric-keyboard";
+import { t } from "i18next";
 
 type TransactionType = "outflow" | "inflow";
 
 interface TransactionTypeSwitchProps {
   type: TransactionType;
-  onChange: (type: TransactionType) => void;
+  onChange: (type: TransactionType, value: number) => void;
 }
 
 export const TransactionTypeSwitch = ({
@@ -26,7 +27,7 @@ export const TransactionTypeSwitch = ({
 }: TransactionTypeSwitchProps) => {
   const value = useSharedValue(0);
   const [width, setWidth] = React.useState(0);
-  const [amount, setAmount] = React.useState(0);
+  const [amount, setAmount] = React.useState("-0");
 
   useEffect(() => {
     if (type === "outflow") {
@@ -47,11 +48,23 @@ export const TransactionTypeSwitch = ({
   });
 
   const onPress = useCallback(() => {
+    // const newValue = parseCurrencyToDecimal(amount) * -1;
+    // setAmount(formatCurrency(newValue));
+
     if (value.value === 0) {
       value.value = withTiming(1, { duration: 300 });
-      onChange("inflow");
+
+      setAmount((v) => {
+        const value = parseCurrencyToDecimal(v) * -1;
+        onChange("inflow", value);
+        return formatCurrency(value);
+      });
     } else {
-      onChange("outflow");
+      setAmount((v) => {
+        const value = parseCurrencyToDecimal(v) * -1;
+        onChange("outflow", value);
+        return formatCurrency(value);
+      });
       value.value = withTiming(0, { duration: 300 });
     }
   }, [value]);
@@ -72,6 +85,8 @@ export const TransactionTypeSwitch = ({
 
   const backgroundColor = useThemeColor({}, "backgroundContent");
 
+  const dynamicInputStyle =
+    type === "inflow" ? styles.inflowStyle : styles.outflowStyle;
   return (
     <View>
       <View
@@ -122,7 +137,9 @@ export const TransactionTypeSwitch = ({
             height: 60,
           }}
         >
-          <Text style={styles.input}>{formatCurrency(amount)}</Text>
+          <Text style={[styles.input, dynamicInputStyle]}>
+            {formatCurrency(parseCurrencyToDecimal(amount))}
+          </Text>
         </View>
       </Pressable>
       <BottomSheetModal
@@ -156,7 +173,8 @@ export const TransactionTypeSwitch = ({
               // const key = activeItem!.item.uuid;
               const lastValue = amount ?? "";
               const newValue = lastValue + value;
-              setAmount(parseCurrencyToDecimal(newValue));
+              setAmount(newValue);
+              onChange(type, parseCurrencyToDecimal(newValue));
               // setEditedItems((items) => {
               //   return {
               //     ...items,
@@ -165,10 +183,10 @@ export const TransactionTypeSwitch = ({
               // });
             }}
             onBackspace={function (): void {
-              const lastValue = formatCurrency(amount) ?? "";
+              const lastValue = amount ?? "";
 
               const newValue = lastValue.slice(0, -1);
-              setAmount(parseCurrencyToDecimal(newValue));
+              setAmount(newValue);
             }}
             onConfirm={async function () {
               handleClosePress();
@@ -184,9 +202,15 @@ export const TransactionTypeSwitch = ({
 
 const styles = StyleSheet.create({
   input: {
-    color: "#fff",
+    // color: "#fff",
     fontSize: 24,
     fontFamily: "NunitoSansBold",
+  },
+  inflowStyle: {
+    color: "#4D9119",
+  },
+  outflowStyle: {
+    color: "#C72C1E",
   },
   item: {
     flex: 1,

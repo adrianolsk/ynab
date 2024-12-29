@@ -19,11 +19,13 @@ interface TextFieldProps extends TextInputProps {
   value?: string;
   onPress?: () => void;
   icon?: keyof typeof FontAwesome.glyphMap;
+  iconColor?: string;
 }
 export const TextField = ({
   placeholder,
   style,
   onPress,
+  iconColor,
   ...props
 }: TextFieldProps) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -53,11 +55,6 @@ export const TextField = ({
     }
   }, [isFocused, props.value]);
 
-  console.log("🍎 animatedLabelStyle", {
-    labelPosition: labelPosition.value,
-    placeholder,
-    value: props.value,
-  });
   const animatedLabelStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -80,7 +77,7 @@ export const TextField = ({
     <Pressable onPress={onPress}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ width: 32, justifyContent: "center" }}>
-          <FontAwesome name={iconName} size={20} color="#aaa" />
+          <FontAwesome name={iconName} size={20} color={iconColor ?? "#aaa"} />
         </View>
         <View style={[styles.container, style]}>
           <AnimatedText style={[styles.label, animatedLabelStyle]}>
@@ -129,6 +126,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   textInputContainer: {
-    height: 40,
+    minHeight: 40,
+    // borderWidth: 1,
+    // borderColor: "red",
+    marginRight: 16,
   },
 });

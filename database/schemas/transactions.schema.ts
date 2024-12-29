@@ -18,10 +18,15 @@ export const TransactionsSchema = sqliteTable(
     uuid: text("uuid").notNull().unique(),
     account_uuid: text("account_uuid")
       .notNull()
-      .references(() => AccountsSchema.id, { onDelete: "cascade" }),
-    category_id: text("category_id").references(() => CategorySchema.id, {
+      .references(() => AccountsSchema.uuid, { onDelete: "cascade" }),
+    category_uuid: text("category_uuid").references(() => CategorySchema.uuid, {
       onDelete: "set null",
     }),
+    payee_uuid: text("payee_uuid")
+      .notNull()
+      .references(() => CategorySchema.id, {
+        onDelete: "set null",
+      }),
     date: text("date").notNull(),
     amount: real("amount").notNull(),
     description: text("description"),
@@ -41,3 +46,5 @@ export const TransactionsSchema = sqliteTable(
   },
   (t) => [index("transaction_account_uuid").on(t.account_uuid)]
 );
+
+export type TransactionsSchemaType = typeof TransactionsSchema.$inferInsert;

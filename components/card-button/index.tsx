@@ -23,9 +23,11 @@ export const CardButton = ({
   type = "primary",
   ...props
 }: CardButtonProps) => {
+  const backgroundStyle =
+    type === "primary" ? styles.primaryBackground : styles.secondaryBackground;
   return (
     <TouchableOpacity onPress={onPress} {...props}>
-      <ViewContent style={styles.container}>
+      <ViewContent style={[styles.container, backgroundStyle]}>
         <Text style={[styles[type]]}>{title}</Text>
       </ViewContent>
     </TouchableOpacity>
@@ -47,11 +49,19 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   primary: {
-    color: "#4D9119",
+    color: "#FFF",
     fontFamily: "NunitoSansSemiBold",
+  },
+  primaryBackground: {
+    backgroundColor: "#3B5EDA",
+    borderRadius: 6,
   },
   secondary: {
     color: "#aaa",
+  },
+  secondaryBackground: {
+    backgroundColor: "#aaa",
+    borderRadius: 6,
   },
   destructive: {
     color: "#C72C1E",

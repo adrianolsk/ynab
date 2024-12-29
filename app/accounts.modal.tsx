@@ -160,7 +160,7 @@ export default function ModalScreen() {
           pathname: "/transaction/new",
           params: {
             accountUuid: item.uuid,
-            accountName: item.name ?? "All transactions",
+            accountName: item.name,
           },
         });
       }
