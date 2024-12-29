@@ -31,6 +31,7 @@ import { StatusBar } from "expo-status-bar";
 import { formatCurrency } from "@/utils/financials";
 import { CardButton } from "@/components/card-button";
 import { AccountGroup } from "@/types";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 type Account = {
   name: string;
@@ -41,25 +42,6 @@ type Account = {
   balance: number | null;
   created_at: string;
 };
-
-const DATA = [
-  {
-    title: undefined,
-    data: ["All transactions"],
-  },
-  {
-    title: "Budget",
-    data: ["Cash Account", "Savings", "WS Visa"],
-  },
-  {
-    title: "Loans",
-    data: ["Mortgage", "Car Loan"],
-  },
-  {
-    title: "Tracking",
-    data: ["TFSA", "RRSP"],
-  },
-];
 
 type RootStackParamList = {
   details: { id: number; name: string };
@@ -95,46 +77,33 @@ export default function TabTwoScreen() {
       data: value.data,
     }));
 
-    arr.unshift({
-      title: undefined,
-      data: [
-        {
-          name: "All transactions",
-          account_type: "checking",
-          budget_uuid: "",
-          uuid: "",
-        },
-      ],
-    });
     return arr;
   }, [data]);
 
+  const handlePress = (uuid: string) => () => {
+    router.push(`/accounts/edit/${uuid}`);
+  };
   return (
-    <>
+    <View style={{ flex: 1 }}>
+      <View style={{ padding: 16 }}>
+        <ListItem
+          title="All transactions"
+          value={0}
+          onPress={() => {
+            router.push("/transactions.screen");
+          }}
+        />
+      </View>
       <SectionList
         style={styles.section}
         sections={accounts}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item }) => (
-          <Link href={`/accounts/edit/${item.id}`} asChild>
-            <Pressable>
-              <ViewContent style={styles.item}>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.title}>{item.name}</Text>
-                </View>
-                <View style={{ flex: 1, alignItems: "flex-end" }}>
-                  <Text
-                    style={[
-                      styles.value,
-                      (item.balance ?? 0) > 0 ? styles.positive : null,
-                    ]}
-                  >
-                    {formatCurrency(item.balance)}
-                  </Text>
-                </View>
-              </ViewContent>
-            </Pressable>
-          </Link>
+          <ListItem
+            title={item.name}
+            value={item.balance}
+            onPress={handlePress(item.uuid)}
+          />
         )}
         renderSectionHeader={({ section: { title } }) => {
           return title ? <Text style={styles.header}>{t(title)}</Text> : null;
@@ -152,9 +121,35 @@ export default function TabTwoScreen() {
           );
         }}
       />
-    </>
+    </View>
   );
 }
+
+interface ListItemProps {
+  title: string;
+  value?: number | null;
+  onPress?: () => void;
+}
+const ListItem = ({ title, value, onPress }: ListItemProps) => {
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+      <ViewContent style={styles.item}>
+        <View style={{}}>
+          <Text style={styles.title}>{title} </Text>
+        </View>
+        {!!value && (
+          <View style={{ flex: 1, alignItems: "flex-end" }}>
+            <Text
+              style={[styles.value, (value ?? 0) > 0 ? styles.positive : null]}
+            >
+              {formatCurrency(value)}
+            </Text>
+          </View>
+        )}
+      </ViewContent>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -165,7 +160,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   item: {
-    flex: 1,
     flexDirection: "row",
     padding: 20,
     borderBottomWidth: 1,
@@ -178,7 +172,7 @@ const styles = StyleSheet.create({
     fontFamily: "NunitoSansSemiBold",
   },
   title: {
-    flex: 1,
+    // flex: 1,
     fontSize: 14,
   },
   value: {
