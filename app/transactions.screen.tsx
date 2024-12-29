@@ -1,56 +1,109 @@
-import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import {
-  Platform,
-  SectionList,
-  StatusBar,
-  StyleSheet,
-  Touchable,
-  View,
-} from "react-native";
 import { Text, TextInput, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
 import {
   AccountSchemaType,
   AccountsSchema,
 } from "@/database/schemas/accounts.schema";
-import { CategorySchemaType } from "@/database/schemas/category.schema";
-import { AccountGroup, AccountType } from "@/types";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
-import { PayeeSchema, PayeeSchemaType } from "@/database/schemas/payee.schema";
-import { FontAwesome } from "@expo/vector-icons";
-import { uuidV4 } from "@/utils/helpers";
-import { getBudgetUuid } from "@/services/storage";
-import {
-  TransactionsSchema,
-  TransactionsSchemaType,
-} from "@/database/schemas/transactions.schema";
+import { CategorySchema } from "@/database/schemas/category.schema";
+import { PayeeSchema } from "@/database/schemas/payee.schema";
+import { TransactionsSchema } from "@/database/schemas/transactions.schema";
 import { formatCurrency } from "@/utils/financials";
+import { FontAwesome } from "@expo/vector-icons";
+import { format } from "date-fns";
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import Checkbox from "expo-checkbox";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Platform,
+  SectionList,
+  StatusBar,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Pressable } from "react-native-gesture-handler";
+
+interface TransactionItem {
+  uuid: string;
+  amount: number;
+  date: string;
+  payee: string;
+  category: string;
+  account: string;
+  cleared: boolean;
+}
 
 type TrsancationItemGroup = {
   title?: string;
-  data: TransactionsSchemaType[];
+  data: TransactionItem[];
 };
 
 export default function ModalScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
-    type: "transaction";
+    accountUuid: string;
   }>();
-  console.log("🍎 values", params.type);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const { data } = useLiveQuery(db.select().from(TransactionsSchema));
+  const [account, setAccount] = useState<AccountSchemaType>();
+  const [checkedItems, setCheckedItems] = useState<
+    Record<string, TransactionItem>
+  >({});
+
+  useEffect(() => {
+    if (!params.accountUuid) return;
+    const accountUuid = params.accountUuid;
+    db.select()
+      .from(AccountsSchema)
+      .where(eq(AccountsSchema.uuid, accountUuid))
+      .then(([result]) => {
+        setAccount(result);
+      });
+  }, [params.accountUuid]);
+
+  const query = db
+    .select({
+      payee: PayeeSchema,
+      category: CategorySchema,
+      account: AccountsSchema,
+      transaction: TransactionsSchema,
+    })
+    .from(TransactionsSchema)
+    .innerJoin(PayeeSchema, eq(TransactionsSchema.payee_uuid, PayeeSchema.uuid))
+    .innerJoin(
+      CategorySchema,
+      eq(TransactionsSchema.category_uuid, CategorySchema.uuid)
+    )
+    .innerJoin(
+      AccountsSchema,
+      eq(TransactionsSchema.account_uuid, AccountsSchema.uuid)
+    );
+
+  // Add conditional filtering
+  if (params.accountUuid) {
+    query.where(eq(TransactionsSchema.account_uuid, params.accountUuid));
+  }
+
+  const { data } = useLiveQuery(query);
 
   const accounts = useMemo(() => {
     const result = data?.reduce((acc, item) => {
-      const firstChar = item.date;
+      const firstChar = item.transaction.date;
       acc[firstChar] = acc[firstChar] || {
         title: firstChar,
         data: [],
       };
-      acc[firstChar].data.push(item);
+      acc[firstChar].data.push({
+        account: item.account.name,
+        category: item.category.name,
+        payee: item.payee.name,
+        uuid: item.transaction.uuid,
+        amount: item.transaction.amount,
+        date: item.transaction.date,
+        cleared: item.transaction.cleared ?? false,
+      });
       return acc;
     }, {} as Record<string, TrsancationItemGroup>);
 
@@ -67,8 +120,7 @@ export default function ModalScreen() {
 
     return accounts.map((group) => {
       const filteredData = group.data.filter((item) => {
-        // todo: filter by joining data
-        return item.uuid.toLowerCase().includes(searchTerm.toLowerCase());
+        return item.payee.toLowerCase().includes(searchTerm.toLowerCase());
       });
       return {
         ...group,
@@ -78,40 +130,17 @@ export default function ModalScreen() {
   }, [accounts, searchTerm]);
 
   const onSelect = useCallback(
-    (item: TransactionsSchemaType | { uuid: string; name: string }) => {
-      if (params.type === "transaction") {
-        router.dismissTo({
-          pathname: "/transaction/new",
-          params: {
-            uuid: item.uuid,
-            // payeeName: item.name,
-          },
-        });
-      }
+    (item: TransactionItem | { uuid: string; name: string }) => {
+      router.push({
+        pathname: "/transaction/new",
+        params: {
+          uuid: item.uuid,
+          // payeeName: item.name,
+        },
+      });
     },
-    [params.type, router]
+    [router]
   );
-
-  const savePayee = async () => {
-    const budgetUuid = (await getBudgetUuid()) ?? "";
-    const [{ payee_uuid }] = await db
-      .insert(PayeeSchema)
-      .values({
-        uuid: uuidV4(),
-        budget_uuid: budgetUuid,
-        name: searchTerm,
-      })
-      .returning({ payee_uuid: PayeeSchema.uuid });
-
-    onSelect({
-      uuid: payee_uuid,
-      name: searchTerm,
-    });
-  };
-
-  const deleteSearchTerm = () => {
-    setSearchTerm("");
-  };
 
   return (
     <>
@@ -119,7 +148,7 @@ export default function ModalScreen() {
       <ExpoStatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
       <Stack.Screen
         options={{
-          headerTitle: "Transactions",
+          headerTitle: account?.name ?? "Transactions",
           headerBackButtonDisplayMode: "minimal",
         }}
       />
@@ -133,43 +162,85 @@ export default function ModalScreen() {
           />
         </View>
       </ViewContent>
-      {searchTerm && (
-        <TouchableOpacity onPress={savePayee}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-              marginTop: 16,
-              height: 48,
-              padding: 16,
-            }}
-          >
-            <FontAwesome name="plus" size={20} color="green" />
-            <Text style={styles.addPayeeText}>Create "{searchTerm}" payee</Text>
-          </View>
-        </TouchableOpacity>
-      )}
+
       <SectionList
         stickySectionHeadersEnabled={false}
         style={styles.section}
         sections={filteredAccounts}
         keyExtractor={(item, index) => item.uuid}
         renderItem={({ item }) => (
-          <Pressable onPress={() => onSelect(item)}>
-            <ViewContent style={styles.item}>
-              <Text style={styles.title}>{formatCurrency(item.amount)}</Text>
-            </ViewContent>
-          </Pressable>
+          <TransactionItemRow
+            item={item}
+            isChecked={!!checkedItems[item.uuid]}
+            onPress={() => onSelect(item)}
+            onCheck={() => {
+              setCheckedItems((prev) => {
+                if (prev[item.uuid]) {
+                  delete prev[item.uuid];
+                } else {
+                  prev[item.uuid] = item;
+                }
+                return { ...prev };
+              });
+            }}
+          />
         )}
         renderSectionHeader={({ section: { title, data } }) => {
           if (data.length === 0) return null;
-          return title ? <Text style={styles.header}>{title}</Text> : null;
+          return title ? (
+            <Text style={styles.header}>{format(title, "dd/MM/yyyy")}</Text>
+          ) : null;
         }}
       />
     </>
   );
 }
+
+interface TransactionItemRowProps {
+  item: TransactionItem;
+  isChecked?: boolean;
+  onPress?: () => void;
+  onCheck?: () => void;
+}
+const TransactionItemRow = ({
+  item,
+  isChecked,
+  onPress,
+  onCheck,
+}: TransactionItemRowProps) => {
+  // const [isChecked, setChecked] = useState(false);
+
+  return (
+    <ViewContent style={styles.item}>
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Checkbox value={isChecked} onValueChange={onCheck} />
+      </View>
+      <Pressable onPress={onPress} style={{ flex: 1 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 8,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={styles.payeeName}>{item.payee}</Text>
+            <Text style={styles.categoryName}>{item.category}</Text>
+          </View>
+          <View style={{ flex: 1, alignItems: "flex-end" }}>
+            <Text style={styles.amount}>{formatCurrency(item.amount)}</Text>
+            <Text style={styles.accountName}>{item.account}</Text>
+          </View>
+          <View>
+            <FontAwesome
+              name={item.cleared ? "check-circle" : "times-circle"}
+              color={item.cleared ? "#4D9119" : "#C72C1E"}
+            />
+          </View>
+        </View>
+      </Pressable>
+    </ViewContent>
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -180,9 +251,11 @@ const styles = StyleSheet.create({
     // padding: 16,
   },
   item: {
-    padding: 20,
+    padding: 16,
     marginBottom: 1,
     borderBottomColor: "#ccc",
+    flexDirection: "row",
+    gap: 8,
   },
   header: {
     marginVertical: 16,
@@ -192,6 +265,22 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
+  },
+  payeeName: {
+    fontSize: 14,
+    fontFamily: "NunitoSansSemiBold",
+  },
+  categoryName: {
+    fontSize: 14,
+    fontFamily: "NunitoSansLight",
+  },
+  accountName: {
+    fontSize: 14,
+    fontFamily: "NunitoSansLight",
+  },
+  amount: {
+    fontSize: 14,
+    fontFamily: "NunitoSansBold",
   },
   addPayeeText: {
     color: "#4B9828",

@@ -81,7 +81,13 @@ export default function TabTwoScreen() {
   }, [data]);
 
   const handlePress = (uuid: string) => () => {
-    router.push(`/accounts/edit/${uuid}`);
+    // router.push(`/accounts/edit/${uuid}`);
+    router.push({
+      pathname: "/transactions.screen",
+      params: {
+        accountUuid: uuid,
+      },
+    });
   };
   return (
     <View style={{ flex: 1 }}>
