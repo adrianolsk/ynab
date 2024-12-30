@@ -208,7 +208,8 @@ CREATE TABLE `transactions` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
 	`account_uuid` text NOT NULL,
-	`category_id` text,
+	`category_uuid` text,
+	`payee_uuid` text NOT NULL,
 	`date` text NOT NULL,
 	`amount` real NOT NULL,
 	`description` text,
@@ -219,8 +220,9 @@ CREATE TABLE `transactions` (
 	`last_synced_at` text,
 	`sync_status` text DEFAULT 'pending' NOT NULL,
 	`version` integer DEFAULT 1 NOT NULL,
-	FOREIGN KEY (`account_uuid`) REFERENCES `accounts`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`account_uuid`) REFERENCES `accounts`(`uuid`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`category_uuid`) REFERENCES `categories`(`uuid`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`payee_uuid`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `transactions_uuid_unique` ON `transactions` (`uuid`);--> statement-breakpoint

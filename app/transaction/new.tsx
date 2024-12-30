@@ -9,6 +9,8 @@ import {
   TransactionsSchema,
   TransactionsSchemaType,
 } from "@/database/schemas/transactions.schema";
+import { updateSpentAmount } from "@/database/services/monthly-allocations.service";
+import { getBudgetUuid } from "@/services/storage";
 import { uuidV4 } from "@/utils/helpers";
 import DateTimePicker, {
   DateTimePickerAndroid,
@@ -110,7 +112,15 @@ const NewTransactionScreen = () => {
       cleared: isCleared,
     };
 
+    const budgetUuid = await getBudgetUuid();
+
     await db.insert(TransactionsSchema).values(data);
+    await updateSpentAmount({
+      budget_uuid: budgetUuid!,
+      month: format(selectedDate, "yyyy-MM"),
+      value: amount,
+      categoryUuid: selectedCategory?.uuid,
+    });
     router.dismiss();
   };
   return (

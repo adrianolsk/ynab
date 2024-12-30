@@ -8,6 +8,7 @@ import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.s
 import { Pressable } from "react-native-gesture-handler";
 import { CategorySchemaType } from "@/database/schemas/category.schema";
 import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
+import { ProgressBar } from "../progress-bar";
 
 interface CategoryCardProps {
   isSelected: boolean;
@@ -39,10 +40,13 @@ const CategoryCard = ({
   const rolloverAmount = monthlyAllocation?.rollover_amount ?? 0;
   const spentAmount = monthlyAllocation?.spent_amount ?? 0;
   const allocatedAmount = monthlyAllocation?.allocated_amount ?? 0;
-  const availableAmount = allocatedAmount + rolloverAmount - spentAmount;
+  const availableAmount = allocatedAmount + rolloverAmount + spentAmount;
   const amountToShow = currentEditedAmount
     ? parseCurrencyToDecimal(currentEditedAmount)
     : allocatedAmount;
+
+  const isFullySpent = spentAmount * -1 >= allocatedAmount;
+  console.log("🍎 availableAmount", { availableAmount, spentAmount });
 
   const tagStyle = useMemo(() => {
     if (availableAmount > 0) {
@@ -60,27 +64,46 @@ const CategoryCard = ({
         onPress(monthlyAllocation?.allocated_amount ?? 0);
       }}
     >
-      <ViewContent style={[styles.item, selectedStyle]}>
-        <View style={{ flex: 2 }}>
-          <Text style={styles.title}>{item.name}</Text>
-        </View>
-        <View>
-          {isOpen && isSelected && (
-            <Text style={[styles.title, styles.titleSelected]}>
-              {formatCurrency(amountToShow)}
-            </Text>
-          )}
-          {isOpen && !isSelected && (
-            <Text style={styles.title}>{formatCurrency(amountToShow)}</Text>
-          )}
-        </View>
-        <View style={{ width: 120, alignItems: "flex-end" }}>
-          <View style={[styles.tag, tagStyle]}>
-            <Text style={styles.title}>{formatCurrency(availableAmount)}</Text>
+      <ViewContent
+        style={[
+          { marginBottom: 1, borderBottomColor: "#ccc", padding: 16 },
+          selectedStyle,
+        ]}
+      >
+        <View style={[styles.item]}>
+          <View style={{ flex: 2 }}>
+            <Text style={styles.title}>{item.name}</Text>
+          </View>
+          <View>
+            {isOpen && isSelected && (
+              <Text style={[styles.title, styles.titleSelected]}>
+                {formatCurrency(amountToShow)}
+              </Text>
+            )}
+            {isOpen && !isSelected && (
+              <Text style={styles.title}>{formatCurrency(amountToShow)}</Text>
+            )}
+          </View>
+          <View style={{ width: 120, alignItems: "flex-end" }}>
+            <View style={[styles.tag, tagStyle]}>
+              <Text style={styles.title}>
+                {formatCurrency(availableAmount)}
+              </Text>
+            </View>
           </View>
         </View>
+        <View style={{ gap: 4, marginTop: 4 }}>
+          <ProgressBar
+            target={300}
+            availableAmount={availableAmount}
+            spentAmount={spentAmount}
+            rolloverAmount={rolloverAmount}
+          />
+          <Text style={styles.fundedOrSpent}>
+            {isFullySpent ? "Fully Spent" : "Funded"}
+          </Text>
+        </View>
       </ViewContent>
-      <View></View>
     </Pressable>
   );
 };
@@ -101,9 +124,6 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: "row",
-    padding: 20,
-    marginBottom: 1,
-    borderBottomColor: "#ccc",
   },
   header: {
     flexDirection: "row",
@@ -118,6 +138,11 @@ const styles = StyleSheet.create({
   },
   titleSelected: {
     fontFamily: "NunitoSansBold",
+  },
+  fundedOrSpent: {
+    fontSize: 12,
+    fontFamily: "NunitoSansMedium",
+    color: "#aaa",
   },
   tag: {
     borderRadius: 12,

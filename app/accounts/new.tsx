@@ -1,28 +1,23 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, Platform, Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
 // import { Text, View } from "@/components/Themed";
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { db } from "@/database/db";
-import * as schema from "@/database/schemas/user.schema";
-import {
-  AccountsSchema,
-  AccountSchemaType,
-} from "@/database/schemas/accounts.schema";
-import { AccountGroup } from "@/database/types";
+import { AccountsSchema } from "@/database/schemas/accounts.schema";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+
 import { BalanceField } from "@/components/balance-field";
-import { TextInput, Text } from "@/components/Themed";
-import { useTranslation } from "react-i18next";
-import { AccountType } from "@/types";
 import { CardButton } from "@/components/card-button";
-import { uuidV4 } from "@/utils/helpers";
-import { getBudgetUuid } from "@/services/storage";
-import { updateReadyToAssign } from "@/database/services/monthly-allocations.service";
-import { format } from "date-fns";
 import ScreenView from "@/components/screen-view";
+import { Text, TextInput } from "@/components/Themed";
+import { updateReadyToAssign } from "@/database/services/ready-to-assign.service";
+import { getBudgetUuid } from "@/services/storage";
+import { AccountGroup, AccountType } from "@/types";
+import { uuidV4 } from "@/utils/helpers";
+import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
+import { Pressable } from "react-native-gesture-handler";
 
 export default function NewAccountScreen() {
   const { t } = useTranslation();

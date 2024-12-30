@@ -49,7 +49,7 @@ import { Pressable } from "react-native-gesture-handler";
 import CategoryCard from "@/components/category-card";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { uuidV4 } from "@/utils/helpers";
-import { updateReadyToAssign } from "@/database/services/monthly-allocations.service";
+import { updateReadyToAssign } from "@/database/services/ready-to-assign.service";
 
 type AccountItem = {
   name: string;
@@ -364,15 +364,16 @@ const Header = ({
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.header}>
+        <FontAwesome
+          name={closed ? "chevron-down" : "chevron-up"}
+          size={12}
+          color="#555"
+        />
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{title}</Text>
         </View>
-        <View style={{ marginRight: 8 }}>
-          <FontAwesome
-            name={closed ? "chevron-down" : "chevron-up"}
-            size={12}
-            color="#555"
-          />
+        <View>
+          <Text style={styles.availableText}>Available to spend</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -403,9 +404,15 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+    gap: 8,
   },
   title: {
     fontSize: 12,
     fontFamily: "NunitoSansMedium",
+  },
+  availableText: {
+    fontSize: 12,
+    fontFamily: "NunitoSansMedium",
+    color: "#aaa",
   },
 });

@@ -8,11 +8,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/database/db";
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
-// import { getMonthlyAllocations } from "@/database/services/monthly-allocations.service";
 
-interface AssignMoneyCardProps {
-  // value: number;
-}
+interface AssignMoneyCardProps {}
 
 type AssignType = "positive" | "assigned" | "negative";
 

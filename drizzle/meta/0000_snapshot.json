@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b8204684-fded-4d10-b390-04cf14c744f5",
+  "id": "1fe1434f-b26b-4fea-b032-f4ae27cb094a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "accounts": {
@@ -1526,11 +1526,18 @@
           "notNull": true,
           "autoincrement": false
         },
-        "category_id": {
-          "name": "category_id",
+        "category_uuid": {
+          "name": "category_uuid",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "payee_uuid": {
+          "name": "payee_uuid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "date": {
@@ -1626,25 +1633,38 @@
         }
       },
       "foreignKeys": {
-        "transactions_account_uuid_accounts_id_fk": {
-          "name": "transactions_account_uuid_accounts_id_fk",
+        "transactions_account_uuid_accounts_uuid_fk": {
+          "name": "transactions_account_uuid_accounts_uuid_fk",
           "tableFrom": "transactions",
           "tableTo": "accounts",
           "columnsFrom": [
             "account_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "transactions_category_id_categories_id_fk": {
-          "name": "transactions_category_id_categories_id_fk",
+        "transactions_category_uuid_categories_uuid_fk": {
+          "name": "transactions_category_uuid_categories_uuid_fk",
           "tableFrom": "transactions",
           "tableTo": "categories",
           "columnsFrom": [
-            "category_id"
+            "category_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "transactions_payee_uuid_categories_id_fk": {
+          "name": "transactions_payee_uuid_categories_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "payee_uuid"
           ],
           "columnsTo": [
             "id"
