@@ -14,3 +14,7 @@ export type AccountType =
   | "liability";
 
 export type AccountGroup = "budget" | "loan" | "tracking";
+
+export type TargetType = "weekly" | "monthly" | "yearly" | "custom";
+
+export type RefillStrategy = "set_aside" | "refill_up_to" | "balance_of";

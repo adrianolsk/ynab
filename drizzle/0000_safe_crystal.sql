@@ -76,25 +76,6 @@ CREATE TABLE `categories` (
 CREATE UNIQUE INDEX `categories_uuid_unique` ON `categories` (`uuid`);--> statement-breakpoint
 CREATE INDEX `category_budget_uuid` ON `categories` (`budget_uuid`);--> statement-breakpoint
 CREATE INDEX `category_uuid` ON `categories` (`uuid`);--> statement-breakpoint
-CREATE TABLE `goals` (
-	`id` integer PRIMARY KEY NOT NULL,
-	`uuid` text NOT NULL,
-	`category_uuid` text NOT NULL,
-	`target_amount` real NOT NULL,
-	`target_date` text NOT NULL,
-	`current_amount` real DEFAULT 0,
-	`created_at` text DEFAULT (current_timestamp) NOT NULL,
-	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
-	`deleted_at` text,
-	`last_synced_at` text,
-	`sync_status` text DEFAULT 'pending' NOT NULL,
-	`version` integer DEFAULT 1 NOT NULL,
-	FOREIGN KEY (`category_uuid`) REFERENCES `categories`(`uuid`) ON UPDATE no action ON DELETE cascade
-);
---> statement-breakpoint
-CREATE UNIQUE INDEX `goals_uuid_unique` ON `goals` (`uuid`);--> statement-breakpoint
-CREATE INDEX `goals_category_uuid` ON `goals` (`category_uuid`);--> statement-breakpoint
-CREATE INDEX `goals_uuid` ON `goals` (`uuid`);--> statement-breakpoint
 CREATE TABLE `monthly_allocations` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`uuid` text NOT NULL,
@@ -192,6 +173,29 @@ CREATE TABLE `tags` (
 CREATE UNIQUE INDEX `tags_uuid_unique` ON `tags` (`uuid`);--> statement-breakpoint
 CREATE INDEX `tags_user_uuid` ON `tags` (`user_uuid`);--> statement-breakpoint
 CREATE INDEX `tags_uuid` ON `tags` (`uuid`);--> statement-breakpoint
+CREATE TABLE `target` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`uuid` text NOT NULL,
+	`category_uuid` text NOT NULL,
+	`target_amount` real NOT NULL,
+	`type` text DEFAULT 'monthly' NOT NULL,
+	`frequency_details` text,
+	`refill_strategy` text DEFAULT 'set_aside' NOT NULL,
+	`due_date` text,
+	`repeat_frequency` text,
+	`repeat_enabled` integer DEFAULT false,
+	`created_at` text DEFAULT (current_timestamp) NOT NULL,
+	`updated_at` text DEFAULT (current_timestamp) NOT NULL,
+	`deleted_at` text,
+	`last_synced_at` text,
+	`sync_status` text DEFAULT 'pending' NOT NULL,
+	`version` integer DEFAULT 1 NOT NULL,
+	FOREIGN KEY (`category_uuid`) REFERENCES `categories`(`uuid`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `target_uuid_unique` ON `target` (`uuid`);--> statement-breakpoint
+CREATE INDEX `target_category_uuid` ON `target` (`category_uuid`);--> statement-breakpoint
+CREATE INDEX `target_uuid` ON `target` (`uuid`);--> statement-breakpoint
 CREATE TABLE `transaction_tags` (
 	`transaction_uuid` text NOT NULL,
 	`tag_uuid` text NOT NULL,
