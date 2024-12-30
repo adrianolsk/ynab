@@ -64,10 +64,49 @@ const CategoryCard = ({
     db.select().from(TargetSchema).where(eq(TargetSchema.category_uuid, uuid))
   );
 
-  if (target) {
-    console.log("🍎 target", { target });
-    console.log("🍎 availableAmount", { availableAmount, spentAmount });
-  }
+  const availableAmountStyle = useMemo(() => {
+    if (spentAmount < 0 && availableAmount < spentAmount * -1) {
+      return styles.tagNegative;
+    }
+    if (availableAmount === 0 && target?.target_amount === 0) {
+      return styles.availableGray;
+    }
+    if (availableAmount < target?.target_amount && target?.target_amount > 0) {
+      return styles.availableYellow;
+    }
+    if (availableAmount >= target?.target_amount && target?.target_amount > 0) {
+      return styles.availableGreen;
+    }
+    if (availableAmount > 0 && !target?.target_amount) {
+      return styles.availableGreen;
+    }
+
+    return styles.availableGray;
+  }, [availableAmount, target]);
+
+  const spentLabel = useMemo(() => {
+    if (spentAmount < 0 && availableAmount < spentAmount * -1) {
+      const value = spentAmount * -1;
+      return `Overspent: ${formatCurrency(value)} of ${formatCurrency(
+        allocatedAmount
+      )}`;
+    }
+    if (availableAmount === 0 && target?.target_amount === 0) {
+      return "????";
+    }
+    if (availableAmount < target?.target_amount && target?.target_amount > 0) {
+      const value = target?.target_amount - availableAmount;
+      return `${formatCurrency(value)} more needed by the end of the month`;
+    }
+    if (availableAmount >= target?.target_amount && target?.target_amount > 0) {
+      return "Funded";
+    }
+    if (availableAmount > 0 && !target?.target_amount) {
+      return "Funded????";
+    }
+
+    return "";
+  }, [availableAmount, target]);
 
   return (
     <Pressable
@@ -96,8 +135,8 @@ const CategoryCard = ({
             )}
           </View>
           <View style={{ width: 120, alignItems: "flex-end" }}>
-            <View style={[styles.tag, tagStyle]}>
-              <Text style={styles.title}>
+            <View style={[styles.tag, availableAmountStyle]}>
+              <Text style={styles.amountText}>
                 {formatCurrency(availableAmount)}
               </Text>
             </View>
@@ -109,10 +148,9 @@ const CategoryCard = ({
             availableAmount={availableAmount}
             spentAmount={spentAmount}
             rolloverAmount={rolloverAmount}
+            allocatedAmount={allocatedAmount}
           />
-          <Text style={styles.fundedOrSpent}>
-            {isFullySpent ? "Fully Spent" : "Funded"}
-          </Text>
+          <Text style={styles.fundedOrSpent}>{spentLabel}</Text>
         </View>
       </ViewContent>
     </Pressable>
@@ -145,7 +183,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 12,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: "NunitoSansBold",
+  },
+  amountText: {
+    fontSize: 12,
+    fontFamily: "NunitoSansBold",
+    color: "#111",
   },
   titleSelected: {
     fontFamily: "NunitoSansBold",
@@ -170,6 +213,15 @@ const styles = StyleSheet.create({
     backgroundColor: "yellow",
   },
   tagGray: {
+    backgroundColor: "#aaa",
+  },
+  availableYellow: {
+    backgroundColor: "#FFD700",
+  },
+  availableGreen: {
+    backgroundColor: "#4B9828",
+  },
+  availableGray: {
     backgroundColor: "#aaa",
   },
 });
