@@ -14,7 +14,8 @@
     "interface": "i18next-resources-for-ts interface -i ./i18n/locales -o ./@types/resources.d.ts",
     "connect": "adb connect 192.168.0.61:5555",
     "ip": "adb reverse tcp:8081 tcp:8081",
-    "connect:android": "npm run connect && npm run ip"
+    "connect:android": "npm run connect && npm run ip",
+     "postinstall": "patch-package"
   },
   "jest": {
     "preset": "jest-expo"

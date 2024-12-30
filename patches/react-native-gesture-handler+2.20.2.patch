@@ -1,0 +1,44 @@
+diff --git a/node_modules/react-native-gesture-handler/src/components/Pressable/Pressable.tsx b/node_modules/react-native-gesture-handler/src/components/Pressable/Pressable.tsx
+index ccb8043..ff15c02 100644
+--- a/node_modules/react-native-gesture-handler/src/components/Pressable/Pressable.tsx
++++ b/node_modules/react-native-gesture-handler/src/components/Pressable/Pressable.tsx
+@@ -299,11 +299,10 @@ export default function Pressable(props: PressableProps) {
+   // RNButton is placed inside ButtonGesture to enable Android's ripple and to capture non-propagating events
+   const buttonGesture = useMemo(
+     () =>
+-      Gesture.Native()
++      Gesture.Native().shouldActivateOnStart(true)
+         .onBegin(() => {        
+-          // Android sets BEGAN state on press down
+-          if (Platform.OS === 'android') {
+-            isTouchPropagationAllowed.current = true;
++          if ( Platform.OS === 'macos') {
++             isTouchPropagationAllowed.current = true;
+           }
+         })
+         .onStart(() => {
+@@ -311,11 +310,6 @@ export default function Pressable(props: PressableProps) {
+             isTouchPropagationAllowed.current = true;
+           }          
+ 
+-          // iOS sets ACTIVE state on press down
+-          if (Platform.OS !== 'ios') {
+-            return;
+-          }
+-
+           if (deferredEventPayload.current) {
+             isTouchPropagationAllowed.current = true;
+ 
+@@ -358,11 +352,7 @@ export default function Pressable(props: PressableProps) {
+     gesture.enabled(isPressableEnabled);
+     gesture.runOnJS(true);
+     gesture.hitSlop(appliedHitSlop);
+-    gesture.shouldCancelWhenOutside(false);
+-
+-    if (Platform.OS !== 'web') {
+-      gesture.shouldCancelWhenOutside(true);
+-    }
++    gesture.shouldCancelWhenOutside(Platform.OS === 'web' ? false : true);
+   }
+ 
+   // Uses different hitSlop, to activate on hitSlop area instead of pressRetentionOffset area
