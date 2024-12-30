@@ -42,7 +42,6 @@ export const TabBar = ({
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
   const { buildHref } = useLinkBuilder();
   const insets = useSafeAreaInsets();
-  console.log("🍎 insets", { insets, palt: Platform.OS });
 
   return (
     <ViewContent

@@ -108,6 +108,7 @@ const CategoryCard = ({
     return "";
   }, [availableAmount, target]);
 
+  const selectedOpacity = { opacity: isSelected ? 0.7 : 1 };
   return (
     <Pressable
       onPress={() => {
@@ -122,7 +123,7 @@ const CategoryCard = ({
       >
         <View style={[styles.item]}>
           <View style={{ flex: 2 }}>
-            <Text style={styles.title}>{item.name}</Text>
+            <Text style={[styles.title, selectedOpacity]}>{item.name}</Text>
           </View>
           <View>
             {isOpen && isSelected && (
@@ -135,14 +136,14 @@ const CategoryCard = ({
             )}
           </View>
           <View style={{ width: 120, alignItems: "flex-end" }}>
-            <View style={[styles.tag, availableAmountStyle]}>
+            <View style={[styles.tag, availableAmountStyle, selectedOpacity]}>
               <Text style={styles.amountText}>
                 {formatCurrency(availableAmount)}
               </Text>
             </View>
           </View>
         </View>
-        <View style={{ gap: 4, marginTop: 4 }}>
+        <View style={[{ gap: 4, marginTop: 4 }, selectedOpacity]}>
           <ProgressBar
             target={target?.target_amount ?? 0}
             availableAmount={availableAmount}
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   selected: {
-    backgroundColor: "#005583",
+    backgroundColor: "#283351",
   },
   section: {
     padding: 16,
@@ -192,6 +193,7 @@ const styles = StyleSheet.create({
   },
   titleSelected: {
     fontFamily: "NunitoSansBold",
+    fontSize: 14,
   },
   fundedOrSpent: {
     fontSize: 12,
