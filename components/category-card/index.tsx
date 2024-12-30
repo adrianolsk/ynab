@@ -9,6 +9,7 @@ import { Pressable } from "react-native-gesture-handler";
 import { CategorySchemaType } from "@/database/schemas/category.schema";
 import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { ProgressBar } from "../progress-bar";
+import { TargetSchema } from "@/database/schemas/target.schema";
 
 interface CategoryCardProps {
   isSelected: boolean;
@@ -46,7 +47,6 @@ const CategoryCard = ({
     : allocatedAmount;
 
   const isFullySpent = spentAmount * -1 >= allocatedAmount;
-  console.log("🍎 availableAmount", { availableAmount, spentAmount });
 
   const tagStyle = useMemo(() => {
     if (availableAmount > 0) {
@@ -57,6 +57,17 @@ const CategoryCard = ({
       return styles.tagNegative;
     }
   }, [availableAmount]);
+
+  const {
+    data: [target],
+  } = useLiveQuery(
+    db.select().from(TargetSchema).where(eq(TargetSchema.category_uuid, uuid))
+  );
+
+  if (target) {
+    console.log("🍎 target", { target });
+    console.log("🍎 availableAmount", { availableAmount, spentAmount });
+  }
 
   return (
     <Pressable
@@ -94,7 +105,7 @@ const CategoryCard = ({
         </View>
         <View style={{ gap: 4, marginTop: 4 }}>
           <ProgressBar
-            target={300}
+            target={target?.target_amount ?? 0}
             availableAmount={availableAmount}
             spentAmount={spentAmount}
             rolloverAmount={rolloverAmount}

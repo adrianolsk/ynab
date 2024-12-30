@@ -13,7 +13,12 @@ const ProgressBar = ({
   spentAmount,
   rolloverAmount,
 }: ProgressBarProps) => {
-  console.log("🍎 ProgressBar", { target, availableAmount, spentAmount });
+  console.log("🍎 ProgressBar", {
+    target,
+    availableAmount,
+    spentAmount,
+    rolloverAmount,
+  });
   return (
     <View style={styles.progressContainer}>
       <View
