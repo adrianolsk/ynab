@@ -19,7 +19,14 @@ const ProgressBar = ({
   const availableAmountComponent = useMemo(() => {
     if (availableAmount === 0) {
       return (
-        <View style={{ width: "100%", height: 6, backgroundColor: "gray" }} />
+        <View style={{ width: "100%", height: 4, backgroundColor: "gray" }} />
+      );
+    }
+    if (availableAmount > 0 && target === 0) {
+      return (
+        <View
+          style={{ width: "100%", height: 4, backgroundColor: "#4B9828" }}
+        />
       );
     }
 

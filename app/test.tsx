@@ -1,57 +1,64 @@
-import Checkbox from "expo-checkbox";
-import { useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-export default function App() {
-  const [isChecked, setChecked] = useState(false);
+const App = () => {
+  const [timesPressed, setTimesPressed] = useState(0);
+
+  let textLog = "";
+  if (timesPressed > 1) {
+    textLog = timesPressed + "x onPress";
+  } else if (timesPressed > 0) {
+    textLog = "onPress";
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.section}>
-        <Checkbox
-          style={styles.checkbox}
-          value={isChecked}
-          onValueChange={setChecked}
-        />
-        <Text style={styles.paragraph}>Normal checkbox</Text>
-      </View>
-      <View style={styles.section}>
-        <Checkbox
-          style={styles.checkbox}
-          value={isChecked}
-          onValueChange={setChecked}
-          color={isChecked ? "#4630EB" : undefined}
-        />
-        <Text style={styles.paragraph}>Custom colored checkbox</Text>
-      </View>
-      <View style={styles.section}>
-        <Checkbox
-          style={styles.checkbox}
-          disabled
-          value={isChecked}
-          onValueChange={setChecked}
-        />
-        <Text style={styles.paragraph}>Disabled checkbox</Text>
-      </View>
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <Pressable
+          android_ripple={{ color: "#FF0000" }}
+          onPress={() => {
+            setTimesPressed((current) => current + 1);
+          }}
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed ? "rgb(210, 230, 255)" : "red",
+            },
+            styles.wrapperCustom,
+          ]}
+        >
+          {({ pressed }) => (
+            <Text style={styles.text}>{pressed ? "Pressed!" : "Press Me"}</Text>
+          )}
+        </Pressable>
+        <View style={styles.logBox}>
+          <Text testID="pressable_press_console">{textLog}</Text>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 16,
-    marginVertical: 32,
-    backgroundColor: "#fff",
+    justifyContent: "center",
   },
-  section: {
-    flexDirection: "row",
-    alignItems: "center",
+  text: {
+    fontSize: 16,
   },
-  paragraph: {
-    fontSize: 15,
+  wrapperCustom: {
+    borderRadius: 8,
+    padding: 6,
   },
-  checkbox: {
-    margin: 8,
+  logBox: {
+    padding: 20,
+    margin: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#f0f0f0",
+    backgroundColor: "#f9f9f9",
   },
 });
+
+export default App;

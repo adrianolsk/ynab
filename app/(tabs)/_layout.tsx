@@ -66,8 +66,8 @@ export default function TabLayout() {
                     ? i18n.changeLanguage("en-CA")
                     : i18n.changeLanguage("pt-BR");
 
-                  // await AsyncStorage.setItem("language", i18n.language);
-                  router.push("/test");
+                  await AsyncStorage.setItem("language", i18n.language);
+                  // router.push("/test");
                 }}
               >
                 {({ pressed }) => (

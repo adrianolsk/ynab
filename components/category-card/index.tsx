@@ -102,7 +102,7 @@ const CategoryCard = ({
       return "Funded";
     }
     if (availableAmount > 0 && !target?.target_amount) {
-      return "Funded????";
+      return ""; // "Funded????";
     }
 
     return "";
@@ -117,7 +117,7 @@ const CategoryCard = ({
     >
       <ViewContent
         style={[
-          { marginBottom: 1, borderBottomColor: "#ccc", padding: 16 },
+          { marginBottom: 1, borderBottomColor: "#ccc", padding: 12 },
           selectedStyle,
         ]}
       >
@@ -163,24 +163,24 @@ export default CategoryCard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
-    marginHorizontal: 16,
+    // paddingTop: StatusBar.currentHeight,
+    // marginHorizontal: 16,
   },
   selected: {
     backgroundColor: "#283351",
   },
   section: {
-    padding: 16,
+    // padding: 16,
   },
   item: {
     flexDirection: "row",
   },
   header: {
     flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    // paddingHorizontal: 16,
+    // paddingVertical: 12,
+    // borderBottomWidth: 1,
+    // borderBottomColor: "#ccc",
   },
   title: {
     fontSize: 12,

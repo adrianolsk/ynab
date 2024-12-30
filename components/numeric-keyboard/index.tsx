@@ -2,6 +2,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { ViewContent, Text } from "../Themed";
+import { Pressable } from "react-native-gesture-handler";
+import * as Haptics from "expo-haptics";
 
 type NumericKeyboardProps = {
   onPress: (value: string) => void;
@@ -59,10 +61,16 @@ export const NumericKeyboard = React.memo(
         {keys.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.row}>
             {row.map((key) => (
-              <TouchableOpacity
+              <Pressable
+                hitSlop={20}
                 key={key}
-                style={{ flex: 1, alignItems: "center" }}
+                style={({ pressed }) => [
+                  { flex: 1, alignItems: "center" },
+                  styles.key,
+                  pressed && styles.keyPressed,
+                ]}
                 onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   if (key === "⌫") {
                     onBackspace();
                   } else if (key === "DONE") {
@@ -74,7 +82,7 @@ export const NumericKeyboard = React.memo(
                   }
                 }}
               >
-                <ViewContent style={styles.key}>
+                <View style={styles.key}>
                   {key === "DONE" ? (
                     <Text style={styles.keyDone}>{key}</Text>
                   ) : key === "x" ? (
@@ -82,9 +90,9 @@ export const NumericKeyboard = React.memo(
                   ) : (
                     <Text style={styles.keyText}>{key}</Text>
                   )}
-                </ViewContent>
+                </View>
                 {/* <Text style={styles.keyText}>{key}</Text> */}
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         ))}
@@ -123,6 +131,9 @@ const styles = StyleSheet.create({
     // backgroundColor: "#f0f0f0",
     borderRadius: 30,
   },
+  keyPressed: {
+    backgroundColor: "#4CAF50",
+  },
   keyDone: {
     // width: "100%",
     // height: 60,
@@ -146,5 +157,18 @@ const styles = StyleSheet.create({
   confirmText: {
     fontSize: 18,
     color: "white",
+  },
+
+  pressable: {
+    width: 120,
+    height: 120,
+    backgroundColor: "mediumpurple",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  highlight: {
+    width: 120,
+    height: 120,
+    backgroundColor: "red",
+    borderWidth: StyleSheet.hairlineWidth,
   },
 });

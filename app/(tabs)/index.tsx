@@ -302,7 +302,7 @@ export default function BudgetScreen() {
           shadowOpacity: 0.5,
           shadowRadius: 2,
         }}
-        detached
+        // detached
       >
         <BottomSheetView style={{ padding: 16 }}>
           <NumericKeyboard
