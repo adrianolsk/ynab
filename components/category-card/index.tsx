@@ -10,6 +10,7 @@ import { CategorySchemaType } from "@/database/schemas/category.schema";
 import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { ProgressBar } from "../progress-bar";
 import { TargetSchema } from "@/database/schemas/target.schema";
+import { BlinkingCaret } from "../blinking-caret";
 
 interface CategoryCardProps {
   isSelected: boolean;
@@ -129,6 +130,7 @@ const CategoryCard = ({
             {isOpen && isSelected && (
               <Text style={[styles.title, styles.titleSelected]}>
                 {formatCurrency(amountToShow)}
+                <BlinkingCaret />
               </Text>
             )}
             {isOpen && !isSelected && (
