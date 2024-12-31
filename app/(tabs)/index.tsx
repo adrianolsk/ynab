@@ -308,6 +308,7 @@ export default function BudgetScreen() {
       pathname: "/category-detail",
       params: {
         categoryUuid: activeItem?.item.uuid,
+        month: format(new Date(), "yyyy-MM"),
       },
     });
   }, [activeItem?.item.uuid, onKeyboardCancelPress, router]);

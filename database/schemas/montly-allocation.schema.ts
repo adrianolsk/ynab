@@ -49,3 +49,6 @@ export const MonthlyAllocationsSchema = sqliteTable(
     ),
   ]
 );
+
+export type MonthlyAllocationsSchemaType =
+  typeof MonthlyAllocationsSchema.$inferInsert;

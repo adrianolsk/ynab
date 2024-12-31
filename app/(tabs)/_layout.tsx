@@ -1,5 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { Pressable } from "react-native";
 
@@ -21,6 +21,7 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -63,7 +64,7 @@ export default function TabLayout() {
                     : i18n.changeLanguage("pt-BR");
 
                   await AsyncStorage.setItem("language", i18n.language);
-                  // router.push("/test");
+                  router.push("/test");
                 }}
               >
                 {({ pressed }) => (

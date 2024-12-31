@@ -1,64 +1,129 @@
+import ScreenView from "@/components/screen-view";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { Alert, Modal, StyleSheet, Pressable, View } from "react-native";
+import { Text } from "@/components/Themed";
 
-const App = () => {
-  const [timesPressed, setTimesPressed] = useState(0);
-
-  let textLog = "";
-  if (timesPressed > 1) {
-    textLog = timesPressed + "x onPress";
-  } else if (timesPressed > 0) {
-    textLog = "onPress";
-  }
-
+interface ModalViewProps {
+  header: React.ReactNode;
+  children: React.ReactNode;
+}
+const ModalView = ({ header, children }: ModalViewProps) => {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <Pressable
-          android_ripple={{ color: "#FF0000" }}
-          onPress={() => {
-            setTimesPressed((current) => current + 1);
-          }}
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed ? "rgb(210, 230, 255)" : "red",
-            },
-            styles.wrapperCustom,
-          ]}
-        >
-          {({ pressed }) => (
-            <Text style={styles.text}>{pressed ? "Pressed!" : "Press Me"}</Text>
-          )}
-        </Pressable>
-        <View style={styles.logBox}>
-          <Text testID="pressable_press_console">{textLog}</Text>
+    <ScreenView>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <Pressable
+            onPress={() => {
+              setModalVisible(!modalVisible);
+            }}
+            style={{
+              flex: 1,
+              // if modal dismiss dont work on android try uncomenting 2 lines
+              // alignItems: "center",
+              // flexDirection: "row",
+              backgroundColor: "orange",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "blue",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Pressable
+                style={{
+                  // flex: 1,
+                  width: "80%",
+                  // backgroundColor: "red",
+                  alignItems: "center",
+                }}
+              >
+                <View style={styles.modalView}>
+                  <View style={styles.header}>{header}</View>
+                  <View style={styles.modalContent}>{children}</View>
+                </View>
+              </Pressable>
+            </View>
+          </Pressable>
         </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+      </Modal>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>Show Modal</Text>
+      </Pressable>
+    </ScreenView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  header: {
+    height: 50,
+    width: "100%",
+    backgroundColor: "#0C1722",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#fff",
+  },
+  centeredView: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "orange",
   },
-  text: {
-    fontSize: 16,
+  modalContent: {
+    width: "100%",
+    padding: 16,
+    // backgroundColor: "red",
+    // minHeight: 200,
   },
-  wrapperCustom: {
+  modalView: {
+    width: "100%",
+    overflow: "hidden",
+
+    // backgroundColor: "white",
+    backgroundColor: "#0C1722",
     borderRadius: 8,
-    padding: 6,
+
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  logBox: {
-    padding: 20,
-    margin: 10,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#f0f0f0",
-    backgroundColor: "#f9f9f9",
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    // textAlign: "center",
   },
 });
 
-export default App;
+export default ModalView;

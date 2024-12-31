@@ -12,24 +12,41 @@ import { Text } from "@/components/Themed";
 import { StyleSheet, View } from "react-native";
 import { formatCurrency } from "@/utils/financials";
 import { CardButton } from "@/components/card-button";
+import {
+  MonthlyAllocationsSchema,
+  MonthlyAllocationsSchemaType,
+} from "@/database/schemas/montly-allocation.schema";
 
 const CategoryDetail = () => {
   const [category, setCategory] = React.useState<CategorySchemaType | null>(
     null
   );
+  const [allocation, setAllocation] =
+    React.useState<MonthlyAllocationsSchemaType | null>(null);
   const params = useLocalSearchParams<{
     categoryUuid: string;
   }>();
 
   useEffect(() => {
-    if (params.categoryUuid) {
-      db.select()
-        .from(CategorySchema)
-        .where(eq(CategorySchema.uuid, params.categoryUuid))
-        .then(([result]) => {
-          setCategory(result);
-        });
-    }
+    (async () => {
+      if (params.categoryUuid) {
+        const [categoryResult] = await db
+          .select()
+          .from(CategorySchema)
+          .where(eq(CategorySchema.uuid, params.categoryUuid));
+
+        const [allocationResult] = await db
+          .select()
+          .from(MonthlyAllocationsSchema)
+          .where(
+            eq(MonthlyAllocationsSchema.category_uuid, params.categoryUuid)
+          );
+
+        setCategory(categoryResult);
+        setAllocation(allocationResult);
+        console.log("🍎 allocationResult", allocationResult);
+      }
+    })();
   }, [params.categoryUuid]);
 
   return (
@@ -44,9 +61,22 @@ const CategoryDetail = () => {
         <Text style={styles.title}>Balance</Text>
         <ViewContent style={styles.container}>
           <LineItem title="From Nov" value={0} />
-          <LineItem title="Assign for Dec" value={300} />
-          <LineItem title="Activity in Dec" value={-132} />
-          <LineItem hideBorder title="Available" value={167} />
+          <LineItem
+            title="Assign for Dec"
+            value={allocation?.allocated_amount ?? 0}
+          />
+          <LineItem
+            title="Activity in Dec"
+            value={allocation?.spent_amount ?? 0}
+          />
+          <LineItem
+            hideBorder
+            title="Available"
+            value={
+              (allocation?.allocated_amount ?? 0) -
+              (allocation?.spent_amount ?? 0) * -1
+            }
+          />
         </ViewContent>
       </View>
       <View>
