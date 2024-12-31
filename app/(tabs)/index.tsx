@@ -37,6 +37,7 @@ import CategoryCard from "@/components/category-card";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { updateReadyToAssign } from "@/database/services/ready-to-assign.service";
 import { uuidV4 } from "@/utils/helpers";
+import { useRouter } from "expo-router";
 
 interface Map {
   [key: string]: boolean | undefined;
@@ -52,6 +53,7 @@ interface SectionType {
 }
 
 export default function BudgetScreen() {
+  const router = useRouter();
   const [currentAllocatedAmount, setCurrentAllocatedAmount] =
     useState<number>(0);
   const [editedItems, setEditedItems] = useState<ItemMap>({});
@@ -269,14 +271,13 @@ export default function BudgetScreen() {
     [activeItem, editedItems, setEditedItems]
   );
 
-  const onKeyboardCancelPress = useCallback(async () => {
-    async () => {
-      setCurrentAllocatedAmount(0);
-      setIsOpen(false);
-      setEditedItems({});
-      handleClosePress();
-      closeBottomSheet();
-    };
+  const onKeyboardCancelPress = useCallback(() => {
+    console.log("aqui");
+    setCurrentAllocatedAmount(0);
+    setIsOpen(false);
+    setEditedItems({});
+    handleClosePress();
+    closeBottomSheet();
   }, [handleClosePress, closeBottomSheet]);
 
   const onKeyboardBackspacePress = useCallback(() => {
@@ -300,6 +301,17 @@ export default function BudgetScreen() {
     handleClosePress();
     closeBottomSheet();
   }, [saveAllocation, handleClosePress, closeBottomSheet]);
+
+  const onEdit = useCallback(() => {
+    onKeyboardCancelPress();
+    router.push({
+      pathname: "/category-detail",
+      params: {
+        categoryUuid: activeItem?.item.uuid,
+      },
+    });
+  }, [activeItem?.item.uuid, onKeyboardCancelPress, router]);
+
   return (
     <View style={{ flex: 1 }}>
       <AssignMoneyCard />
@@ -355,6 +367,7 @@ export default function BudgetScreen() {
             onPress={onKeyboardKeyPress}
             onBackspace={onKeyboardBackspacePress}
             onConfirm={onKeyboardConfirmPress}
+            onEdit={onEdit}
           />
         </BottomSheetView>
       </BottomSheetModal>

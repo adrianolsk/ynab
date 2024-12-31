@@ -11,6 +11,7 @@ import { ViewContent, Text } from "../Themed";
 import { Pressable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { PressableStateCallbackType } from "react-native-gesture-handler/lib/typescript/components/Pressable/PressableProps";
+import { useRouter } from "expo-router";
 
 type NumericKeyboardProps = {
   onPress: (value: string) => void;
@@ -18,6 +19,7 @@ type NumericKeyboardProps = {
   onConfirm: () => void;
   onCancel: () => void;
   hideButtons?: boolean;
+  onEdit?: () => void;
 };
 
 export const NumericKeyboard = React.memo(
@@ -27,6 +29,7 @@ export const NumericKeyboard = React.memo(
     onConfirm,
     onCancel,
     hideButtons,
+    onEdit,
   }: NumericKeyboardProps) => {
     const keys = [
       ["1", "2", "3", "-"],
@@ -84,7 +87,7 @@ export const NumericKeyboard = React.memo(
                 <Text style={{ fontSize: 12 }}>Move Money</Text>
               </ViewContent>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.flex1} onPress={() => {}}>
+            <TouchableOpacity style={styles.flex1} onPress={onEdit}>
               <ViewContent darkColor="#1D2B3A" style={styles.button}>
                 <FontAwesome name="ellipsis-h" size={20} color="#aaa" />
                 <Text style={{ fontSize: 12 }}>Details</Text>
