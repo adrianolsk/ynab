@@ -1,4 +1,4 @@
-import { View, StyleSheet, StatusBar } from "react-native";
+import { View, StyleSheet } from "react-native";
 import React, { useMemo } from "react";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { eq } from "drizzle-orm";
@@ -47,18 +47,6 @@ const CategoryCard = ({
     ? parseCurrencyToDecimal(currentEditedAmount)
     : allocatedAmount;
 
-  const isFullySpent = spentAmount * -1 >= allocatedAmount;
-
-  const tagStyle = useMemo(() => {
-    if (availableAmount > 0) {
-      return styles.tagPositive;
-    } else if (availableAmount === 0) {
-      return styles.tagGray;
-    } else {
-      return styles.tagNegative;
-    }
-  }, [availableAmount]);
-
   const {
     data: [target],
   } = useLiveQuery(
@@ -83,7 +71,7 @@ const CategoryCard = ({
     }
 
     return styles.availableGray;
-  }, [availableAmount, target]);
+  }, [availableAmount, spentAmount, target?.target_amount]);
 
   const spentLabel = useMemo(() => {
     if (spentAmount < 0 && availableAmount < spentAmount * -1) {
@@ -107,7 +95,7 @@ const CategoryCard = ({
     }
 
     return "";
-  }, [availableAmount, target]);
+  }, [allocatedAmount, availableAmount, spentAmount, target?.target_amount]);
 
   const selectedOpacity = { opacity: isSelected ? 0.7 : 1 };
   return (
@@ -165,24 +153,16 @@ export default CategoryCard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingTop: StatusBar.currentHeight,
-    // marginHorizontal: 16,
   },
   selected: {
     backgroundColor: "#283351",
   },
-  section: {
-    // padding: 16,
-  },
+
   item: {
     flexDirection: "row",
   },
   header: {
     flexDirection: "row",
-    // paddingHorizontal: 16,
-    // paddingVertical: 12,
-    // borderBottomWidth: 1,
-    // borderBottomColor: "#ccc",
   },
   title: {
     fontSize: 12,

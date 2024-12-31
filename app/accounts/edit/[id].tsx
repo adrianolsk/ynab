@@ -3,11 +3,9 @@ import { CardButton } from "@/components/card-button";
 import { TextField } from "@/components/text-field";
 import { Text, View, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
-import {
-  AccountsSchema,
-  AccountSchemaType,
-} from "@/database/schemas/accounts.schema";
-import { AccountGroup } from "@/database/types";
+import { AccountsSchema } from "@/database/schemas/accounts.schema";
+import { AccountGroup } from "@/types";
+
 import { eq } from "drizzle-orm";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -55,7 +53,7 @@ export default function EditAccountScreen() {
       if (!params.id) return;
 
       const id = parseInt(params.id);
-      const response = await db
+      await db
         .update(AccountsSchema)
         .set({
           notes: notes,

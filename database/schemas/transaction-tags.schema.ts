@@ -1,14 +1,7 @@
-import {
-  customType,
-  index,
-  int,
-  real,
-  sqliteTable,
-  text,
-} from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { TransactionsSchema } from "./transactions.schema";
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { TagsSchema } from "./tags.schema";
+import { TransactionsSchema } from "./transactions.schema";
 
 // TRANSACTION TAGS TABLE
 export const transactionTags = sqliteTable(

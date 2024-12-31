@@ -1,51 +1,16 @@
-import {
-  Button,
-  StyleSheet,
-  ScrollView,
-  SectionList,
-  // StatusBar,
-  Pressable,
-  Platform,
-} from "react-native";
-
-import EditScreenInfo from "@/components/EditScreenInfo";
+import { SectionList, StyleSheet } from "react-native";
 import { Text, View, ViewContent } from "@/components/Themed";
-import { useSQLiteContext } from "expo-sqlite";
-import { drizzle, useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { AccountsSchema } from "../../database/schemas/accounts.schema";
-import { useEffect, useMemo } from "react";
 import { db } from "@/database/db";
-import { eq, isNull } from "drizzle-orm";
-import {
-  Link,
-  useNavigation,
-  useNavigationContainerRef,
-  useRootNavigation,
-  useRouter,
-} from "expo-router";
-import { routeToScreen } from "expo-router/build/useScreens";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-
+import { AccountsSchema } from "../../database/schemas/accounts.schema";
 import { type AccountSchemaType } from "@/database/schemas/accounts.schema";
-import { StatusBar } from "expo-status-bar";
-import { formatCurrency } from "@/utils/financials";
 import { CardButton } from "@/components/card-button";
 import { AccountGroup } from "@/types";
+import { formatCurrency } from "@/utils/financials";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
-type Account = {
-  name: string;
-  id: number;
-  user_id: number;
-  updated_at: string;
-  account_type: string;
-  balance: number | null;
-  created_at: string;
-};
-
-type RootStackParamList = {
-  details: { id: number; name: string };
-};
 
 type AccountGroupItem = {
   title?: AccountGroup;
@@ -72,7 +37,7 @@ export default function TabTwoScreen() {
       return acc;
     }, {} as MyObject);
 
-    const arr = Object.entries(result).map(([key, value]) => ({
+    const arr = Object.entries(result).map(([, value]) => ({
       title: value.title,
       data: value.data,
     }));

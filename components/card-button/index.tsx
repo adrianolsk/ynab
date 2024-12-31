@@ -1,12 +1,5 @@
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  ButtonProps,
-} from "react-native";
 import React from "react";
+import { ButtonProps, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { ViewContent } from "../Themed";
 
 type ButtonType = "primary" | "secondary" | "destructive";

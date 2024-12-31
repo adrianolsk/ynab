@@ -8,7 +8,6 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
-import { UserSchema } from "./user.schema";
 import { AccountGroup, AccountType } from "@/types";
 import { BudgetSchema } from "./budget.schema";
 

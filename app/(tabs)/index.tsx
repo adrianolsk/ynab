@@ -1,68 +1,42 @@
 import {
   SectionList,
-  SectionListProps,
+  SectionListData,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
 
 import { AssignMoneyCard } from "@/components/assign-money-card";
-import { Text, useThemeColor, View, ViewContent } from "@/components/Themed";
+import { Text, useThemeColor, View } from "@/components/Themed";
 
-import { AccountGroup, AccountType } from "@/types";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { NumericKeyboard } from "@/components/numeric-keyboard";
+import { db } from "@/database/db";
 import {
   CategoryGroupSchema,
   CategoryGroupSchemaType,
 } from "@/database/schemas/category-group.schema";
-import { db } from "@/database/db";
-import { eq } from "drizzle-orm";
 import {
   CategorySchema,
   CategorySchemaType,
 } from "@/database/schemas/category.schema";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
-import BottomSheet, {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetView,
-  BottomSheetDraggableView,
-} from "@gorhom/bottom-sheet";
-import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
-import { NumericKeyboard } from "@/components/numeric-keyboard";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { format } from "date-fns";
+import { eq } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { format, set } from "date-fns";
-import { Pressable } from "react-native-gesture-handler";
+
 import CategoryCard from "@/components/category-card";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
-import { uuidV4 } from "@/utils/helpers";
 import { updateReadyToAssign } from "@/database/services/ready-to-assign.service";
-
-type AccountItem = {
-  name: string;
-  target: number | null | undefined;
-  alocated: number | null | undefined;
-  uuid: string;
-};
-
-type SectionItem = {
-  title: string;
-  accountGroup: AccountGroup;
-  data: AccountItem[];
-};
+import { uuidV4 } from "@/utils/helpers";
 
 interface Map {
   [key: string]: boolean | undefined;
@@ -83,12 +57,12 @@ export default function BudgetScreen() {
   const [editedItems, setEditedItems] = useState<ItemMap>({});
   const [collapsedSections, setCollapsedSections] = useState<Map>({});
 
-  const toggleSection = (title: string) => {
+  const toggleSection = useCallback((title: string) => {
     setCollapsedSections((prevState) => ({
       ...prevState,
       [title]: !prevState[title],
     }));
-  };
+  }, []);
 
   const { data: liveData } = useLiveQuery(
     db
@@ -162,51 +136,24 @@ export default function BudgetScreen() {
   const closeBottomSheet = useCallback(() => {
     setIsOpen(false);
     bottomSheetHeight.value = withTiming(0, { duration: 100 }); // Animate back to 0 height
-  }, []);
+  }, [bottomSheetHeight]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: bottomSheetHeight.value,
   }));
 
-  const scrolltoindex = (sectionIndex: number, itemIndex: number) => {
-    sectionListRef.current?.scrollToLocation({
-      sectionIndex,
-      itemIndex,
-      viewPosition: 0.1,
-    });
-  };
-  const handleOpenKeyboard = async (
-    sectionIndex: number,
-    itemIndex: number
-  ) => {
-    handlePress(); // Set the height of the bottom sheet
-    await saveAllocation();
-
-    if (
-      activeItem?.section === sectionIndex &&
-      activeItem?.index === itemIndex
-    ) {
-      closeBottomSheet();
-      setActiveItem(null);
-      setEditedItems({});
-      handleClosePress();
-      return;
-    } else {
-      setEditedItems({});
-      setActiveItem({
-        section: sectionIndex,
-        index: itemIndex,
-        item: SECTIONS[sectionIndex].data[itemIndex],
+  const scrolltoindex = useCallback(
+    (sectionIndex: number, itemIndex: number) => {
+      sectionListRef.current?.scrollToLocation({
+        sectionIndex,
+        itemIndex,
+        viewPosition: 0.1,
       });
-    }
-    bottomSheetRef.current?.present();
+    },
+    [sectionListRef]
+  );
 
-    bottomSheetHeight.value = withTiming(240, { duration: 300 }, () => {
-      runOnJS(scrolltoindex)(sectionIndex, itemIndex);
-    });
-  };
-
-  const saveAllocation = async () => {
+  const saveAllocation = useCallback(async () => {
     if (!editedItems[activeItem?.item?.uuid ?? ""]) return;
     try {
       const key = activeItem!.item.uuid;
@@ -225,7 +172,7 @@ export default function BudgetScreen() {
         month,
         value: valueToDecrease,
       });
-      const result = await db
+      await db
         .insert(MonthlyAllocationsSchema)
         .values({
           uuid: uuidV4(),
@@ -245,9 +192,114 @@ export default function BudgetScreen() {
     } catch (error) {
       console.log("🍎 error", { error: error });
     }
-  };
+  }, [activeItem, editedItems, currentAllocatedAmount]);
+
+  const handleOpenKeyboard = useCallback(
+    async (sectionIndex: number, itemIndex: number) => {
+      handlePress(); // Set the height of the bottom sheet
+      await saveAllocation();
+
+      if (
+        activeItem?.section === sectionIndex &&
+        activeItem?.index === itemIndex
+      ) {
+        closeBottomSheet();
+        setActiveItem(null);
+        setEditedItems({});
+        handleClosePress();
+        return;
+      } else {
+        setEditedItems({});
+        setActiveItem({
+          section: sectionIndex,
+          index: itemIndex,
+          item: SECTIONS[sectionIndex].data[itemIndex],
+        });
+      }
+      bottomSheetRef.current?.present();
+
+      bottomSheetHeight.value = withTiming(240, { duration: 300 }, () => {
+        runOnJS(scrolltoindex)(sectionIndex, itemIndex);
+      });
+    },
+    [
+      handlePress,
+      saveAllocation,
+      activeItem?.section,
+      activeItem?.index,
+      bottomSheetHeight,
+      closeBottomSheet,
+      handleClosePress,
+      SECTIONS,
+      scrolltoindex,
+    ]
+  );
 
   const backgroundColor = useThemeColor({}, "backgroundContent");
+
+  const renderSectionHeader = useCallback(
+    ({
+      section: { title },
+    }: {
+      section: SectionListData<CategorySchemaType, SectionType>;
+    }) => {
+      return (
+        <Header
+          closed={!!collapsedSections[title]}
+          title={title}
+          onPress={() => toggleSection(title)}
+        />
+      );
+    },
+    [collapsedSections, toggleSection]
+  );
+
+  const onKeyboardKeyPress = useCallback(
+    async function (value: string) {
+      const key = activeItem!.item.uuid;
+      const lastValue = editedItems[activeItem!.item.uuid] ?? "";
+      const newValue = lastValue + value;
+      setEditedItems((items) => {
+        return {
+          ...items,
+          [key]: newValue,
+        };
+      });
+    },
+    [activeItem, editedItems, setEditedItems]
+  );
+
+  const onKeyboardCancelPress = useCallback(async () => {
+    async () => {
+      setCurrentAllocatedAmount(0);
+      setIsOpen(false);
+      setEditedItems({});
+      handleClosePress();
+      closeBottomSheet();
+    };
+  }, [handleClosePress, closeBottomSheet]);
+
+  const onKeyboardBackspacePress = useCallback(() => {
+    setEditedItems((items) => {
+      const key = activeItem!.item.uuid;
+      const lastValue =
+        items[activeItem!.item.uuid] ?? formatCurrency(currentAllocatedAmount);
+
+      const newValue = lastValue.slice(0, -1);
+      return {
+        ...items,
+        [key]: newValue,
+      };
+    });
+  }, [activeItem, currentAllocatedAmount, setEditedItems]);
+
+  const onKeyboardConfirmPress = useCallback(async () => {
+    await saveAllocation();
+    setIsOpen(false);
+    setEditedItems({});
+    handleClosePress();
+    closeBottomSheet();
+  }, [saveAllocation, handleClosePress, closeBottomSheet]);
   return (
     <View style={{ flex: 1 }}>
       <AssignMoneyCard />
@@ -262,7 +314,6 @@ export default function BudgetScreen() {
           const sectionIndex = SECTIONS.indexOf(section);
           const isSelected =
             activeItem?.section === sectionIndex && activeItem?.index === index;
-          const selectedStyle = isSelected ? styles.selected : {};
 
           return (
             <CategoryCard
@@ -278,13 +329,7 @@ export default function BudgetScreen() {
             />
           );
         }}
-        renderSectionHeader={({ section: { title } }) => (
-          <Header
-            closed={!!collapsedSections[title]}
-            title={title}
-            onPress={() => toggleSection(title)}
-          />
-        )}
+        renderSectionHeader={renderSectionHeader}
         ListFooterComponent={() => <Animated.View style={[animatedStyle]} />}
       />
 
@@ -306,45 +351,10 @@ export default function BudgetScreen() {
       >
         <BottomSheetView style={{ padding: 16 }}>
           <NumericKeyboard
-            onCancel={async () => {
-              setCurrentAllocatedAmount(0);
-              setIsOpen(false);
-              setEditedItems({});
-              handleClosePress();
-              closeBottomSheet();
-            }}
-            onPress={async function (value: string) {
-              const key = activeItem!.item.uuid;
-              const lastValue = editedItems[activeItem!.item.uuid] ?? "";
-              const newValue = lastValue + value;
-              setEditedItems((items) => {
-                return {
-                  ...items,
-                  [key]: newValue,
-                };
-              });
-            }}
-            onBackspace={function (): void {
-              setEditedItems((items) => {
-                const key = activeItem!.item.uuid;
-                const lastValue =
-                  items[activeItem!.item.uuid] ??
-                  formatCurrency(currentAllocatedAmount);
-
-                const newValue = lastValue.slice(0, -1);
-                return {
-                  ...items,
-                  [key]: newValue,
-                };
-              });
-            }}
-            onConfirm={async function () {
-              await saveAllocation();
-              setIsOpen(false);
-              setEditedItems({});
-              handleClosePress();
-              closeBottomSheet();
-            }}
+            onCancel={onKeyboardCancelPress}
+            onPress={onKeyboardKeyPress}
+            onBackspace={onKeyboardBackspacePress}
+            onConfirm={onKeyboardConfirmPress}
           />
         </BottomSheetView>
       </BottomSheetModal>

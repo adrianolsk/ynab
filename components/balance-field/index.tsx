@@ -1,22 +1,19 @@
-import { StyleSheet, Text } from "react-native";
-import React, { useEffect, useState } from "react";
+import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
+import React, { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { Switch } from "../switch";
-import Decimal from "decimal.js";
-import { Controller, useForm } from "react-hook-form";
-import { TextInput, View, ViewContent } from "../Themed";
-import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
+import { TextInput, ViewContent } from "../Themed";
 
 export const BalanceField = (props: any) => {
   const isOn = useSharedValue(true);
 
-  const { control, handleSubmit, setValue, watch, getValues, reset } = useForm({
+  const { control, setValue, getValues, reset } = useForm({
     defaultValues: {
       amount: props.value?.toString(),
     },
   });
-
-  // const amountValue = watch("amount");
 
   useEffect(() => {
     const currency = getValues("amount");
@@ -29,10 +26,9 @@ export const BalanceField = (props: any) => {
         isOn.value = false;
       }
     }
-  }, [props.value]);
+  }, [getValues, isOn, props.value, reset]);
 
   const handlePress = () => {
-    const isPositive = !isOn.value;
     const multiplyer = -1;
     const currency = getValues("amount");
     const numericValue = parseCurrencyToDecimal(currency);

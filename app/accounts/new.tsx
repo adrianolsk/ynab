@@ -56,7 +56,7 @@ export default function NewAccountScreen() {
     }
 
     try {
-      const response = await db.insert(AccountsSchema).values({
+      await db.insert(AccountsSchema).values({
         uuid: uuidV4(),
         budget_uuid: "2",
         name: text,

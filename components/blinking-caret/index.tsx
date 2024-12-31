@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -32,12 +32,6 @@ export const BlinkingCaret = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  text: {
-    // fontSize: 24,
-    // fontFamily: "Arial",
-    // flexDirection: "row",
-    // alignItems: "center",
   },
   caret: {
     width: 2,

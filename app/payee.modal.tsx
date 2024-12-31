@@ -1,47 +1,25 @@
+import { Text, TextInput, ViewContent } from "@/components/Themed";
+import { db } from "@/database/db";
+import { PayeeSchema, PayeeSchemaType } from "@/database/schemas/payee.schema";
+import { getBudgetUuid } from "@/services/storage";
+import { uuidV4 } from "@/utils/helpers";
+import { FontAwesome } from "@expo/vector-icons";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Platform,
   SectionList,
   StatusBar,
   StyleSheet,
-  Touchable,
   View,
 } from "react-native";
-import { Text, TextInput, ViewContent } from "@/components/Themed";
-import { db } from "@/database/db";
-import {
-  AccountSchemaType,
-  AccountsSchema,
-} from "@/database/schemas/accounts.schema";
-import { CategorySchemaType } from "@/database/schemas/category.schema";
-import { AccountGroup, AccountType } from "@/types";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
 import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
-import { PayeeSchema, PayeeSchemaType } from "@/database/schemas/payee.schema";
-import { FontAwesome } from "@expo/vector-icons";
-import { uuidV4 } from "@/utils/helpers";
-import { getBudgetUuid } from "@/services/storage";
 
 type PayeeItemGroup = {
   title?: string;
   data: PayeeSchemaType[];
-};
-
-type AccountItem = {
-  name: string;
-  type: AccountType;
-};
-
-interface SectionType {
-  title: string;
-  data: CategorySchemaType[];
-}
-
-type SectionItem = {
-  title: string;
-  data: AccountItem[];
 };
 
 export default function ModalScreen() {
@@ -49,22 +27,25 @@ export default function ModalScreen() {
   const params = useLocalSearchParams<{
     type: "transaction";
   }>();
-  console.log("🍎 values", params.type);
+
   const [searchTerm, setSearchTerm] = useState("");
   const { data } = useLiveQuery(db.select().from(PayeeSchema));
 
   const accounts = useMemo(() => {
-    const result = data?.reduce((acc, item) => {
-      const firstChar = item.name.charAt(0);
-      acc[firstChar] = acc[firstChar] || {
-        title: firstChar,
-        data: [],
-      };
-      acc[firstChar].data.push(item);
-      return acc;
-    }, {} as Record<string, PayeeItemGroup>);
+    const result = data?.reduce(
+      (acc, item) => {
+        const firstChar = item.name.charAt(0);
+        acc[firstChar] = acc[firstChar] || {
+          title: firstChar,
+          data: [],
+        };
+        acc[firstChar].data.push(item);
+        return acc;
+      },
+      {} as Record<string, PayeeItemGroup>
+    );
 
-    const arr = Object.entries(result).map(([key, value]) => ({
+    const arr = Object.entries(result).map(([, value]) => ({
       title: value.title,
       data: value.data,
     }));
@@ -176,7 +157,7 @@ export default function ModalScreen() {
         stickySectionHeadersEnabled={false}
         style={styles.section}
         sections={filteredAccounts}
-        keyExtractor={(item, index) => item.uuid}
+        keyExtractor={(item) => item.uuid}
         renderItem={({ item }) => (
           <Pressable onPress={() => onSelect(item)}>
             <ViewContent style={styles.item}>

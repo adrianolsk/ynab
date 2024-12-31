@@ -1,5 +1,5 @@
+import { sql } from "drizzle-orm";
 import {
-  customType,
   index,
   int,
   real,
@@ -7,9 +7,8 @@ import {
   text,
   unique,
 } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
-import { CategorySchema } from "./category.schema";
 import { BudgetSchema } from "./budget.schema";
+import { CategorySchema } from "./category.schema";
 
 // MONTHLY ALLOCATIONS TABLE
 export const MonthlyAllocationsSchema = sqliteTable(

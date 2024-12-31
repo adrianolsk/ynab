@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useMemo } from "react";
 import { StripedProgressBar } from "../stripped-progress-bar";
 
@@ -13,7 +13,6 @@ const ProgressBar = ({
   target,
   availableAmount,
   spentAmount,
-  rolloverAmount,
   allocatedAmount,
 }: ProgressBarProps) => {
   const availableAmountComponent = useMemo(() => {
@@ -105,7 +104,7 @@ const ProgressBar = ({
         }}
       />
     );
-  }, [availableAmount]);
+  }, [allocatedAmount, availableAmount, spentAmount, target]);
 
   // return <StripedProgressBar progress={10} />;
   return (

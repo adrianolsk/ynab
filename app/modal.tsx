@@ -1,17 +1,10 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import {
-  Button,
-  Platform,
-  SectionList,
-  StatusBar,
-  StyleSheet,
-} from "react-native";
+import { Platform, SectionList, StatusBar, StyleSheet } from "react-native";
 
-import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View, ViewContent } from "@/components/Themed";
+import { Text, ViewContent } from "@/components/Themed";
+import { AccountGroup, AccountType } from "@/types";
 import { useRouter } from "expo-router";
-import { TouchableOpacity, Pressable } from "react-native-gesture-handler";
-import { AccountType, AccountGroup } from "@/types";
+import { Pressable } from "react-native-gesture-handler";
 
 type AccountItem = {
   name: string;

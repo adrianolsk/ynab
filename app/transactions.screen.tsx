@@ -8,15 +8,15 @@ import {
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { PayeeSchema } from "@/database/schemas/payee.schema";
 import { TransactionsSchema } from "@/database/schemas/transactions.schema";
-import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
+import { formatCurrency } from "@/utils/financials";
 import { FontAwesome } from "@expo/vector-icons";
 import { format } from "date-fns";
-import { eq, sql, sum } from "drizzle-orm";
+import { eq, sum } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Platform,
   SectionList,
@@ -90,25 +90,28 @@ export default function ModalScreen() {
   const { data } = useLiveQuery(query);
 
   const accounts = useMemo(() => {
-    const result = data?.reduce((acc, item) => {
-      const firstChar = item.transaction.date;
-      acc[firstChar] = acc[firstChar] || {
-        title: firstChar,
-        data: [],
-      };
-      acc[firstChar].data.push({
-        account: item.account.name,
-        category: item.category.name,
-        payee: item.payee.name,
-        uuid: item.transaction.uuid,
-        amount: item.transaction.amount,
-        date: item.transaction.date,
-        cleared: item.transaction.cleared ?? false,
-      });
-      return acc;
-    }, {} as Record<string, TrsancationItemGroup>);
+    const result = data?.reduce(
+      (acc, item) => {
+        const firstChar = item.transaction.date;
+        acc[firstChar] = acc[firstChar] || {
+          title: firstChar,
+          data: [],
+        };
+        acc[firstChar].data.push({
+          account: item.account.name,
+          category: item.category.name,
+          payee: item.payee.name,
+          uuid: item.transaction.uuid,
+          amount: item.transaction.amount,
+          date: item.transaction.date,
+          cleared: item.transaction.cleared ?? false,
+        });
+        return acc;
+      },
+      {} as Record<string, TrsancationItemGroup>
+    );
 
-    const arr = Object.entries(result).map(([key, value]) => ({
+    const arr = Object.entries(result).map(([, value]) => ({
       title: value.title,
       data: value.data,
     }));
@@ -168,7 +171,7 @@ export default function ModalScreen() {
       <SectionList
         stickySectionHeadersEnabled={false}
         sections={filteredAccounts}
-        keyExtractor={(item, index) => item.uuid}
+        keyExtractor={(item) => item.uuid}
         renderItem={({ item }) => (
           <TransactionItemRow
             item={item}

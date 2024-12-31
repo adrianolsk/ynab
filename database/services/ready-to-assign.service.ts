@@ -1,6 +1,5 @@
 import { uuidV4 } from "@/utils/helpers";
 import { db } from "../db";
-import { CategorySchema } from "../schemas/category.schema";
 import { MonthlyAllocationsSchema } from "../schemas/montly-allocation.schema";
 import { and, eq } from "drizzle-orm";
 
@@ -45,10 +44,9 @@ export const updateReadyToAssign = async ({
       value,
     });
   } else {
-    const currentAllocatedAmount = current.allocated_amount;
     const newAllocatedAmount = current.allocated_amount + value;
 
-    const result = await db
+    await db
       .update(MonthlyAllocationsSchema)
       .set({
         allocated_amount: newAllocatedAmount,
@@ -67,7 +65,7 @@ export const insertReadyToAssign = async ({
   month,
   value,
 }: InsertReadyToAssignParams) => {
-  const result = await db
+  await db
     .insert(MonthlyAllocationsSchema)
     .values({
       uuid: uuidV4(),

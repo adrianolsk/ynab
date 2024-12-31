@@ -9,7 +9,6 @@ import Animated, {
 import { Text, TextInput } from "@/components/Themed";
 import { Pressable } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
-import { Icon } from "@expo/vector-icons/build/createIconSet";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
@@ -53,7 +52,7 @@ export const TextField = ({
     } else {
       labelPosition.value = 1;
     }
-  }, [isFocused, props.value]);
+  }, [isFocused, labelPosition, props.value]);
 
   const animatedLabelStyle = useAnimatedStyle(() => {
     return {
@@ -127,8 +126,6 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     minHeight: 40,
-    // borderWidth: 1,
-    // borderColor: "red",
     marginRight: 16,
   },
 });

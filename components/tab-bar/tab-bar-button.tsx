@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text } from "react-native";
 import React, { useEffect } from "react";
 import { Pressable } from "react-native-gesture-handler";
 import { useThemeColor, ViewContent } from "../Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import Animated, {
   interpolate,
-  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -14,7 +13,7 @@ import Animated, {
 // const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type Icon = React.ComponentProps<typeof FontAwesome>["name"];
-type Route = "index" | "accounts" | "transaction" | "report" | "help";
+// type Route = "index" | "accounts" | "transaction" | "report" | "help";
 const ROUTE_ICONS: Record<string, Icon> = {
   index: "dollar",
   accounts: "bank",
@@ -44,7 +43,6 @@ const TabBarButton = ({
   label,
   route,
   options,
-  index,
 }: TabBarButtonProps) => {
   const tabIconDefault = useThemeColor({}, "tabIconDefault");
   const tabIconSelected = useThemeColor({}, "tabIconSelected");
@@ -52,7 +50,7 @@ const TabBarButton = ({
 
   useEffect(() => {
     value.value = withTiming(isFocused ? 1 : 0, { duration: 100 });
-  }, [isFocused]);
+  }, [isFocused, value]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const scale = interpolate(value.value, [0, 1], [1, 1.2]);
@@ -109,5 +107,3 @@ const TabBarButton = ({
 };
 
 export { TabBarButton };
-
-const styles = StyleSheet.create({});

@@ -1,30 +1,29 @@
+import SeedDatabase from "@/components/seed-database";
+import { Text } from "@/components/Themed";
+import { useColorScheme } from "@/components/useColorScheme";
+import { DarkTheme } from "@/constants/DarkTheme";
+import { LightTheme } from "@/constants/LightTheme";
+import { DATABASE_NAME, db } from "@/database/db";
+import "@/i18n";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import {
   // DarkTheme,
   // DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import "react-native-reanimated";
-import "@/i18n";
-import { useColorScheme } from "@/components/useColorScheme";
-import "react-native-get-random-values";
-import { DATABASE_NAME, db } from "@/database/db";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { Platform, View } from "react-native";
-import migrations from "../drizzle/migrations";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { StatusBar } from "expo-status-bar";
-import { LightTheme } from "@/constants/LightTheme";
-import { DarkTheme } from "@/constants/DarkTheme";
-import { useDatabaseSeed } from "@/hooks/use-database-seed.hook";
-import SeedDatabase from "@/components/seed-database";
+import { useEffect } from "react";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { Text } from "@/components/Themed";
+import "react-native-get-random-values";
+import "react-native-reanimated";
+import migrations from "../drizzle/migrations";
 // DATABASE
 import * as SQLite from "expo-sqlite";
 const actualDatabse = SQLite.openDatabaseSync(DATABASE_NAME);

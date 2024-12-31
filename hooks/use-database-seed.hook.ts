@@ -1,18 +1,15 @@
 import { db } from "@/database/db";
-import { UserSchema } from "@/database/schemas/user.schema";
-import { and, count, eq } from "drizzle-orm";
-import { useState, useEffect, useCallback } from "react";
-import { v4 as uuidV4 } from "uuid";
-import { format } from "date-fns";
 import { BudgetSchema } from "@/database/schemas/budget.schema";
 import { CategoryGroupSchema } from "@/database/schemas/category-group.schema";
-import {
-  categoryGroupSeed,
-  // systemCategories,
-} from "./seed/category-group.seed";
 import { CategorySchema } from "@/database/schemas/category.schema";
+import { UserSchema } from "@/database/schemas/user.schema";
+import { format } from "date-fns";
+import { count, eq } from "drizzle-orm";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { v4 as uuidV4 } from "uuid";
+import { categoryGroupSeed } from "./seed/category-group.seed";
+
 import { setBudgetUuid } from "@/services/storage";
 
 export const useDatabaseSeed = () => {
@@ -43,33 +40,36 @@ export const useDatabaseSeed = () => {
     }
   }, []);
 
-  const seedBudget = useCallback(async (user_uuid: string | undefined) => {
-    if (!user_uuid) return;
+  const seedBudget = useCallback(
+    async (user_uuid: string | undefined) => {
+      if (!user_uuid) return;
 
-    const [budget] = await db.select().from(BudgetSchema);
+      const [budget] = await db.select().from(BudgetSchema);
 
-    if (budget) {
-      await setBudgetUuid(budget.uuid);
-      return budget.uuid;
-    } else {
-      try {
-        const [{ budget_uuid }] = await db
-          .insert(BudgetSchema)
-          .values({
-            uuid: uuidV4(),
-            name: "My Budget",
-            user_uuid: user_uuid,
-            start_date: startDate,
-            currency: "BRL",
-          })
-          .returning({ budget_uuid: BudgetSchema.uuid });
-        await setBudgetUuid(budget_uuid);
-        return budget_uuid;
-      } catch (error) {
-        console.log("🍎 error", { error });
+      if (budget) {
+        await setBudgetUuid(budget.uuid);
+        return budget.uuid;
+      } else {
+        try {
+          const [{ budget_uuid }] = await db
+            .insert(BudgetSchema)
+            .values({
+              uuid: uuidV4(),
+              name: "My Budget",
+              user_uuid: user_uuid,
+              start_date: startDate,
+              currency: "BRL",
+            })
+            .returning({ budget_uuid: BudgetSchema.uuid });
+          await setBudgetUuid(budget_uuid);
+          return budget_uuid;
+        } catch (error) {
+          console.log("🍎 error", { error });
+        }
       }
-    }
-  }, []);
+    },
+    [startDate]
+  );
 
   const seedGategoryGroup = useCallback(
     async (budget_uuid: string | undefined) => {
@@ -110,7 +110,7 @@ export const useDatabaseSeed = () => {
         }
       }
     },
-    []
+    [t]
   );
 
   const seed = useCallback(async () => {
@@ -119,10 +119,11 @@ export const useDatabaseSeed = () => {
     await seedGategoryGroup(budget_uuid);
     // await seedSystemCategories(budget_uuid);
     setReady(true);
-  }, []);
+  }, [seedBudget, seedGategoryGroup, seedUser]);
+
   useEffect(() => {
     seed();
-  }, []);
+  }, [seed]);
 
   return { ready };
 };

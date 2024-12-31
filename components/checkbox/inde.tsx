@@ -15,12 +15,10 @@ interface CheckboxProps {
   disabled?: boolean;
   color?: string;
   style?: any;
-  onChange?: () => void;
 }
 export const Checkbox = ({
   color,
   disabled,
-  onChange,
   onValueChange,
   style,
   value,

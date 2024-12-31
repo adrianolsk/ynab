@@ -1,21 +1,17 @@
-import React, { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, router, Tabs } from "expo-router";
-import { Pressable, View, Text } from "react-native";
+import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { Pressable } from "react-native";
 
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { TabBar } from "@/components/tab-bar";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
 import { ViewContent } from "@/components/Themed";
-import { useTranslation } from "react-i18next";
+import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import { useColorScheme } from "@/components/useColorScheme";
+import Colors from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StatusBar } from "expo-status-bar";
+import { useTranslation } from "react-i18next";
 import changeNavigationBarColor from "react-native-navigation-bar-color";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];

@@ -6,7 +6,6 @@ import { Text } from "@/components/Themed";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { eq } from "drizzle-orm";
 import { db } from "@/database/db";
-import { CategorySchema } from "@/database/schemas/category.schema";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 
 interface AssignMoneyCardProps {}
@@ -34,14 +33,6 @@ export const AssignMoneyCard = ({}: AssignMoneyCardProps) => {
       return "negative";
     }
   }, [value]);
-
-  const formattedValue = formatCurrency(value);
-  const cardStyle =
-    value > 0
-      ? styles.positive
-      : value === 0
-      ? styles.assigned
-      : styles.negative;
 
   const onAssign = () => {};
   const onFix = () => {};
@@ -110,8 +101,7 @@ const OverAssigned = ({ value, onPress }: ReadyToAssignProps) => {
   );
 };
 
-const Assigned = ({ value, onPress }: ReadyToAssignProps) => {
-  const formattedValue = formatCurrency(value);
+const Assigned = ({ onPress }: ReadyToAssignProps) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
       <View style={[styles.container, styles.assigned]}>

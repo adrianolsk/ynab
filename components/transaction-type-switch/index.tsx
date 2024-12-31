@@ -1,3 +1,5 @@
+import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import React, { useCallback, useEffect, useRef } from "react";
 import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
@@ -7,12 +9,8 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { TextInput, useThemeColor } from "../Themed";
-import { format, set } from "date-fns";
-import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { NumericKeyboard } from "../numeric-keyboard";
-import { t } from "i18next";
+import { useThemeColor } from "../Themed";
 
 type TransactionType = "outflow" | "inflow";
 
@@ -35,7 +33,7 @@ export const TransactionTypeSwitch = ({
     } else {
       value.value = 1;
     }
-  }, [type]);
+  }, [type, value]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const color = interpolateColor(value.value, [0, 1], ["#F14839", "#4B9828"]);
@@ -67,7 +65,7 @@ export const TransactionTypeSwitch = ({
       });
       value.value = withTiming(0, { duration: 300 });
     }
-  }, [value]);
+  }, [onChange, value]);
 
   const onLayout = useCallback(({ nativeEvent }: LayoutChangeEvent) => {
     setWidth(nativeEvent.layout.width);
@@ -132,8 +130,7 @@ export const TransactionTypeSwitch = ({
           style={{
             padding: 16,
             alignItems: "center",
-            // borderWidth: 1,
-            // borderColor: "#999",
+
             height: 60,
           }}
         >
@@ -163,24 +160,12 @@ export const TransactionTypeSwitch = ({
             hideButtons
             onCancel={async () => {
               handleClosePress();
-              // setCurrentAllocatedAmount(0);
-              // setIsOpen(false);
-              // setEditedItems({});
-              // handleClosePress();
-              // closeBottomSheet();
             }}
             onPress={async function (value: string) {
-              // const key = activeItem!.item.uuid;
               const lastValue = amount ?? "";
               const newValue = lastValue + value;
               setAmount(newValue);
               onChange(type, parseCurrencyToDecimal(newValue));
-              // setEditedItems((items) => {
-              //   return {
-              //     ...items,
-              //     [key]: newValue,
-              //   };
-              // });
             }}
             onBackspace={function (): void {
               const lastValue = amount ?? "";
@@ -190,8 +175,6 @@ export const TransactionTypeSwitch = ({
             }}
             onConfirm={async function () {
               handleClosePress();
-              // handleClosePress();
-              // closeBottomSheet();
             }}
           />
         </BottomSheetView>
@@ -202,7 +185,6 @@ export const TransactionTypeSwitch = ({
 
 const styles = StyleSheet.create({
   input: {
-    // color: "#fff",
     fontSize: 24,
     fontFamily: "NunitoSansBold",
   },

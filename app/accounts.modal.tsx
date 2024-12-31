@@ -1,33 +1,16 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
-import {
-  Button,
-  Platform,
-  SectionList,
-  StatusBar,
-  StyleSheet,
-} from "react-native";
-
-import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View, ViewContent } from "@/components/Themed";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { TouchableOpacity, Pressable } from "react-native-gesture-handler";
-import { AccountType, AccountGroup } from "@/types";
+import { Platform, SectionList, StatusBar, StyleSheet } from "react-native";
+import { Text, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
-import {
-  CategoryGroupSchema,
-  CategoryGroupSchemaType,
-} from "@/database/schemas/category-group.schema";
-import {
-  CategorySchema,
-  CategorySchemaType,
-} from "@/database/schemas/category.schema";
-import { eq } from "drizzle-orm";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { useCallback, useMemo } from "react";
 import {
   AccountSchemaType,
   AccountsSchema,
 } from "@/database/schemas/accounts.schema";
+import { AccountGroup } from "@/types";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useMemo } from "react";
+import { Pressable } from "react-native-gesture-handler";
 
 type AccountGroupItem = {
   title?: AccountGroup;
@@ -36,95 +19,6 @@ type AccountGroupItem = {
 type MyObject = {
   [key in AccountGroup]: AccountGroupItem;
 };
-
-type AccountItem = {
-  name: string;
-  type: AccountType;
-};
-
-interface SectionType {
-  title: string;
-  data: CategorySchemaType[];
-}
-
-type SectionItem = {
-  title: string;
-  accountGroup: "budget" | "loan" | "tracking";
-  data: AccountItem[];
-};
-
-const DATA: SectionItem[] = [
-  {
-    title: "Categories",
-    accountGroup: "budget",
-    data: [
-      {
-        name: "Checking",
-        type: "checking",
-      },
-      {
-        name: "Savings",
-        type: "savings",
-      },
-      {
-        name: "Cash",
-        type: "cash",
-      },
-      {
-        name: "Credit Card",
-        type: "credit_card",
-      },
-      {
-        name: "Line of Credit",
-        type: "line_of_credit",
-      },
-    ],
-  },
-  {
-    title: "Mortgage and Loans",
-    accountGroup: "loan",
-    data: [
-      {
-        name: "Mortgage",
-        type: "mortgage",
-      },
-      {
-        name: "Auto Loan",
-        type: "auto_loan",
-      },
-      {
-        name: "Student Loan",
-        type: "student_loan",
-      },
-      {
-        name: "Personal Loan",
-        type: "personal_loan",
-      },
-      {
-        name: "Medical Debt",
-        type: "medical_debt",
-      },
-      {
-        name: "Other Debt",
-        type: "other_debt",
-      },
-    ],
-  },
-  {
-    title: "Tracking Accounts",
-    accountGroup: "tracking",
-    data: [
-      {
-        name: "Asset",
-        type: "asset",
-      },
-      {
-        name: "Liability",
-        type: "liability",
-      },
-    ],
-  },
-];
 
 export default function ModalScreen() {
   const router = useRouter();
@@ -145,7 +39,7 @@ export default function ModalScreen() {
       return acc;
     }, {} as MyObject);
 
-    const arr = Object.entries(result).map(([key, value]) => ({
+    const arr = Object.entries(result).map(([, value]) => ({
       title: value.title,
       data: value.data,
     }));
@@ -182,7 +76,7 @@ export default function ModalScreen() {
         stickySectionHeadersEnabled={false}
         style={styles.section}
         sections={accounts}
-        keyExtractor={(item, index) => item.uuid}
+        keyExtractor={(item) => item.uuid}
         renderItem={({ item }) => (
           <Pressable
             // style={styles.item}

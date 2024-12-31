@@ -1,12 +1,5 @@
-import {
-  customType,
-  index,
-  int,
-  real,
-  sqliteTable,
-  text,
-} from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { BudgetSchema } from "./budget.schema";
 import { UserSchema } from "./user.schema";
 

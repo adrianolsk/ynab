@@ -55,7 +55,7 @@ const NewTransactionScreen = () => {
       uuid: params.categoryUuid,
       name: params.categoryName,
     });
-  }, [params.categoryUuid]);
+  }, [params.categoryName, params.categoryUuid]);
 
   useEffect(() => {
     if (!params.accountUuid) return;
@@ -63,7 +63,7 @@ const NewTransactionScreen = () => {
       uuid: params.accountUuid,
       name: params.accountName,
     });
-  }, [params.accountUuid]);
+  }, [params.accountName, params.accountUuid]);
 
   useEffect(() => {
     if (!params.payeeUuid) return;
@@ -71,7 +71,7 @@ const NewTransactionScreen = () => {
       uuid: params.payeeUuid,
       name: params.payeeName,
     });
-  }, [params.payeeUuid]);
+  }, [params.payeeName, params.payeeUuid]);
 
   const handleOpenCalendar = useCallback(() => {
     if (Platform.OS === "ios") {
@@ -89,7 +89,7 @@ const NewTransactionScreen = () => {
         },
       });
     }
-  }, [showDatePicker]);
+  }, []);
 
   const handleDateChange = useCallback((event: any, selectedDate: any) => {
     setShowDatePicker(false);

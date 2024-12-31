@@ -1,26 +1,16 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import React, { useEffect, useState } from "react";
-import {
-  Pressable,
-  SafeAreaView,
-  View,
-  StyleSheet,
-  Button,
-} from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
   SharedValue,
-  useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-
-const AnimatedFontAwesome = Animated.createAnimatedComponent(FontAwesome);
-// todo: fix types
 
 interface SwitchProps {
   value: SharedValue<boolean>;
@@ -78,12 +68,6 @@ export const Switch = ({
       backgroundColor: colorValue,
       transform: [{ translateX: translateValue }],
       borderRadius: height.value / 2,
-    };
-  });
-
-  const animatedProps = useAnimatedProps(() => {
-    return {
-      name: value.value ? "plus" : "minus",
     };
   });
 

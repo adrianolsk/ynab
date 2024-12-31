@@ -1,6 +1,6 @@
 import { uuidV4 } from "@/utils/helpers";
 import { db } from "../db";
-import { CategorySchema } from "../schemas/category.schema";
+
 import { MonthlyAllocationsSchema } from "../schemas/montly-allocation.schema";
 import { and, eq } from "drizzle-orm";
 
@@ -57,7 +57,7 @@ export const updateSpentAmount = async ({
     // todo: calculate spent_amount using all transactions of that category
     const newSpentAmount = current.spent_amount + value;
 
-    const result = await db
+    await db
       .update(MonthlyAllocationsSchema)
       .set({
         spent_amount: newSpentAmount,
@@ -78,7 +78,7 @@ export const insertAllocation = async ({
   value,
   categoryUuid,
 }: InsertReadyToAssignParams) => {
-  const result = await db
+  await db
     .insert(MonthlyAllocationsSchema)
     .values({
       uuid: uuidV4(),

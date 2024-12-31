@@ -1,5 +1,5 @@
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import {
   View,
   TouchableOpacity,
@@ -154,14 +154,7 @@ const styles = StyleSheet.create({
   keyPressed: {
     backgroundColor: "#1D2B3A",
   },
-  keyDone: {
-    // width: "100%",
-    // height: 60,
-    // justifyContent: "center",
-    // alignItems: "center",
-    // backgroundColor: "#f0f0f0",
-    // borderRadius: 30,
-  },
+  keyDone: {},
   keyText: {
     fontSize: 24,
     // color: "#333",
