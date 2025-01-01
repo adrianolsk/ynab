@@ -4,7 +4,7 @@
     "loan": "Loan",
     "tracking": "Tracking",
     "test": "This is a test {{value}}",
-    "accountTypes":{
+    "accountTypes": {
         "checking": "Checking Account",
         "savings": "Savings Account",
         "cash": "Cash Account",
@@ -24,7 +24,7 @@
         "bills": "Bills",
         "needs": "Needs",
         "wants": "Wants",
-        "placeholder": "Select Category Group"  ,
+        "placeholder": "Select Category Group",
         "categories": {
             "rent_mortgage": "Rent/Mortgage",
             "phone": "Phone",
@@ -38,11 +38,11 @@
             "entertainment": "Entertainment",
             "vacation": "Vacation",
             "stuff_i_forgot_to_budget_for": "Stuff I forgot to budget for",
-            "dining_out": "Dining out" 
+            "dining_out": "Dining out"
         }
     },
     "screens": {
-        "budget": "Budget",  
+        "budget": "Budget",
         "accounts": "Accounts",
         "accounts.add": "Add Account",
         "accounts.edit": "Edit Account",
@@ -50,5 +50,19 @@
         "transaction": "Transaction",
         "report": "Report",
         "help": "Help"
+    },
+    "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
     }
 }

@@ -4,7 +4,7 @@
     "loan": "Empréstimo",
     "tracking": "Monitoramento",
     "test": "Este é um teste {{value}}",
-    "accountTypes":{
+    "accountTypes": {
         "checking": "Conta corrente",
         "savings": "Conta Poupança",
         "cash": "Dinheiro",
@@ -38,8 +38,8 @@
             "entertainment": "Entretenimento",
             "vacation": "Vacação",
             "stuff_i_forgot_to_budget_for": "Coisas que eu esqueci de me preencher",
-            "dining_out": "Jantar" 
-        }   
+            "dining_out": "Jantar"
+        }
     },
     "screens": {
         "budget": "Orçamento",
@@ -50,5 +50,19 @@
         "transaction": "Transação",
         "report": "Relatório",
         "help": "Ajuda"
+    },
+    "months": {
+        "january": "Janeiro",
+        "february": "Fevereiro",
+        "march": "Março",
+        "april": "Abril",
+        "may": "Maio",
+        "june": "Junho",
+        "july": "Julho",
+        "august": "Agosto",
+        "september": "Setembro",
+        "october": "Outubro",
+        "november": "Novembro",
+        "december": "Dezembro"
     }
 }
