@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
 import { AssignMoneyCard } from "@/components/assign-money-card";
 import { Text, useThemeColor, View } from "@/components/Themed";
 
@@ -37,7 +36,10 @@ import CategoryCard from "@/components/category-card";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { updateReadyToAssign } from "@/database/services/ready-to-assign.service";
 import { uuidV4 } from "@/utils/helpers";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
+import { MonthModal } from "@/components/mont-modal";
+import { Pressable } from "react-native-gesture-handler";
+import { formatWithLocale } from "@/utils/dates";
 
 interface Map {
   [key: string]: boolean | undefined;
@@ -53,6 +55,11 @@ interface SectionType {
 }
 
 export default function BudgetScreen() {
+  const [currentMonth, setCurrentMonth] = useState(
+    format(new Date(), "yyyy-MM")
+  );
+
+  const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
   const [currentAllocatedAmount, setCurrentAllocatedAmount] =
     useState<number>(0);
@@ -315,6 +322,26 @@ export default function BudgetScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen
+        options={{
+          headerTitle: () => (
+            <Pressable
+              onPress={() => setIsVisible(true)}
+              style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+            >
+              <Text style={{ textTransform: "capitalize" }}>
+                {formatWithLocale(currentMonth, "MMMM yyyy")}
+              </Text>
+              <FontAwesome
+                name="arrow-circle-o-down"
+                size={20}
+                color="#3F69DC"
+              />
+            </Pressable>
+          ),
+          // header: () => null,
+        }}
+      />
       <AssignMoneyCard />
 
       <SectionList<CategorySchemaType, SectionType>
@@ -338,6 +365,7 @@ export default function BudgetScreen() {
                 handleOpenKeyboard(SECTIONS.indexOf(section), index);
               }}
               isOpen={isOpen}
+              currentMonth={currentMonth}
               currentEditedAmount={editedItems[item.uuid]}
             />
           );
@@ -372,6 +400,15 @@ export default function BudgetScreen() {
           />
         </BottomSheetView>
       </BottomSheetModal>
+
+      <MonthModal
+        onChange={function (month: string): void {
+          console.log("🍎 month", { month });
+          setCurrentMonth(month);
+        }}
+        isVisible={isVisible}
+        onDismiss={() => setIsVisible(false)}
+      />
     </View>
   );
 }

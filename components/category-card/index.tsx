@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import React, { useMemo } from "react";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/database/db";
 import { Text, ViewContent } from "@/components/Themed";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
@@ -19,6 +19,7 @@ interface CategoryCardProps {
   item: CategorySchemaType;
   isOpen: boolean;
   currentEditedAmount: string;
+  currentMonth: string;
 }
 const CategoryCard = ({
   uuid,
@@ -27,6 +28,7 @@ const CategoryCard = ({
   isSelected,
   onPress,
   currentEditedAmount,
+  currentMonth,
 }: CategoryCardProps) => {
   const {
     data: [monthlyAllocation],
@@ -34,7 +36,13 @@ const CategoryCard = ({
     db
       .select()
       .from(MonthlyAllocationsSchema)
-      .where(eq(MonthlyAllocationsSchema.category_uuid, uuid))
+      .where(
+        and(
+          eq(MonthlyAllocationsSchema.category_uuid, uuid),
+          eq(MonthlyAllocationsSchema.month, currentMonth)
+        )
+      ),
+    [uuid, currentMonth]
   );
 
   const selectedStyle = isSelected ? styles.selected : {};

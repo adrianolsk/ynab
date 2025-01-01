@@ -59,9 +59,9 @@ export default function TabLayout() {
             headerRight: () => (
               <Pressable
                 onPress={async () => {
-                  i18n.language === "pt-BR"
-                    ? i18n.changeLanguage("en-CA")
-                    : i18n.changeLanguage("pt-BR");
+                  i18n.language === "ptBR"
+                    ? i18n.changeLanguage("enCA")
+                    : i18n.changeLanguage("ptBR");
 
                   await AsyncStorage.setItem("language", i18n.language);
                   router.push("/test");

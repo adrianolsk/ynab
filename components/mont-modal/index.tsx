@@ -7,31 +7,31 @@ import { StyleSheet, View } from "react-native";
 import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
 
 const months: Array<Array<MonthName>> = [
-  ["january", "february", "march"],
-  ["april", "may", "june"],
-  ["july", "august", "september"],
-  ["october", "november", "december"],
+  ["01", "02", "03"],
+  ["04", "05", "06"],
+  ["07", "08", "09"],
+  ["10", "11", "12"],
 ] as const;
 
 const monthNames = [
-  "january",
-  "february",
-  "march",
-  "april",
-  "may",
-  "june",
-  "july",
-  "august",
-  "september",
-  "october",
-  "november",
-  "december",
+  "01",
+  "02",
+  "03",
+  "04",
+  "05",
+  "06",
+  "07",
+  "08",
+  "09",
+  "10",
+  "11",
+  "12",
 ] as const;
 
 type MonthName = (typeof monthNames)[number];
 
 interface MonthModalProps {
-  onChange: (year: number, month: string) => void;
+  onChange: (month: string) => void;
   isVisible: boolean;
   onDismiss: () => void;
 }
@@ -56,7 +56,7 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
 
   const onMonthPress = (month: MonthName) => () => {
     setCurrentMonth(month);
-    onChange(selectedYear, month);
+    onChange(`${selectedYear}-${month}`);
     onDismiss();
   };
 
@@ -90,8 +90,9 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
     >
       {months.map((row, index) => (
         <View key={index} style={{ flexDirection: "row" }}>
-          {row.map((month, index) => (
+          {row.map((month) => (
             <Pressable
+              key={month}
               onPress={onMonthPress(month)}
               style={({ pressed }) => [
                 styles.monthButton,
@@ -106,7 +107,7 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
                 },
               ]}
             >
-              <View key={index}>
+              <View>
                 <Text>{t(`months.${month}`)}</Text>
               </View>
             </Pressable>

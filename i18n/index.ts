@@ -6,8 +6,8 @@ import translationEn from "./locales/en-CA/translation.json";
 import translationPt from "./locales/pt-BR/translation.json";
 
 const resources = {
-  "pt-BR": { translation: translationPt },
-  "en-CA": { translation: translationEn },
+  ptBR: { translation: translationPt },
+  enCA: { translation: translationEn },
 };
 
 const initI18n = async () => {
@@ -43,7 +43,7 @@ const initI18n = async () => {
       // },
       lng: savedLanguage,
       //   lng: "pt-BR", // if you're using a language detector, do not define the lng option
-      fallbackLng: "pt-BR",
+      fallbackLng: "ptBR",
 
       interpolation: {
         escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
