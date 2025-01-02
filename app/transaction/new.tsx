@@ -82,7 +82,6 @@ const NewTransactionScreen = () => {
         is24Hour: true,
         value: new Date(),
         onChange(event, date) {
-          console.log("🍎 onChange", { event, date });
           if (date) {
             setSelectedDate(date);
           }

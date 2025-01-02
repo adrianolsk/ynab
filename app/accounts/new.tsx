@@ -39,10 +39,6 @@ export default function NewAccountScreen() {
     setAccountType(params.id);
   }, [params.id]);
 
-  getBudgetUuid().then((budgetUuid) =>
-    console.log("🍎 budgetUuid", { budgetUuid })
-  );
-
   const addAccount = async () => {
     const value: number = balance ?? 0; //parseFloat(balance);
 

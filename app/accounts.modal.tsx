@@ -25,7 +25,6 @@ export default function ModalScreen() {
   const params = useLocalSearchParams<{
     type: "transaction";
   }>();
-  console.log("🍎 values", params.type);
 
   const { data } = useLiveQuery(db.select().from(AccountsSchema));
 

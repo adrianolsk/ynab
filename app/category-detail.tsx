@@ -44,7 +44,6 @@ const CategoryDetail = () => {
 
         setCategory(categoryResult);
         setAllocation(allocationResult);
-        console.log("🍎 allocationResult", allocationResult);
       }
     })();
   }, [params.categoryUuid]);

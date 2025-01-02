@@ -1,7 +1,11 @@
 import { Text } from "@/components/Themed";
 import { ModalView } from "@/components/modal-view";
+import { db } from "@/database/db";
+import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { format, addMonths } from "date-fns";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
@@ -36,13 +40,27 @@ interface MonthModalProps {
   onDismiss: () => void;
 }
 const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
-  //   const [modalVisible, setModalVisible] = useState(false);
-  const [currentYear] = useState(new Date().getFullYear());
+  const [selectedYearMonth, setSelectedYearMonth] = useState<string>(
+    format(new Date(), "yyyy-MM")
+  );
+
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState<MonthName>(() => {
-    const date = new Date();
-    return monthNames[date.getMonth()];
-  });
+
+  const { data } = useLiveQuery(
+    db
+      .selectDistinct({ month: MonthlyAllocationsSchema.month })
+      .from(MonthlyAllocationsSchema)
+  );
+
+  const isEnabled = useCallback(
+    (month: string) => {
+      const hasData = data.some((x) => x.month === month);
+      const thisMonth = format(new Date(), "yyyy-MM");
+      const nextMonth = format(addMonths(new Date(), 1), "yyyy-MM");
+      return hasData || month === thisMonth || month === nextMonth;
+    },
+    [data]
+  );
 
   const { t } = useTranslation();
 
@@ -55,9 +73,12 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
   };
 
   const onMonthPress = (month: MonthName) => () => {
-    setCurrentMonth(month);
-    onChange(`${selectedYear}-${month}`);
-    onDismiss();
+    const pressedMonth = `${selectedYear}-${month}`;
+    if (isEnabled(pressedMonth)) {
+      setSelectedYearMonth(pressedMonth);
+      onChange(pressedMonth);
+      onDismiss();
+    }
   };
 
   return (
@@ -90,28 +111,37 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
     >
       {months.map((row, index) => (
         <View key={index} style={{ flexDirection: "row" }}>
-          {row.map((month) => (
-            <Pressable
-              key={month}
-              onPress={onMonthPress(month)}
-              style={({ pressed }) => [
-                styles.monthButton,
-                {
-                  backgroundColor: pressed ? "#2C50B2" : "transparent",
-                },
-                {
-                  backgroundColor:
-                    currentMonth === month && selectedYear === currentYear
-                      ? "#2C50B2"
-                      : "transparent",
-                },
-              ]}
-            >
-              <View>
-                <Text>{t(`months.${month}`)}</Text>
-              </View>
-            </Pressable>
-          ))}
+          {row.map((month) => {
+            const isMonthEnabled = isEnabled(`${selectedYear}-${month}`);
+            return (
+              <Pressable
+                key={month}
+                onPress={onMonthPress(month)}
+                style={({ pressed }) => [
+                  styles.monthButton,
+                  {
+                    backgroundColor: pressed ? "#2C50B2" : "transparent",
+                  },
+                  {
+                    backgroundColor:
+                      `${selectedYear}-${month}` === selectedYearMonth
+                        ? "#2C50B2"
+                        : "transparent",
+                  },
+                ]}
+              >
+                <View>
+                  <Text
+                    style={{
+                      color: isMonthEnabled ? "white" : "#555",
+                    }}
+                  >
+                    {t(`months.${month}`)}
+                  </Text>
+                </View>
+              </Pressable>
+            );
+          })}
         </View>
       ))}
     </ModalView>

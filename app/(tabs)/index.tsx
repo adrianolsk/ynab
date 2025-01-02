@@ -320,26 +320,25 @@ export default function BudgetScreen() {
     });
   }, [activeItem?.item.uuid, onKeyboardCancelPress, router]);
 
+  const renderHeaderTitle = useCallback(() => {
+    return (
+      <Pressable
+        onPress={() => setIsVisible(true)}
+        style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+      >
+        <Text style={{ textTransform: "capitalize" }}>
+          {formatWithLocale(currentMonth, "MMMM yyyy")}
+        </Text>
+        <FontAwesome name="arrow-circle-o-down" size={20} color="#3F69DC" />
+      </Pressable>
+    );
+  }, [currentMonth]);
+
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          headerTitle: () => (
-            <Pressable
-              onPress={() => setIsVisible(true)}
-              style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
-            >
-              <Text style={{ textTransform: "capitalize" }}>
-                {formatWithLocale(currentMonth, "MMMM yyyy")}
-              </Text>
-              <FontAwesome
-                name="arrow-circle-o-down"
-                size={20}
-                color="#3F69DC"
-              />
-            </Pressable>
-          ),
-          // header: () => null,
+          headerTitle: renderHeaderTitle,
         }}
       />
       <AssignMoneyCard />
@@ -348,7 +347,6 @@ export default function BudgetScreen() {
         ref={sectionListRef}
         stickySectionHeadersEnabled={false}
         sections={SECTIONS}
-        // style={[styles.section]}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({ item, index, section }) => {
           const sectionIndex = SECTIONS.indexOf(section);
@@ -402,10 +400,7 @@ export default function BudgetScreen() {
       </BottomSheetModal>
 
       <MonthModal
-        onChange={function (month: string): void {
-          console.log("🍎 month", { month });
-          setCurrentMonth(month);
-        }}
+        onChange={setCurrentMonth}
         isVisible={isVisible}
         onDismiss={() => setIsVisible(false)}
       />
