@@ -315,10 +315,10 @@ export default function BudgetScreen() {
       pathname: "/category-detail",
       params: {
         categoryUuid: activeItem?.item.uuid,
-        month: format(new Date(), "yyyy-MM"),
+        month: currentMonth,
       },
     });
-  }, [activeItem?.item.uuid, onKeyboardCancelPress, router]);
+  }, [activeItem?.item.uuid, currentMonth, onKeyboardCancelPress, router]);
 
   const renderHeaderTitle = useCallback(() => {
     return (

@@ -11,7 +11,6 @@ import { ViewContent, Text } from "../Themed";
 import { Pressable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { PressableStateCallbackType } from "react-native-gesture-handler/lib/typescript/components/Pressable/PressableProps";
-import { useRouter } from "expo-router";
 
 type NumericKeyboardProps = {
   onPress: (value: string) => void;

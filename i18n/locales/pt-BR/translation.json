@@ -64,5 +64,28 @@
         "10": "Outubro",
         "11": "Novembro",
         "12": "Dezembro"
+    },
+    "screen": {
+        "categoryDetail": {
+            "balance": "Saldo",
+            "from": "De {{month}}",
+            "assigned": "Alocado em {{month}}",
+            "activity": "Atividade em {{month}}",
+            "available": "Disponível",
+            "target": "Meta",
+            "targetTitle": "Quanto você precisa para {{categoryName}}?",
+            "targetDescription": "A meta é o valor que você deseja ter disponível para gastar em {{categoryName}}. Se você não tem uma meta, você pode deixar este campo em branco.",
+            "createTarget": "Criar Meta",
+            "warning": {
+                "title": "Aviso",
+                "upcoming": "{{total}} transações futuras",
+                "availableAfterUpcoming": "Disponível após as transações futuras"
+            },
+            "actions": {
+                "rename": "Renomear Categoria",
+                "delete": "Excluir Categoria",
+                "hide": "Ocultar Categoria"
+            }
+        }
     }
 }

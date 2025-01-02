@@ -1,19 +1,21 @@
 import React from "react";
 import { ButtonProps, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { ViewContent } from "../Themed";
+import { FontAwesome } from "@expo/vector-icons";
 
 type ButtonType = "primary" | "secondary" | "destructive";
 
 interface CardButtonProps extends ButtonProps {
   onPress?: () => void;
-
   type?: ButtonType;
+  iconLeft?: keyof typeof FontAwesome.glyphMap;
 }
 
 export const CardButton = ({
   onPress,
   title,
   type = "primary",
+  iconLeft,
   ...props
 }: CardButtonProps) => {
   const backgroundStyle =
@@ -21,6 +23,7 @@ export const CardButton = ({
   return (
     <TouchableOpacity onPress={onPress} {...props}>
       <ViewContent style={[styles.container, backgroundStyle]}>
+        {iconLeft && <FontAwesome name={iconLeft} size={16} color="white" />}
         <Text style={[styles[type]]}>{title}</Text>
       </ViewContent>
     </TouchableOpacity>
@@ -29,9 +32,10 @@ export const CardButton = ({
 
 const styles = StyleSheet.create({
   container: {
-    // backgroundColor: "#fff",
+    flexDirection: "row",
+    gap: 8,
     padding: 16,
-    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 6,
     shadowOffset: {
       width: 0,
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     color: "#aaa",
   },
   secondaryBackground: {
-    backgroundColor: "#aaa",
+    backgroundColor: "#233883",
     borderRadius: 6,
   },
   destructive: {

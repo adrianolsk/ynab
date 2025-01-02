@@ -5,9 +5,9 @@ import {
   CategorySchemaType,
   CategorySchema,
 } from "@/database/schemas/category.schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Stack, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Text } from "@/components/Themed";
 import { StyleSheet, View } from "react-native";
 import { formatCurrency } from "@/utils/financials";
@@ -16,8 +16,12 @@ import {
   MonthlyAllocationsSchema,
   MonthlyAllocationsSchemaType,
 } from "@/database/schemas/montly-allocation.schema";
+import { formatWithLocale } from "@/utils/dates";
+import { useTranslation } from "react-i18next";
+import { addMonths, parse } from "date-fns";
 
 const CategoryDetail = () => {
+  const { t } = useTranslation();
   const [category, setCategory] = React.useState<CategorySchemaType | null>(
     null
   );
@@ -25,7 +29,16 @@ const CategoryDetail = () => {
     React.useState<MonthlyAllocationsSchemaType | null>(null);
   const params = useLocalSearchParams<{
     categoryUuid: string;
+    month: string;
   }>();
+
+  const monthData = useMemo(() => {
+    const parsedDate = parse(params.month, "yyyy-MM", new Date());
+    return {
+      previousMonth: addMonths(parsedDate, -1),
+      currentMonth: parsedDate,
+    };
+  }, [params.month]);
 
   useEffect(() => {
     (async () => {
@@ -39,14 +52,17 @@ const CategoryDetail = () => {
           .select()
           .from(MonthlyAllocationsSchema)
           .where(
-            eq(MonthlyAllocationsSchema.category_uuid, params.categoryUuid)
+            and(
+              eq(MonthlyAllocationsSchema.category_uuid, params.categoryUuid),
+              eq(MonthlyAllocationsSchema.month, params.month)
+            )
           );
 
         setCategory(categoryResult);
         setAllocation(allocationResult);
       }
     })();
-  }, [params.categoryUuid]);
+  }, [params.categoryUuid, params.month]);
 
   return (
     <ScreenView>
@@ -57,15 +73,24 @@ const CategoryDetail = () => {
         }}
       />
       <View style={styles.block}>
-        <Text style={styles.title}>Balance</Text>
+        <Text style={styles.title}>{t("screen.categoryDetail.balance")}</Text>
         <ViewContent style={styles.container}>
-          <LineItem title="From Nov" value={0} />
           <LineItem
-            title="Assign for Dec"
+            title={t("screen.categoryDetail.from", {
+              month: formatWithLocale(monthData.previousMonth, "MMM"),
+            })}
+            value={0}
+          />
+          <LineItem
+            title={t("screen.categoryDetail.assigned", {
+              month: formatWithLocale(params.month, "MMM"),
+            })}
             value={allocation?.allocated_amount ?? 0}
           />
           <LineItem
-            title="Activity in Dec"
+            title={t("screen.categoryDetail.activity", {
+              month: formatWithLocale(params.month, "MMM"),
+            })}
             value={allocation?.spent_amount ?? 0}
           />
           <LineItem
@@ -78,21 +103,51 @@ const CategoryDetail = () => {
           />
         </ViewContent>
       </View>
+      {/* <WarningBlock /> */}
       <View>
-        <Text style={styles.title}>Target</Text>
+        <Text style={styles.title}>{t("screen.categoryDetail.target")}</Text>
 
         <ViewContent style={styles.targetContainer}>
           <Text style={styles.targetTitle}>
-            How much do you need for {category?.name}?
+            {t("screen.categoryDetail.targetTitle", {
+              categoryName: category?.name ?? "",
+            })}
           </Text>
           <Text>
-            When you create a target, we'll let you know how much money to set
-            aside to stay on track over time.
+            {t("screen.categoryDetail.targetDescription", {
+              categoryName: category?.name ?? "",
+            })}
           </Text>
           <View style={{ marginTop: 32 }}>
-            <CardButton title={"Create Target"} />
+            <CardButton title={t("screen.categoryDetail.createTarget")} />
           </View>
         </ViewContent>
+      </View>
+      <View style={{ gap: 8, marginTop: 16 }}>
+        <CardButton
+          iconLeft="edit"
+          type="secondary"
+          title={t("screen.categoryDetail.actions.rename")}
+          onPress={() => {
+            console.log("Edit category");
+          }}
+        />
+        <CardButton
+          iconLeft="eye-slash"
+          type="secondary"
+          title={t("screen.categoryDetail.actions.hide")}
+          onPress={() => {
+            console.log("Edit category");
+          }}
+        />
+        <CardButton
+          iconLeft="trash"
+          type="secondary"
+          title={t("screen.categoryDetail.actions.delete")}
+          onPress={() => {
+            console.log("Edit category");
+          }}
+        />
       </View>
     </ScreenView>
   );
@@ -110,6 +165,31 @@ const LineItem = ({ title, value, hideBorder }: LineItemProps) => {
     <View style={[styles.lineItem, borderStyle]}>
       <Text style={styles.description}>{title}</Text>
       <Text style={styles.description}>{formatCurrency(value)}</Text>
+    </View>
+  );
+};
+
+const WarningBlock = () => {
+  const { t } = useTranslation();
+
+  return (
+    <View style={styles.block}>
+      <Text style={styles.title}>
+        {t("screen.categoryDetail.warning.title")}
+      </Text>
+      <ViewContent style={styles.container}>
+        <LineItem
+          title={t("screen.categoryDetail.warning.upcoming", {
+            total: 2,
+          })}
+          value={0}
+        />
+        <LineItem
+          hideBorder
+          title={t("screen.categoryDetail.warning.availableAfterUpcoming")}
+          value={0}
+        />
+      </ViewContent>
     </View>
   );
 };

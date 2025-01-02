@@ -64,5 +64,28 @@
         "10": "October",
         "11": "November",
         "12": "December"
+    },
+    "screen": {
+        "categoryDetail": {
+            "balance": "Balance",
+            "from": "From {{month}}",
+            "assigned": "Assigned for {{month}}",
+            "activity": "Activity in {{month}}",
+            "available": "Available",
+            "target": "Target",
+            "targetTitle": "How much do you need for {{categoryName}?",
+            "targetDescription": "When you create a target, we'll let you know how much money to set aside to stay on track over time.",
+            "createTarget": "Create Target",
+            "warning": {
+                "title": "Warning",
+                "upcoming": "{{total}} Upcoming transactions",
+                "availableAfterUpcoming": "Available after upcoming transactions"
+            },
+            "actions": {
+                "rename": "Rename Category",
+                "delete": "Delete Ctegory",
+                "hide": "Hide Category"
+            }
+        }
     }
 }

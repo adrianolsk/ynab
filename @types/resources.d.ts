@@ -37,8 +37,8 @@ interface Resources {
         "medical_expenses": "Despesas Médicas",
         "emergency_fund": "Fundo de Emergência",
         "entertainment": "Entretenimento",
-        "vacation": "Vacação",
-        "stuff_i_forgot_to_budget_for": "Coisas que eu esqueci de me preencher",
+        "vacation": "Férias",
+        "stuff_i_forgot_to_budget_for": "Coisas que eu esqueci de orçar",
         "dining_out": "Jantar"
       }
     },
@@ -65,6 +65,29 @@ interface Resources {
       "07": "Julho",
       "08": "Agosto",
       "09": "Setembro"
+    },
+    "screen": {
+      "categoryDetail": {
+        "balance": "Saldo",
+        "from": "De {{month}}",
+        "assigned": "Alocado em {{month}}",
+        "activity": "Atividade em {{month}}",
+        "available": "Disponível",
+        "target": "Meta",
+        "targetTitle": "Quanto você precisa para {{categoryName}}?",
+        "targetDescription": "A meta é o valor que você deseja ter disponível para gastar em {{categoryName}}. Se você não tem uma meta, você pode deixar este campo em branco.",
+        "createTarget": "Criar Meta",
+        "warning": {
+          "title": "Aviso",
+          "upcoming": "{{total}} transações futuras",
+          "availableAfterUpcoming": "Disponível após as transações futuras"
+        },
+        "actions": {
+          "rename": "Renomear Categoria",
+          "delete": "Excluir Categoria",
+          "hide": "Ocultar Categoria"
+        }
+      }
     }
   }
 }
