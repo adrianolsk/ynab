@@ -86,6 +86,14 @@
                 "delete": "Delete Ctegory",
                 "hide": "Hide Category"
             }
+        },
+        "targetDetail": {
+            "frequency": {
+                "weekly": "Weekly",
+                "monthly": "Monthly",
+                "yearly": "Yearly",
+                "custom": "Custom"
+            }
         }
     }
 }

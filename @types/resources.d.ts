@@ -87,6 +87,14 @@ interface Resources {
           "delete": "Excluir Categoria",
           "hide": "Ocultar Categoria"
         }
+      },
+      "targetDetail": {
+        "frequency": {
+          "monthly": "Mensal",
+          "weekly": "Semanal",
+          "yearly": "Anual",
+          "custom": "Personalizado"
+        }
       }
     }
   }

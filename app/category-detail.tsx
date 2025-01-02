@@ -6,8 +6,8 @@ import {
   CategorySchema,
 } from "@/database/schemas/category.schema";
 import { and, eq } from "drizzle-orm";
-import { Stack, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useMemo } from "react";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Text } from "@/components/Themed";
 import { StyleSheet, View } from "react-native";
 import { formatCurrency } from "@/utils/financials";
@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { addMonths, parse } from "date-fns";
 
 const CategoryDetail = () => {
+  const router = useRouter();
   const { t } = useTranslation();
   const [category, setCategory] = React.useState<CategorySchemaType | null>(
     null
@@ -63,6 +64,16 @@ const CategoryDetail = () => {
       }
     })();
   }, [params.categoryUuid, params.month]);
+
+  const handleCreateTarget = useCallback(() => {
+    console.log("Create target");
+    router.push({
+      pathname: "/target.screen",
+      params: {
+        categoryUuid: params.categoryUuid,
+      },
+    });
+  }, [params.categoryUuid, router]);
 
   return (
     <ScreenView>
@@ -119,7 +130,10 @@ const CategoryDetail = () => {
             })}
           </Text>
           <View style={{ marginTop: 32 }}>
-            <CardButton title={t("screen.categoryDetail.createTarget")} />
+            <CardButton
+              onPress={handleCreateTarget}
+              title={t("screen.categoryDetail.createTarget")}
+            />
           </View>
         </ViewContent>
       </View>
