@@ -24,11 +24,12 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
 import "react-native-reanimated";
 import migrations from "../drizzle/migrations";
+import * as SystemUI from "expo-system-ui";
 // DATABASE
 import * as SQLite from "expo-sqlite";
 const actualDatabse = SQLite.openDatabaseSync(DATABASE_NAME);
 // DATABASE
-
+SystemUI.setBackgroundColorAsync("black");
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -107,6 +108,9 @@ function RootLayoutNav() {
         <BottomSheetModalProvider>
           <Stack
             screenOptions={{
+              contentStyle: {
+                // backgroundColor: "red",
+              },
               headerTitleStyle: {
                 fontFamily: "NunitoSansSemiBold",
               },

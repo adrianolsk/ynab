@@ -1,12 +1,10 @@
 import React from "react";
+import { Modal, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import {
-  Modal,
+  GestureHandlerRootView,
   Pressable,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from "react-native";
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 
 interface ModalViewProps {
   header: React.ReactNode;
@@ -31,13 +29,9 @@ const ModalView = ({
       visible={isVisible}
       onRequestClose={onDismiss}
     >
-      <View style={styles.centeredView}>
-        <Pressable
-          onPress={onDismiss}
-          style={{
-            flex: 1,
-          }}
-        >
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Pressable onPress={onDismiss} style={styles.modalOverlay}></Pressable>
+        <View style={styles.centeredView}>
           <View
             style={{
               flex: 1,
@@ -45,11 +39,12 @@ const ModalView = ({
               justifyContent: "center",
             }}
           >
-            <Pressable
+            <View
               style={{
                 width: "80%",
                 alignItems: "center",
               }}
+              // onPress={(e) => {e.nativeEvent.stopImmediatePropagation();}}
             >
               <View style={styles.modalView}>
                 <View style={[styles.header, modalHeaderStyle]}>{header}</View>
@@ -57,15 +52,29 @@ const ModalView = ({
                   {children}
                 </View>
               </View>
-            </Pressable>
+            </View>
           </View>
-        </Pressable>
-      </View>
+        </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  // modalContent: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   margin: '5%',
+  // },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#00000099",
+    // backgroundColor: "red",
+  },
   header: {
     height: 50,
     width: "100%",
@@ -77,7 +86,7 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    backgroundColor: "#00000099",
+    // backgroundColor: "#00000099",
   },
   modalContent: {
     width: "100%",

@@ -20,7 +20,12 @@ type NumericKeyboardProps = {
   hideButtons?: boolean;
   onEdit?: () => void;
 };
-
+const keys = [
+  ["1", "2", "3", "-"],
+  ["4", "5", "6", "+"],
+  ["7", "8", "9", "="],
+  ["x", "0", "⌫", "DONE"], // Include backspace on the last row
+];
 export const NumericKeyboard = React.memo(
   ({
     onPress,
@@ -30,13 +35,6 @@ export const NumericKeyboard = React.memo(
     hideButtons,
     onEdit,
   }: NumericKeyboardProps) => {
-    const keys = [
-      ["1", "2", "3", "-"],
-      ["4", "5", "6", "+"],
-      ["7", "8", "9", "="],
-      ["x", "0", "⌫", "DONE"], // Include backspace on the last row
-    ];
-
     const onKeyPress = useCallback(
       (key: string) => () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -98,9 +96,10 @@ export const NumericKeyboard = React.memo(
           <View style={styles.row} key={rowIndex}>
             {row.map((key) => (
               <Pressable
+                onPressIn={onKeyPress(key)}
                 key={key}
                 style={pressableStyle}
-                onPress={onKeyPress(key)}
+                // onPress={onKeyPress(key)}
               >
                 <View style={styles.key}>
                   {key === "DONE" ? (

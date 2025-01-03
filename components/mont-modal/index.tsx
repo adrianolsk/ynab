@@ -8,7 +8,8 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
-import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
+import * as Haptics from "expo-haptics";
 
 const months: Array<Array<MonthName>> = [
   ["01", "02", "03"],
@@ -65,19 +66,22 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
   const { t } = useTranslation();
 
   const previousYear = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedYear((x) => x - 1);
   };
 
   const nextYear = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedYear((x) => x + 1);
   };
 
   const onMonthPress = (month: MonthName) => () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const pressedMonth = `${selectedYear}-${month}`;
     if (isEnabled(pressedMonth)) {
       setSelectedYearMonth(pressedMonth);
       onChange(pressedMonth);
-      onDismiss();
+      requestAnimationFrame(onDismiss);
     }
   };
 
@@ -87,12 +91,15 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
       isVisible={isVisible}
       header={
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
-            onPress={previousYear}
-            style={styles.navigationButton}
+          <Pressable
+            onPressIn={previousYear}
+            style={({ pressed }) => [
+              styles.navigationButton,
+              pressed && styles.navigationButtonPressed,
+            ]}
           >
             <FontAwesome name="chevron-left" color="#2C50B2" size={20} />
-          </TouchableOpacity>
+          </Pressable>
           <View
             style={{
               flex: 1,
@@ -102,9 +109,15 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
           >
             <Text style={styles.textYear}>{selectedYear}</Text>
           </View>
-          <TouchableOpacity onPress={nextYear} style={styles.navigationButton}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.navigationButton,
+              pressed && styles.navigationButtonPressed,
+            ]}
+            onPressIn={nextYear}
+          >
             <FontAwesome name="chevron-right" color="#2C50B2" size={20} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       }
       onDismiss={onDismiss}
@@ -116,7 +129,7 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
             return (
               <Pressable
                 key={month}
-                onPress={onMonthPress(month)}
+                onPressIn={onMonthPress(month)}
                 style={({ pressed }) => [
                   styles.monthButton,
                   {
@@ -162,6 +175,9 @@ const styles = StyleSheet.create({
     height: 48,
     alignItems: "center",
     justifyContent: "center",
+  },
+  navigationButtonPressed: {
+    backgroundColor: "#2C50B2",
   },
   textYear: {
     fontSize: 16,

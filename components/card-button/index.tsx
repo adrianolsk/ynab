@@ -1,7 +1,8 @@
 import React from "react";
-import { ButtonProps, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ButtonProps, StyleSheet, Text } from "react-native";
 import { ViewContent } from "../Themed";
 import { FontAwesome } from "@expo/vector-icons";
+import { Pressable } from "react-native-gesture-handler";
 
 type ButtonType = "primary" | "secondary" | "destructive";
 
@@ -21,12 +22,16 @@ export const CardButton = ({
   const backgroundStyle =
     type === "primary" ? styles.primaryBackground : styles.secondaryBackground;
   return (
-    <TouchableOpacity onPress={onPress} {...props}>
+    <Pressable
+      onPress={onPress}
+      {...props}
+      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+    >
       <ViewContent style={[styles.container, backgroundStyle]}>
         {iconLeft && <FontAwesome name={iconLeft} size={16} color="white" />}
         <Text style={[styles[type]]}>{title}</Text>
       </ViewContent>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

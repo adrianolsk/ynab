@@ -10,7 +10,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo } from "react";
 import { Text } from "@/components/Themed";
 import { Pressable, StyleSheet, View } from "react-native";
-import { formatCurrency } from "@/utils/financials";
+import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { CardButton } from "@/components/card-button";
 import {
   MonthlyAllocationsSchema,
@@ -27,7 +27,7 @@ const frquencyList: FrequencyType[] = ["weekly", "monthly", "yearly", "custom"];
 
 const CategoryDetail = () => {
   const router = useRouter();
-  const [targetAmount, setTargetAmount] = React.useState(0);
+  const [targetAmount, setTargetAmount] = React.useState("0");
   const [selectedFrequency, setSelectedFrequency] =
     React.useState<FrequencyType>("monthly");
 
@@ -40,7 +40,14 @@ const CategoryDetail = () => {
   const params = useLocalSearchParams<{
     categoryUuid: string;
     month: string;
+    amount: string;
   }>();
+
+  useEffect(() => {
+    if (params.amount) {
+      setTargetAmount(params.amount);
+    }
+  }, [params.amount]);
 
   useEffect(() => {
     (async () => {
@@ -94,6 +101,7 @@ const CategoryDetail = () => {
         >
           {frquencyList.map((item) => (
             <Pressable
+              key={item}
               style={({ pressed }) => [
                 styles.frequencyButton,
                 selectedFrequency === item
@@ -114,13 +122,13 @@ const CategoryDetail = () => {
           <TextField
             placeholder="I need"
             style={{}}
-            value={formatCurrency(targetAmount)}
+            value={formatCurrency(parseCurrencyToDecimal(targetAmount))}
             onPress={() =>
               router.push({
-                pathname: "/payee.modal",
+                pathname: "/amount.modal",
                 params: {
                   id: 1,
-                  type: "transaction",
+                  amount: targetAmount,
                 },
               })
             }
