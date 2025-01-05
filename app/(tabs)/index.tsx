@@ -41,6 +41,7 @@ import { MonthModal } from "@/components/mont-modal";
 import { Pressable } from "react-native-gesture-handler";
 import { formatWithLocale } from "@/utils/dates";
 import { FONT_FAMILIES } from "@/utils/constants";
+import { ChevronAccordion } from "@/components/chevron";
 
 interface Map {
   [key: string]: boolean | undefined;
@@ -421,11 +422,12 @@ const Header = ({
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.header}>
-        <FontAwesome
+        {/* <FontAwesome
           name={closed ? "chevron-down" : "chevron-up"}
-          size={12}
+          size={14}
           color="#555"
-        />
+        /> */}
+        <ChevronAccordion isOpen={closed} />
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{title}</Text>
         </View>
@@ -453,19 +455,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 20,
     marginBottom: 1,
-    borderBottomColor: "#ccc",
   },
   header: {
     flexDirection: "row",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#ccc",
+    height: 48,
     gap: 8,
+    alignItems: "center",
   },
   title: {
     fontSize: 12,
     fontFamily: FONT_FAMILIES.Medium,
+    letterSpacing: 0.5,
   },
   availableText: {
     fontSize: 12,
