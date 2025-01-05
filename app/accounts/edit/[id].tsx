@@ -5,6 +5,7 @@ import { Text, View, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
 import { AccountsSchema } from "@/database/schemas/accounts.schema";
 import { AccountGroup } from "@/types";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 import { eq } from "drizzle-orm";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -128,12 +129,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginHorizontal: 16,
     marginTop: 16,
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    fontFamily: "LatoRegular",
+    fontFamily: FONT_FAMILIES.Regular,
   },
   separator: {
     backgroundColor: "#aaa",
@@ -160,6 +161,6 @@ const styles = StyleSheet.create({
   info: {
     marginTop: 8,
     fontSize: 12,
-    fontFamily: "NunitoSansLight",
+    fontFamily: FONT_FAMILIES.Light,
   },
 });

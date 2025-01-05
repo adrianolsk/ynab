@@ -5,6 +5,7 @@ import { StyleSheet } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { Switch } from "../switch";
 import { TextInput, ViewContent } from "../Themed";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 export const BalanceField = (props: any) => {
   const isOn = useSharedValue(true);
@@ -90,6 +91,6 @@ const styles = StyleSheet.create({
     borderColor: "#C72C1E",
   },
   input: {
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
   },
 });

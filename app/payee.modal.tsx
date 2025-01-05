@@ -2,6 +2,7 @@ import { Text, TextInput, ViewContent } from "@/components/Themed";
 import { db } from "@/database/db";
 import { PayeeSchema, PayeeSchemaType } from "@/database/schemas/payee.schema";
 import { getBudgetUuid } from "@/services/storage";
+import { FONT_FAMILIES } from "@/utils/constants";
 import { uuidV4 } from "@/utils/helpers";
 import { FontAwesome } from "@expo/vector-icons";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
@@ -197,6 +198,6 @@ const styles = StyleSheet.create({
   },
   addPayeeText: {
     color: "#4B9828",
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
 });

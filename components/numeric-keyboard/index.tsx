@@ -37,7 +37,7 @@ export const NumericKeyboard = React.memo(
   }: NumericKeyboardProps) => {
     const onKeyPress = useCallback(
       (key: string) => () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
         if (key === "⌫") {
           onBackspace();
         } else if (key === "DONE") {

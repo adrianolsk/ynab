@@ -1,6 +1,7 @@
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import ScreenView from "@/components/screen-view";
 import { Text, useThemeColor } from "@/components/Themed";
+import { FONT_FAMILIES } from "@/utils/constants";
 import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
@@ -111,7 +112,7 @@ export default NewTransactionScreen;
 const styles = StyleSheet.create({
   input: {
     fontSize: 48,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
   },
   inflowStyle: {
     color: "#4D9119",
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
     color: "#fff",
   },
   selectedText: {

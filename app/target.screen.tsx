@@ -21,6 +21,8 @@ import { useTranslation } from "react-i18next";
 import { addMonths, parse, set } from "date-fns";
 import { TextField } from "@/components/text-field";
 import { Separator } from "@/components/separator";
+import * as Haptics from "expo-haptics";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 type FrequencyType = "weekly" | "monthly" | "yearly" | "custom";
 const frquencyList: FrequencyType[] = ["weekly", "monthly", "yearly", "custom"];
@@ -109,7 +111,8 @@ const CategoryDetail = () => {
                   : {},
                 pressed ? styles.frequencyButtonSelected : {},
               ]}
-              onPress={() => {
+              onPressIn={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                 setSelectedFrequency(item);
                 console.log("Edit category");
               }}
@@ -219,7 +222,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 12,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
     marginBottom: 8,
   },
   description: {
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
   targetTitle: {
     fontSize: 16,
     marginBottom: 8,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
   },
 });
 

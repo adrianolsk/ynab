@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 const months: Array<Array<MonthName>> = [
   ["01", "02", "03"],
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   },
   textYear: {
     fontSize: 16,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   button: {
     borderRadius: 20,

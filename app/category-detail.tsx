@@ -19,6 +19,7 @@ import {
 import { formatWithLocale } from "@/utils/dates";
 import { useTranslation } from "react-i18next";
 import { addMonths, parse } from "date-fns";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 const CategoryDetail = () => {
   const router = useRouter();
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 12,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
     marginBottom: 8,
   },
   description: {
@@ -241,7 +242,7 @@ const styles = StyleSheet.create({
   targetTitle: {
     fontSize: 16,
     marginBottom: 8,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
   },
 });
 

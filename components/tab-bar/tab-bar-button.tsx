@@ -9,6 +9,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 // const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -72,7 +73,7 @@ const TabBarButton = ({
       accessibilityState={isFocused ? { selected: true } : {}}
       accessibilityLabel={options.tabBarAccessibilityLabel}
       testID={options.tabBarButtonTestID}
-      onPress={onPress}
+      onPressIn={onPress}
       style={{ flex: 1 }}
     >
       <Animated.View style={[animatedStyle]}>
@@ -93,7 +94,7 @@ const TabBarButton = ({
               style={{
                 marginTop: 8,
                 fontSize: 12,
-                fontFamily: "NunitoSansLight",
+                fontFamily: FONT_FAMILIES.Light,
                 color: isFocused ? tabIconSelected : tabIconDefault,
               }}
             >

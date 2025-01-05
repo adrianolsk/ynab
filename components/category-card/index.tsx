@@ -11,6 +11,7 @@ import { formatCurrency, parseCurrencyToDecimal } from "@/utils/financials";
 import { ProgressBar } from "../progress-bar";
 import { TargetSchema } from "@/database/schemas/target.schema";
 import { BlinkingCaret } from "../blinking-caret";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 interface CategoryCardProps {
   isSelected: boolean;
@@ -108,6 +109,11 @@ const CategoryCard = ({
   const selectedOpacity = { opacity: isSelected ? 0.7 : 1 };
   return (
     <Pressable
+      style={({ pressed }) => [
+        {
+          opacity: pressed ? 0.5 : 1,
+        },
+      ]}
       onPress={() => {
         onPress(monthlyAllocation?.allocated_amount ?? 0);
       }}
@@ -173,21 +179,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   title: {
-    fontSize: 12,
-    fontFamily: "NunitoSansBold",
+    fontSize: 14,
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   amountText: {
-    fontSize: 12,
-    fontFamily: "NunitoSansBold",
+    fontSize: 14,
+    fontFamily: FONT_FAMILIES.Bold,
     color: "#111",
   },
   titleSelected: {
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.ExtraBold,
     fontSize: 14,
   },
   fundedOrSpent: {
     fontSize: 12,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
     color: "#aaa",
   },
   tag: {

@@ -40,6 +40,7 @@ import { Stack, useRouter } from "expo-router";
 import { MonthModal } from "@/components/mont-modal";
 import { Pressable } from "react-native-gesture-handler";
 import { formatWithLocale } from "@/utils/dates";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 interface Map {
   [key: string]: boolean | undefined;
@@ -464,11 +465,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 12,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
   },
   availableText: {
     fontSize: 12,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
     color: "#aaa",
   },
 });

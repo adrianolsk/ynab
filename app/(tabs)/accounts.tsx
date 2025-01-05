@@ -11,6 +11,7 @@ import { CardButton } from "@/components/card-button";
 import { AccountGroup } from "@/types";
 import { formatCurrency } from "@/utils/financials";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 type AccountGroupItem = {
   title?: AccountGroup;
@@ -140,14 +141,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     fontSize: 14,
     marginTop: 16,
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   title: {
     // flex: 1,
     fontSize: 14,
   },
   value: {
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   positive: {
     color: "#4D9119",

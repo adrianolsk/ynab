@@ -8,6 +8,7 @@ import {
 import { CategorySchema } from "@/database/schemas/category.schema";
 import { PayeeSchema } from "@/database/schemas/payee.schema";
 import { TransactionsSchema } from "@/database/schemas/transactions.schema";
+import { FONT_FAMILIES } from "@/utils/constants";
 import { formatCurrency } from "@/utils/financials";
 import { FontAwesome } from "@expo/vector-icons";
 import { format } from "date-fns";
@@ -316,22 +317,22 @@ const styles = StyleSheet.create({
   },
   payeeName: {
     fontSize: 14,
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   categoryName: {
     fontSize: 14,
-    fontFamily: "NunitoSansLight",
+    fontFamily: FONT_FAMILIES.Light,
   },
   accountName: {
     fontSize: 14,
-    fontFamily: "NunitoSansLight",
+    fontFamily: FONT_FAMILIES.Light,
   },
   amount: {
     fontSize: 14,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
   },
   addPayeeText: {
     color: "#4B9828",
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
 });

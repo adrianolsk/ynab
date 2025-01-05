@@ -7,6 +7,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { eq } from "drizzle-orm";
 import { db } from "@/database/db";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 interface AssignMoneyCardProps {}
 
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   money: {
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
   },
   positive: {
     backgroundColor: "#386B11",

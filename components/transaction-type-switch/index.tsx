@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { NumericKeyboard } from "../numeric-keyboard";
 import { useThemeColor } from "../Themed";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 type TransactionType = "outflow" | "inflow";
 
@@ -37,11 +38,12 @@ export const TransactionTypeSwitch = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     const color = interpolateColor(value.value, [0, 1], ["#F14839", "#4B9828"]);
-    const colorValue = withTiming(color, { duration: 100 });
+    const colorValue = withTiming(color, { duration: 500 });
+    const translateX = withTiming(value.value * (width / 2), { duration: 300 });
 
     return {
       backgroundColor: colorValue,
-      transform: [{ translateX: value.value * (width / 2) }],
+      transform: [{ translateX }],
     };
   });
 
@@ -100,7 +102,7 @@ export const TransactionTypeSwitch = ({
       >
         <Animated.View style={[styles.selectedItem, animatedStyle]} />
         <Pressable
-          onPress={onPress}
+          onPressIn={onPress}
           style={{
             flex: 1,
           }}
@@ -110,7 +112,7 @@ export const TransactionTypeSwitch = ({
           </View>
         </Pressable>
         <Pressable
-          onPress={onPress}
+          onPressIn={onPress}
           style={{
             flex: 1,
           }}
@@ -186,7 +188,7 @@ export const TransactionTypeSwitch = ({
 const styles = StyleSheet.create({
   input: {
     fontSize: 24,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
   },
   inflowStyle: {
     color: "#4D9119",
@@ -210,7 +212,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    fontFamily: "NunitoSansBold",
+    fontFamily: FONT_FAMILIES.Bold,
     color: "#fff",
   },
   selectedText: {

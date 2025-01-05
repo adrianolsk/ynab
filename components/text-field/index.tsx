@@ -9,6 +9,7 @@ import Animated, {
 import { Text, TextInput } from "@/components/Themed";
 import { Pressable } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
@@ -73,7 +74,7 @@ export const TextField = ({
 
   const iconName = props.icon ?? "user";
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPressIn={onPress}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ width: 32, justifyContent: "center" }}>
           <FontAwesome name={iconName} size={20} color={iconColor ?? "#aaa"} />
@@ -107,20 +108,21 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   label: {
+    width: "90%",
     position: "absolute",
     left: 0,
 
-    fontFamily: "NunitoSansRegular",
+    fontFamily: FONT_FAMILIES.Regular,
   },
   textInput: {
     height: 40,
     backgroundColor: "transparent",
     fontSize: 14,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
   },
   textOnlyInput: {
     fontSize: 14,
-    fontFamily: "NunitoSansMedium",
+    fontFamily: FONT_FAMILIES.Medium,
 
     marginTop: 8,
   },

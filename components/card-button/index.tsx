@@ -3,6 +3,7 @@ import { ButtonProps, StyleSheet, Text } from "react-native";
 import { ViewContent } from "../Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import { Pressable } from "react-native-gesture-handler";
+import { FONT_FAMILIES } from "@/utils/constants";
 
 type ButtonType = "primary" | "secondary" | "destructive";
 
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
   primary: {
     color: "#FFF",
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
   primaryBackground: {
     backgroundColor: "#3B5EDA",
@@ -67,6 +68,6 @@ const styles = StyleSheet.create({
   },
   destructive: {
     color: "#C72C1E",
-    fontFamily: "NunitoSansSemiBold",
+    fontFamily: FONT_FAMILIES.SemiBold,
   },
 });
