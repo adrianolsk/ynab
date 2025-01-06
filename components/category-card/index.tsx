@@ -120,11 +120,7 @@ const CategoryCard = ({
     >
       <ViewContent
         style={[
-          {
-            borderWidth: StyleSheet.hairlineWidth,
-            borderBottomColor: "#ccc",
-            padding: 12,
-          },
+          { marginBottom: 1, borderBottomColor: "#ccc", padding: 12 },
           selectedStyle,
         ]}
       >
@@ -159,7 +155,7 @@ const CategoryCard = ({
             rolloverAmount={rolloverAmount}
             allocatedAmount={allocatedAmount}
           />
-          {spentLabel && <Text style={styles.fundedOrSpent}>{spentLabel}</Text>}
+          <Text style={styles.fundedOrSpent}>{spentLabel}</Text>
         </View>
       </ViewContent>
     </Pressable>
