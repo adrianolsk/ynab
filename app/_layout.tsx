@@ -140,6 +140,14 @@ function RootLayoutNav() {
           name="accounts/edit/[id]"
           options={{ presentation: "formSheet" }}
         /> */}
+            <Stack.Screen
+              name="month.modal"
+              options={{
+                presentation: "transparentModal",
+                animation: "fade",
+                headerShown: false,
+              }}
+            />
           </Stack>
         </BottomSheetModalProvider>
       </ThemeProvider>

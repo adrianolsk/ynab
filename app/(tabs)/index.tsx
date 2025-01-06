@@ -24,7 +24,13 @@ import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { format } from "date-fns";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -36,11 +42,12 @@ import CategoryCard from "@/components/category-card";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { updateReadyToAssign } from "@/database/services/ready-to-assign.service";
 import { uuidV4 } from "@/utils/helpers";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { MonthModal } from "@/components/mont-modal";
 import { Pressable } from "react-native-gesture-handler";
 import { formatWithLocale } from "@/utils/dates";
 import { FONT_FAMILIES } from "@/utils/constants";
+import { ChevronAccordion } from "@/components/chevron";
 
 interface Map {
   [key: string]: boolean | undefined;
@@ -59,6 +66,16 @@ export default function BudgetScreen() {
   const [currentMonth, setCurrentMonth] = useState(
     format(new Date(), "yyyy-MM")
   );
+
+  const params = useLocalSearchParams<{
+    currentMonth: string;
+  }>();
+
+  useEffect(() => {
+    if (params.currentMonth) {
+      setCurrentMonth(params.currentMonth);
+    }
+  }, [params.currentMonth]);
 
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
@@ -324,7 +341,15 @@ export default function BudgetScreen() {
   const renderHeaderTitle = useCallback(() => {
     return (
       <Pressable
-        onPress={() => setIsVisible(true)}
+        onPressIn={() => {
+          console.log("currentMonth", currentMonth);
+          router.push({
+            pathname: "/month.modal",
+            params: {
+              currentMonth: currentMonth,
+            },
+          });
+        }}
         style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
       >
         <Text style={{ textTransform: "capitalize" }}>
@@ -333,7 +358,7 @@ export default function BudgetScreen() {
         <FontAwesome name="arrow-circle-o-down" size={20} color="#3F69DC" />
       </Pressable>
     );
-  }, [currentMonth]);
+  }, [currentMonth, router]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -400,11 +425,11 @@ export default function BudgetScreen() {
         </BottomSheetView>
       </BottomSheetModal>
 
-      <MonthModal
+      {/* <MonthModal
         onChange={setCurrentMonth}
         isVisible={isVisible}
         onDismiss={() => setIsVisible(false)}
-      />
+      /> */}
     </View>
   );
 }
@@ -421,11 +446,7 @@ const Header = ({
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.header}>
-        <FontAwesome
-          name={closed ? "chevron-down" : "chevron-up"}
-          size={12}
-          color="#555"
-        />
+        <ChevronAccordion isOpen={closed} />
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{title}</Text>
         </View>
@@ -453,19 +474,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 20,
     marginBottom: 1,
-    borderBottomColor: "#ccc",
   },
   header: {
     flexDirection: "row",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#ccc",
+    height: 48,
     gap: 8,
+    alignItems: "center",
   },
   title: {
     fontSize: 12,
     fontFamily: FONT_FAMILIES.Medium,
+    letterSpacing: 0.5,
   },
   availableText: {
     fontSize: 12,

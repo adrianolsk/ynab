@@ -18,13 +18,15 @@ const ProgressBar = ({
   const availableAmountComponent = useMemo(() => {
     if (availableAmount === 0) {
       return (
-        <View style={{ width: "100%", height: 4, backgroundColor: "gray" }} />
+        <View
+          style={{ width: "100%", height: 5, backgroundColor: "#1F2C3A" }}
+        />
       );
     }
     if (availableAmount > 0 && target === 0) {
       return (
         <View
-          style={{ width: "100%", height: 4, backgroundColor: "#4B9828" }}
+          style={{ width: "100%", height: 5, backgroundColor: "#4B9828" }}
         />
       );
     }
@@ -43,7 +45,7 @@ const ProgressBar = ({
           <View
             style={{
               width: "100%",
-              height: 4,
+              height: "100%",
               backgroundColor: "#C50500",
               position: "absolute",
             }}
@@ -58,7 +60,7 @@ const ProgressBar = ({
             <View
               style={{
                 width: `${alocatedPercent}%`,
-                height: 4,
+                height: "100%",
                 backgroundColor: "#FFD700",
                 position: "absolute",
               }}
@@ -74,7 +76,7 @@ const ProgressBar = ({
             <View
               style={{
                 width: `${spentPercentage}%`,
-                height: 4,
+                height: "100%",
                 backgroundColor: "#4B9828",
                 position: "absolute",
               }}
@@ -99,7 +101,7 @@ const ProgressBar = ({
           zIndex: 1,
           position: "absolute",
           width: `${progress}%`,
-          height: 4,
+          height: "100%",
           backgroundColor: color,
         }}
       />
@@ -116,9 +118,12 @@ export { ProgressBar };
 
 const styles = StyleSheet.create({
   progressContainer: {
-    height: 4,
+    height: 5,
     borderRadius: 4,
-    backgroundColor: "#555",
+    overflow: "hidden",
+    backgroundColor: "#1F2C3A",
     flexDirection: "row",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#555",
   },
 });

@@ -155,7 +155,7 @@ const CategoryCard = ({
             rolloverAmount={rolloverAmount}
             allocatedAmount={allocatedAmount}
           />
-          <Text style={styles.fundedOrSpent}>{spentLabel}</Text>
+          {spentLabel && <Text style={styles.fundedOrSpent}>{spentLabel}</Text>}
         </View>
       </ViewContent>
     </Pressable>
@@ -169,7 +169,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   selected: {
-    backgroundColor: "#283351",
+    backgroundColor: "#28335199",
+    // backgroundColor: "#283351",
   },
 
   item: {

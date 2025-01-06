@@ -3,7 +3,7 @@ import { ModalView } from "@/components/modal-view";
 import { db } from "@/database/db";
 import { MonthlyAllocationsSchema } from "@/database/schemas/montly-allocation.schema";
 import { FontAwesome } from "@expo/vector-icons";
-import { format, addMonths } from "date-fns";
+import { format, addMonths, parse } from "date-fns";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import { StyleSheet, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { FONT_FAMILIES } from "@/utils/constants";
+import { useLocalSearchParams } from "expo-router";
 
 const months: Array<Array<MonthName>> = [
   ["01", "02", "03"],
@@ -42,11 +43,16 @@ interface MonthModalProps {
   onDismiss: () => void;
 }
 const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
+  const params = useLocalSearchParams<{
+    currentMonth: string;
+  }>();
   const [selectedYearMonth, setSelectedYearMonth] = useState<string>(
-    format(new Date(), "yyyy-MM")
+    format(parse(params.currentMonth, "yyyy-MM", new Date()), "yyyy-MM")
   );
 
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedYear, setSelectedYear] = useState(
+    parse(params.currentMonth, "yyyy-MM", new Date()).getFullYear()
+  );
 
   const { data } = useLiveQuery(
     db
@@ -88,6 +94,7 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
 
   return (
     <ModalView
+      onDismiss={onDismiss}
       modalContentStyle={styles.modalContentStyle}
       isVisible={isVisible}
       header={
@@ -121,7 +128,6 @@ const MonthModal = ({ onChange, isVisible, onDismiss }: MonthModalProps) => {
           </Pressable>
         </View>
       }
-      onDismiss={onDismiss}
     >
       {months.map((row, index) => (
         <View key={index} style={{ flexDirection: "row" }}>

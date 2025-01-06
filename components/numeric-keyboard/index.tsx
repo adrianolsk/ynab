@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 4,
     borderRadius: 10,
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     // backgroundColor: "#f0f0f0",
     borderRadius: 10,
-    borderWidth: StyleSheet.hairlineWidth,
+    // borderWidth: StyleSheet.hairlineWidth,
     borderColor: "#aaa",
   },
   keyPressed: {

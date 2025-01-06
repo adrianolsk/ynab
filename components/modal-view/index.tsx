@@ -23,11 +23,12 @@ const ModalView = ({
   modalHeaderStyle,
 }: ModalViewProps) => {
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onDismiss}
+    <View
+      style={{ flex: 1, flexDirection: "row" }}
+      // animationType="fade"
+      // transparent={true}
+      // visible={isVisible}
+      // onRequestClose={onDismiss}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Pressable onPress={onDismiss} style={styles.modalOverlay}></Pressable>
@@ -44,7 +45,6 @@ const ModalView = ({
                 width: "80%",
                 alignItems: "center",
               }}
-              // onPress={(e) => {e.nativeEvent.stopImmediatePropagation();}}
             >
               <View style={styles.modalView}>
                 <View style={[styles.header, modalHeaderStyle]}>{header}</View>
@@ -56,16 +56,11 @@ const ModalView = ({
           </View>
         </View>
       </GestureHandlerRootView>
-    </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // modalContent: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   margin: '5%',
-  // },
   modalOverlay: {
     position: "absolute",
     top: 0,
@@ -73,7 +68,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "#00000099",
-    // backgroundColor: "red",
   },
   header: {
     height: 50,
@@ -86,7 +80,6 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    // backgroundColor: "#00000099",
   },
   modalContent: {
     width: "100%",
@@ -108,25 +101,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
   },
 });
 
